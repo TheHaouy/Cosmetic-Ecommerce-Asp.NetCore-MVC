@@ -1,0 +1,184 @@
+@model Final_VS1.Areas.NhanVien.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard Nhân Viên";
+    ViewData["PageTitle"] = "Dashboard Nhân Viên";
+}
+
+<div class="container-fluid fade-in">
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary">
+                <i class="fas fa-clock"></i>
+                <h3>@Model.DonHangChoXuLy</h3>
+                <p>Đơn chờ xử lý</p>
+                <a href="@Url.Action("Index", "Donhang")?status=Chờ xác nhận" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning">
+                <i class="fas fa-shipping-fast"></i>
+                <h3>@Model.DonHangDangGiao</h3>
+                <p>Đang giao hàng</p>
+                <a href="@Url.Action("Index", "Donhang")?status=Đang giao hàng" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success">
+                <i class="fas fa-check-circle"></i>
+                <h3>@Model.DonHangHoanThanh</h3>
+                <p>Hoàn thành hôm nay</p>
+                <a href="@Url.Action("Index", "Donhang")?status=Hoàn thành" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>@Model.SanPhamSapHet</h3>
+                <p>Sản phẩm sắp hết</p>
+                <a href="@Url.Action("Index", "Sanpham")" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Orders -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Đơn hàng mới nhất</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.DonHangMoiNhat.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.DonHangMoiNhat)
+                                    {
+                                        <tr>
+                                            <td><strong>#@order.IdDonHang</strong></td>
+                                            <td>@(order.IdTaiKhoanNavigation?.HoTen ?? "Khách")</td>
+                                            <td>@order.NgayDat?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="text-success fw-bold">@((order.TongTien ?? 0).ToString("N0"))₫</td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = order.TrangThai switch
+                                                    {
+                                                        "Chờ xác nhận" => "bg-warning",
+                                                        "Đã xác nhận" => "bg-info",
+                                                        "Đang giao hàng" => "bg-primary",
+                                                        "Hoàn thành" => "bg-success",
+                                                        "Đã hủy" => "bg-danger",
+                                                        _ => "bg-secondary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@order.TrangThai</span>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Detail", "Donhang", new { id = order.IdDonHang })" 
+                                                   class="btn btn-sm btn-outline-primary btn-action">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 text-gradient"></i>
+                            <p>Chưa có đơn hàng mới</p>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-center bg-white border-top">
+                    <a href="@Url.Action("Index", "Donhang")" class="btn btn-sm btn-primary">
+                        Xem tất cả <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Products -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Sản phẩm sắp hết</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    @if (Model.SanPhamSapHetChiTiet.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var variant in Model.SanPhamSapHetChiTiet)
+                            {
+                                <div class="list-group-item hover-lift px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1 text-dark">@variant.IdSanPhamNavigation?.TenSanPham</h6>
+                                            @if (!string.IsNullOrEmpty(variant.Sku))
+                                            {
+                                                <small class="text-muted">SKU: @variant.Sku</small>
+                                            }
+                                        </div>
+                                        <span class="badge bg-danger">@(variant.SoLuongTonKho ?? 0)</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-check-circle fa-3x mb-3" style="color: var(--primary-color);"></i>
+                            <p>Tất cả sản phẩm còn đủ hàng</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Stat card đã được định nghĩa trong nhanvien.css, 
+           chỉ thêm các style bổ sung nếu cần */
+        .stat-card .stretched-link::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            content: "";
+        }
+        
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+        }
+        
+        .list-group-item:hover {
+            background-color: rgba(185, 215, 192, 0.1);
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+}

@@ -1,0 +1,413 @@
+/* CSS cho quản lý biến thể sản phẩm */
+
+/* Modal biến thể */
+.modal-xl {
+    max-width: 1200px;
+}
+
+/* Bảng biến thể */
+.table-variants {
+    font-size: 0.875rem;
+}
+
+.table-variants th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table-variants td {
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+}
+
+/* Badges thuộc tính */
+.attribute-badge {
+    background-color: #e9ecef;
+    color: #495057;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    margin: 0.125rem;
+    display: inline-block;
+}
+
+.attribute-group {
+    margin-bottom: 0.5rem;
+}
+
+.attribute-group:last-child {
+    margin-bottom: 0;
+}
+
+.attribute-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* CSS cho quản lý thuộc tính */
+.attribute-values {
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 0.25rem 0;
+}
+
+.attribute-values .badge {
+    font-size: 0.75rem;
+    margin: 0.125rem;
+    transition: all 0.2s ease;
+}
+
+.attribute-values .badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.attribute-values .badge .btn-close {
+    font-size: 0.6rem;
+    width: 0.8em;
+    height: 0.8em;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    margin-left: 0.25rem;
+}
+
+.attribute-values .badge .btn-close:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.add-value-form input {
+    min-width: 200px;
+    font-size: 0.875rem;
+}
+
+.add-value-form input:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.add-value-form .btn {
+    transition: all 0.2s ease;
+}
+
+.add-value-form .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+.opacity-50 {
+    opacity: 0.5 !important;
+    pointer-events: none;
+}
+
+/* Responsive cho attribute management */
+@media (max-width: 768px) {
+    .add-value-form {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    
+    .add-value-form input {
+        min-width: auto;
+    }
+    
+    .attribute-values {
+        max-height: 80px;
+    }
+    
+    .table th:nth-child(3) {
+        min-width: 200px;
+    }
+}
+
+/* Form biến thể */
+.variant-form .form-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+}
+
+.variant-form .form-control,
+.variant-form .form-select {
+    font-size: 0.875rem;
+}
+
+/* Attribute cards */
+.attribute-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.attribute-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.75rem;
+}
+
+.attribute-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.attribute-checkboxes .form-check {
+    margin-bottom: 0;
+}
+
+.attribute-checkboxes .form-check-label {
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.attribute-checkboxes .form-check-input:checked + .form-check-label {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.btn-variants {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* SKU display */
+.sku-display {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    border: 1px solid #e9ecef;
+}
+
+/* Stock badges */
+.stock-high {
+    background-color: #28a745;
+    color: white;
+}
+
+.stock-medium {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.stock-low {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Price display */
+.price-display {
+    font-weight: 600;
+    color: #28a745;
+    font-size: 0.875rem;
+}
+
+/* Tooltips */
+.variant-tooltip {
+    font-size: 0.8rem;
+}
+
+/* Loading states */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border-radius: 0.5rem;
+}
+
+/* Empty states */
+.empty-variants {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-variants i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Attribute management */
+.attribute-list-item {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.attribute-list-item:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 0.125rem 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+.attribute-name {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.attribute-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.attribute-value-badge {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.add-value-form {
+    margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-xl {
+        max-width: 100%;
+        margin: 0.5rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.75rem;
+    }
+    
+    .btn-group-sm > .btn {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.625rem;
+    }
+    
+    .attribute-checkboxes {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Toast notifications positioning */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+}
+
+/* Custom scrollbar for modals */
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation cho loading */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Variant action buttons */
+.variant-actions {
+    white-space: nowrap;
+}
+
+.variant-actions .btn {
+    margin: 0 1px;
+}
+
+/* Form validation styles */
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+}
+
+.was-validated .form-control:valid {
+    border-color: #28a745;
+}
+
+/* Quick actions */
+.quick-actions {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 100;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1rem;
+}
+
+/* Stats display */
+.variant-stats {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 600;
+}

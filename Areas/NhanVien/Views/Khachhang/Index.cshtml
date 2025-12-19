@@ -1,0 +1,186 @@
+@model List<Final_VS1.Data.TaiKhoan>
+@{
+    ViewData["Title"] = "Danh Sách Khách Hàng";
+    ViewData["PageTitle"] = "Danh Sách Khách Hàng";
+}
+
+<div class="container-fluid fade-in">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-users me-2"></i>Danh Sách Khách Hàng (Chỉ xem)
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Filter Controls -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm khách hàng...">
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="true">Hoạt động</option>
+                        <option value="false">Bị khóa</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Customer Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Khách hàng</th>
+                            <th>Email</th>
+                            <th>SĐT</th>
+                            <th>Tổng đơn</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model)
+                        {
+                            <tr>
+                                <td>@customer.IdTaiKhoan</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-wrapper me-2">
+                                            @if (!string.IsNullOrEmpty(customer.AnhDaiDien))
+                                            {
+                                                <img src="@customer.AnhDaiDien" alt="Avatar" 
+                                                     class="rounded-circle avatar-img">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center avatar-img">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            }
+                                            @if (customer.TrangThai != true)
+                                            {
+                                                <span class="lock-indicator"><i class="fas fa-lock"></i></span>
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>@(customer.HoTen ?? "Chưa cập nhật")</strong>
+                                            @if (!string.IsNullOrEmpty(customer.GioiTinh))
+                                            {
+                                                <br><small class="text-muted">@customer.GioiTinh</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@customer.Email</td>
+                                <td>@(customer.SoDienThoai ?? "Chưa có")</td>
+                                <td>
+                                    <span class="badge bg-info">@customer.DonHangs.Count đơn</span>
+                                </td>
+                                <td>
+                                    @if (customer.TrangThai == true)
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Bị khóa</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Detail", "Khachhang", new { id = customer.IdTaiKhoan })" 
+                                       class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-users fa-3x mb-3 text-gradient"></i>
+                    <p>Chưa có khách hàng nào</p>
+                </div>
+            }
+
+            <!-- Count -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <span class="text-muted">Hiển thị <strong id="currentCount">@Model.Count</strong> / <strong>@Model.Count</strong> khách hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            function filterTable() {
+                var searchValue = $('#searchInput').val().toLowerCase();
+                var statusValue = $('#statusFilter').val();
+
+                var count = 0;
+
+                $('#customerTable tbody tr').each(function() {
+                    var row = $(this);
+                    var text = row.text().toLowerCase();
+                    var status = row.find('.badge').last().hasClass('bg-success') ? 'true' : 'false';
+
+                    var matchSearch = searchValue === '' || text.includes(searchValue);
+                    var matchStatus = statusValue === '' || status === statusValue;
+
+                    if (matchSearch && matchStatus) {
+                        row.show();
+                        count++;
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                $('#currentCount').text(count);
+            }
+
+            $('#searchInput, #statusFilter').on('keyup change', filterTable);
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .avatar-wrapper {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .avatar-wrapper .avatar-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+        .lock-indicator {
+            position: absolute;
+            right: -6px;
+            bottom: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            border: 2px solid #fff;
+        }
+    </style>
+}

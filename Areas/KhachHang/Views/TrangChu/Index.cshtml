@@ -1,0 +1,560 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+
+}
+@section Styles {
+    <link href="~/css/KhachHang/trangchu.css" rel="stylesheet" asp-append-version="true">
+}
+
+<!-- Banner chính dạng carousel, mỗi slide là một div.hero-banner, banner đầu giữ nguyên -->
+<div id="heroBannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+             <div class="hero-banner hero-banner-full1" style="background-image: url('/images/banner3.png');">
+                <div>
+                    <!--<h1>Khuyến mãi đặc biệt!</h1>-->
+                    <!--<p>Giảm giá lên đến 50% cho sản phẩm mới</p>-->
+                    <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" class="btn-mua-ngay-banner2">Xem ngay</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="hero-banner hero-banner-full1" style="background-image: url('/images/banner2.png');">
+                <div>
+                   <!-- <h1>BST Son môi mới nhất</h1>-->
+                    <!--<p>Sắc màu quyến rũ, thời thượng</p>-->
+                    <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-sortBy="bestseller" class="btn-mua-ngay-banner2">Mua ngay</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="hero-banner hero-banner-full1" style="background-image: url('/images/banner5.png');">
+                <div>
+                    <!--<h1>Chăm sóc da ban đêm</h1>-->
+                    <!--<p>Nuôi dưỡng làn da khỏe mạnh từ sâu bên trong</p>-->
+                    <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-sortBy="bestseller" class="btn-mua-ngay-banner2">Mua ngay</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="hero-banner hero-banner-full2" style="background-image: url('/images/banner4.png');">
+                <div>
+                    <!--<h1>100% Organic</h1>-->
+                    <!--<p>An toàn, dịu nhẹ cho da</p>-->
+                    <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-sortBy="bestseller" class="btn-mua-ngay-banner2">Mua ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Chỉ giữ lại indicators, bỏ nút mũi tên -->
+    <div class="carousel-indicators" style="bottom: 20px;">
+        <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#heroBannerCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    </div>
+</div>
+<!-- Danh mục sản phẩm nổi bật -->
+<div class="product-category">
+    <div class="container">
+        <h2 class="text-center section-title">Danh mục sản phẩm nổi bật</h2>
+        
+        @{
+            var danhMucCounts = ViewBag.DanhMucs as List<dynamic> ?? new List<dynamic>();
+            var count1 = danhMucCounts.Count > 0 ? danhMucCounts[0].SoLuongSanPham : 0;
+            var count2 = danhMucCounts.Count > 1 ? danhMucCounts[1].SoLuongSanPham : 0;
+            var count3 = danhMucCounts.Count > 2 ? danhMucCounts[2].SoLuongSanPham : 0;
+            var count4 = danhMucCounts.Count > 3 ? danhMucCounts[3].SoLuongSanPham : 0;
+            var count5 = danhMucCounts.Count > 4 ? danhMucCounts[4].SoLuongSanPham : 0;
+            var count6 = danhMucCounts.Count > 5 ? danhMucCounts[5].SoLuongSanPham : 0;
+        }
+        
+        <!-- Debug info - sẽ xóa sau -->
+        <div style="display:none;">
+            Debug: DanhMucs count = @(danhMucCounts?.Count ?? 0)
+            @if (danhMucCounts?.Count > 0)
+            {
+                <div>First category: @danhMucCounts[0].TenDanhMuc - @danhMucCounts[0].SoLuongSanPham</div>
+            }
+        </div>
+        
+        <!-- Carousel danh mục -->
+        <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner">
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        @for (int i = 0; i < danhMucCounts.Count && i < 6; i++)
+                        {
+                            var dm = danhMucCounts[i];
+                            var gradientClass = "category-gradient";
+                            var categoryImage = "/Images/categories/default.jpg";
+                            
+                            // Đặt gradient và hình ảnh dựa trên tên hoặc ID danh mục con
+                            var categoryName = dm.TenDanhMuc?.ToLower() ?? "";
+                            
+                            if (categoryName.Contains("sữa rửa mặt") || categoryName.Contains("rửa mặt"))
+                            {
+                                gradientClass = "category-gradient cleanser-gradient";
+                                categoryImage = "/Images/categories/cleanser.jpg";
+                            }
+                            else if (categoryName.Contains("serum") || categoryName.Contains("tinh chất"))
+                            {
+                                gradientClass = "category-gradient serum-gradient";
+                                categoryImage = "/Images/categories/serum.jpg";
+                            }
+                            else if (categoryName.Contains("kem dưỡng") || categoryName.Contains("moisturizer"))
+                            {
+                                gradientClass = "category-gradient moisturizer-gradient";
+                                categoryImage = "/Images/categories/moisturizer.jpg";
+                            }
+                            else if (categoryName.Contains("son") || categoryName.Contains("lipstick"))
+                            {
+                                gradientClass = "category-gradient makeup-gradient";
+                                categoryImage = "/Images/categories/lipstick.jpg";
+                            }
+                            else if (categoryName.Contains("phấn") || categoryName.Contains("cushion"))
+                            {
+                                gradientClass = "category-gradient makeup-gradient";
+                                categoryImage = "/Images/categories/cushion.jpg";
+                            }
+                            else if (categoryName.Contains("mascara") || categoryName.Contains("eyeliner"))
+                            {
+                                gradientClass = "category-gradient makeup-gradient";
+                                categoryImage = "/Images/categories/eye-makeup.jpg";
+                            }
+                            else if (categoryName.Contains("dầu gội") || categoryName.Contains("shampoo"))
+                            {
+                                gradientClass = "category-gradient haircare-gradient";
+                                categoryImage = "/Images/categories/shampoo.jpg";
+                            }
+                            else if (categoryName.Contains("dầu xả") || categoryName.Contains("conditioner"))
+                            {
+                                gradientClass = "category-gradient haircare-gradient";
+                                categoryImage = "/Images/categories/conditioner.jpg";
+                            }
+                            else if (categoryName.Contains("chống nắng") || categoryName.Contains("sunscreen"))
+                            {
+                                gradientClass = "category-gradient suncare-gradient";
+                                categoryImage = "/Images/categories/sunscreen.jpg";
+                            }
+                            else if (categoryName.Contains("tinh dầu"))
+                            {
+                                gradientClass = "category-gradient oils-gradient";
+                                categoryImage = "/Images/categories/oils.jpg";
+                            }
+                            else if (categoryName.Contains("body") || categoryName.Contains("cơ thể"))
+                            {
+                                gradientClass = "category-gradient bodycare-gradient";
+                                categoryImage = "/Images/categories/bodycare.jpg";
+                            }
+                            else
+                            {
+                                // Gradient mặc định dựa trên index
+                                var gradients = new[] { "category-gradient", "makeup-gradient", "haircare-gradient", "suncare-gradient", "oils-gradient", "bodycare-gradient" };
+                                gradientClass = $"category-gradient {gradients[i % gradients.Length]}";
+                                categoryImage = "/Images/categories/skincare.jpg";
+                            }
+                            
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4 scroll-animate">
+                                <div class="category-card-new">
+                                    @if (!string.IsNullOrEmpty(dm.Slug))
+                                    {
+                                        <a asp-route="category_slug" asp-route-slug="@dm.Slug" class="text-decoration-none">
+                                            <div class="category-image-container">
+                                                <img src="@categoryImage" alt="@dm.TenDanhMuc" class="category-image" onerror="this.src='/Images/noimage.jpg'">
+                                                <div class="category-overlay">
+                                                    <div class="@gradientClass"></div>
+                                                    <div class="category-content">
+                                                        <h6 class="category-title">@dm.TenDanhMuc</h6>
+                                                        <small class="category-count">@dm.SoLuongSanPham sản phẩm</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-category="@dm.IdDanhMuc" class="text-decoration-none">
+                                            <div class="category-image-container">
+                                                <!-- Same content -->
+                                            </div>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#categoryCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sản phẩm bán chạy / Gợi ý cho bạn -->
+
+<div class="container bestselling-products-section">
+    <h2 class="text-center section-title">Sản phẩm bán chạy</h2>
+    <!-- Carousel sản phẩm -->
+    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+        @{
+            var sanPhams = ViewBag.SanPhamBanChay as IEnumerable<dynamic>;
+            int perSlide = 4;
+            int total = sanPhams != null ? sanPhams.Count() : 0;
+            int slideCount = (int)Math.Ceiling((double)total / perSlide);
+        }
+        <div class="carousel-inner">
+            @if (sanPhams != null && sanPhams.Any())
+            {
+                for (int i = 0; i < slideCount; i++)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="row justify-content-center">
+                            @foreach (var item in sanPhams.Skip(i * perSlide).Take(perSlide))
+                            {
+                                var sanPham = item.SanPham;
+                                var reviewCount = item.ReviewCount;
+                                var avgRating = item.AverageRating;
+                                <div class="col-md-3 col-sm-6 mb-4 scroll-animate">
+                                    @if (!string.IsNullOrEmpty(sanPham.Slug))
+                                    {
+                                        <a asp-route="product_slug" asp-route-slug="@sanPham.Slug" class="text-decoration-none">
+                                            <div class="product-card">
+                                                <div class="product-image-container">
+                                                @{
+                                                    var defaultImage = "/Images/noimage.jpg";
+                                                    var anhChinh = defaultImage;
+                                                    
+                                                    if (sanPham.AnhSanPhams != null)
+                                                    {
+                                                        // Bước 1: Tìm ảnh chính
+                                                        foreach (var anh in sanPham.AnhSanPhams)
+                                                        {
+                                                            if (!string.IsNullOrEmpty(anh.DuongDan) && !string.IsNullOrEmpty(anh.LoaiAnh))
+                                                            {
+                                                                var loaiAnh = anh.LoaiAnh.Trim().ToLower();
+                                                                if (loaiAnh == "chinh" || loaiAnh == "chính")
+                                                                {
+                                                                    anhChinh = anh.DuongDan;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                    
+                                                        // Bước 2: Nếu không có ảnh chính, tìm ảnh phụ
+                                                        if (anhChinh == defaultImage)
+                                                        {
+                                                            foreach (var anh in sanPham.AnhSanPhams)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(anh.DuongDan) && !string.IsNullOrEmpty(anh.LoaiAnh))
+                                                                {
+                                                                    var loaiAnh = anh.LoaiAnh.Trim().ToLower();
+                                                                    if (loaiAnh == "phu" || loaiAnh == "phụ")
+                                                                    {
+                                                                        anhChinh = anh.DuongDan;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    
+                                                        // Bước 3: Nếu không có ảnh chính và ảnh phụ → sử dụng noimage (defaultImage)
+                                                    }
+                                                }
+                                                <img src="@anhChinh" class="product-image" alt="@sanPham.TenSanPham" onerror="this.src='/Images/noimage.jpg'">
+                                            </div>
+                                            <div class="product-info">
+                                                <h6 class="product-name">@sanPham.TenSanPham</h6>
+                                                @{
+                                                    decimal? minPrice = null;
+                                                    string priceDisplay = "0";
+                                                    
+                                                    if (sanPham.BienTheSanPhams != null && ((IEnumerable<dynamic>)sanPham.BienTheSanPhams).Any())
+                                                    {
+                                                        var prices = ((IEnumerable<dynamic>)sanPham.BienTheSanPhams).Select(bt => (decimal?)bt.GiaBan).Where(p => p.HasValue).ToList();
+                                                        if (prices.Any())
+                                                        {
+                                                            minPrice = prices.Min();
+                                                            if (minPrice.HasValue)
+                                                            {
+                                                                priceDisplay = minPrice.Value.ToString("N0");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <div class="product-price">
+                                                    <span class="current-price">@priceDisplay₫</span>
+                                                </div>
+                                                <div class="product-actions">
+                                                    <button class="btn btn-primary btn-sm flex-fill" onclick="addToCartTrangChu(@sanPham.IdSanPham, event)">Xem chi tiết</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-area="KhachHang" asp-controller="ChiTiet" asp-action="Index" asp-route-id="@sanPham.IdSanPham" class="text-decoration-none">
+                                            <div class="product-card">
+                                                <div class="product-image-container">
+                                                @{
+                                                    var defaultImage2 = "/Images/noimage.jpg";
+                                                    var anhChinh2 = defaultImage2;
+                                                    
+                                                    if (sanPham.AnhSanPhams != null)
+                                                    {
+                                                        // Bước 1: Tìm ảnh chính
+                                                        foreach (var anh in sanPham.AnhSanPhams)
+                                                        {
+                                                            if (!string.IsNullOrEmpty(anh.DuongDan) && !string.IsNullOrEmpty(anh.LoaiAnh))
+                                                            {
+                                                                var loaiAnh = anh.LoaiAnh.Trim().ToLower();
+                                                                if (loaiAnh == "chinh" || loaiAnh == "chính")
+                                                                {
+                                                                    anhChinh2 = anh.DuongDan;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                        // Bước 2: Nếu không có ảnh chính, tìm ảnh phụ
+                                                        if (anhChinh2 == defaultImage2)
+                                                        {
+                                                            foreach (var anh in sanPham.AnhSanPhams)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(anh.DuongDan) && !string.IsNullOrEmpty(anh.LoaiAnh))
+                                                                {
+                                                                    var loaiAnh = anh.LoaiAnh.Trim().ToLower();
+                                                                    if (loaiAnh == "phu" || loaiAnh == "phụ")
+                                                                    {
+                                                                        anhChinh2 = anh.DuongDan;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <img src="@anhChinh2" class="product-image" alt="@sanPham.TenSanPham" onerror="this.src='/Images/noimage.jpg'">
+                                            </div>
+                                            <div class="product-info">
+                                                <h6 class="product-name">@sanPham.TenSanPham</h6>
+                                                @{
+                                                    decimal? minPrice2 = null;
+                                                    string priceDisplay2 = "0";
+                                                    
+                                                    if (sanPham.BienTheSanPhams != null && ((IEnumerable<dynamic>)sanPham.BienTheSanPhams).Any())
+                                                    {
+                                                        var prices = ((IEnumerable<dynamic>)sanPham.BienTheSanPhams).Select(bt => (decimal?)bt.GiaBan).Where(p => p.HasValue).ToList();
+                                                        if (prices.Any())
+                                                        {
+                                                            minPrice2 = prices.Min();
+                                                            if (minPrice2.HasValue)
+                                                            {
+                                                                priceDisplay2 = minPrice2.Value.ToString("N0");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <div class="product-price">
+                                                    <span class="current-price">@priceDisplay2₫</span>
+                                                </div>
+                                                <div class="product-actions">
+                                                    <button class="btn btn-primary btn-sm flex-fill" onclick="addToCartTrangChu(@sanPham.IdSanPham, event)">Xem chi tiết</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <!-- Fallback: hiển thị sản phẩm tĩnh nếu không có dữ liệu -->
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <a href="#" class="text-decoration-none">
+                                <div class="product-card">
+                                    <div class="product-image-container">
+                                        <img src="/Images/noimage.jpg" 
+                                             class="product-image" alt="Kem chống nắng SPF 50">
+                                    </div>
+                                    <div class="product-info">
+                                        <h6 class="product-name">Kem chống nắng SPF 50</h6>
+                                        <p class="product-description">Kem chống nắng vật lý an toàn cho da</p>
+                                        <!-- rating removed -->
+                                        <div class="product-price">
+                                            <span class="current-price">320.000₫</span>
+                                        </div>
+                                        <div class="product-actions">
+                                            <button class="btn btn-primary btn-sm flex-fill">Thêm giỏ hàng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <a href="#" class="text-decoration-none">
+                                <div class="product-card">
+                                    <div class="product-image-container">
+                                        <img src="/Images/noimage.jpg" 
+                                             class="product-image" alt="Kem dưỡng ẩm thiên nhiên">
+                                    </div>
+                                    <div class="product-info">
+                                        <h6 class="product-name">Kem dưỡng ẩm thiên nhiên</h6>
+                                        <p class="product-description">Kem dưỡng ẩm từ chiết xuất lô hội và vitamin E</p>
+                                        <!-- rating removed -->
+                                        <div class="product-price">
+                                            <span class="current-price">350.000₫</span>
+                                        </div>
+                                        <div class="product-actions">
+                                            <button class="btn btn-primary btn-sm flex-fill">Thêm giỏ hàng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <a href="#" class="text-decoration-none">
+                                <div class="product-card">
+                                    <div class="product-image-container">
+                                <img src="/Images/noimage.jpg" 
+                                    class="product-image" alt="Sữa rửa mặt tạo bọt">
+                                    </div>
+                                    <div class="product-info">
+                                        <h6 class="product-name">Sữa rửa mặt tạo bọt</h6>
+                                        <p class="product-description">Sữa rửa mặt tạo bọt nhẹ nhàng</p>
+                                        <!-- rating removed -->
+                                        <div class="product-price">
+                                            <span class="current-price">180.000₫</span>
+                                        </div>
+                                        <div class="product-actions">
+                                            <button class="btn btn-primary btn-sm flex-fill">Thêm giỏ hàng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <a href="#" class="text-decoration-none">
+                                <div class="product-card">
+                                    <div class="product-image-container">
+                                        <img src="/Images/noimage.jpg" 
+                                             class="product-image" alt="Son môi organic">
+                                    </div>
+                                    <div class="product-info">
+                                        <h6 class="product-name">Son môi organic</h6>
+                                        <p class="product-description">Son môi từ thành phần hữu cơ 100%</p>
+                                        <div class="product-rating">
+                                            <span class="star">☆</span>
+                                            <span class="star">☆</span>
+                                            <span class="star">☆</span>
+                                            <span class="star">☆</span>
+                                            <span class="star">☆</span>
+                                            <span class="review-count">(0)</span>
+                                        </div>
+                                        <div class="product-price">
+                                            <span class="current-price">280.000₫</span>
+                                        </div>
+                                        <div class="product-actions">
+                                            <button class="btn btn-primary btn-sm flex-fill">Thêm giỏ hàng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Carousel controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        <!-- Carousel indicators -->
+        <div class="carousel-indicators">
+            @if (sanPhams != null && sanPhams.Any())
+            {
+                for (int i = 0; i < slideCount; i++)
+                {
+                    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
+                }
+            }
+            else
+            {
+                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Khu vực đánh giá nổi bật -->
+
+
+@section Scripts {
+    <script>
+        // Scroll Animation Observer
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intersection Observer options
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            // Callback function when elements enter/exit viewport
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Element is visible
+                        entry.target.classList.add('visible');
+                    } else {
+                        // Element is not visible - remove class to replay animation
+                        // Comment this line if you want animation to play only once
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            };
+
+            // Create the observer
+            const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+            // Observe all elements with scroll animation classes
+            const animatedElements = document.querySelectorAll(
+                '.scroll-animate, .scroll-animate-left, .scroll-animate-right, .scroll-animate-scale, .section-title'
+            );
+
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+
+            // Add staggered animation for product cards
+            const productCards = document.querySelectorAll('.scroll-animate');
+            productCards.forEach((card, index) => {
+                card.style.transitionDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Custom JavaScript cho trang chủ nếu cần
+        // Có thể override hoặc extend functions từ trangchu.js
+    </script>
+}

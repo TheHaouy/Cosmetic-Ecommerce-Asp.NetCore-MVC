@@ -1,0 +1,202 @@
+@using Final_VS1.Data
+@model Final_VS1.Data.SanPham
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+    ViewData["PageTitle"] = "Chi Tiết Sản Phẩm";
+    
+    string[] mainImageTypes = new[] { "Chính", "Chinh", "Primary", "Main" };
+    var anhChinh = Model.AnhSanPhams
+        .FirstOrDefault(a => !string.IsNullOrEmpty(a.LoaiAnh) && 
+                           mainImageTypes.Contains(a.LoaiAnh, StringComparer.OrdinalIgnoreCase))?.DuongDan;
+
+    if (string.IsNullOrEmpty(anhChinh) && Model.AnhSanPhams.Any())
+    {
+        anhChinh = Model.AnhSanPhams.First().DuongDan;
+    }
+
+    if (string.IsNullOrEmpty(anhChinh))
+    {
+        anhChinh = "/images/noimage.jpg";
+    }
+
+    var allImages = new List<AnhSanPham>();
+    var mainImage = Model.AnhSanPhams.FirstOrDefault(a => a.DuongDan == anhChinh);
+    if (mainImage != null)
+    {
+        allImages.Add(mainImage);
+    }
+    allImages.AddRange(Model.AnhSanPhams.Where(a => a.DuongDan != anhChinh));
+}
+
+<div class="container-fluid fade-in">
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "Sanpham")" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>Chi Tiết Sản Phẩm: @Model.TenSanPham
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Product Images -->
+                <div class="col-md-3">
+                    <div class="main-image-container mb-2">
+                        <img src="@anhChinh" 
+                             class="main-product-image w-100 rounded" 
+                             alt="Ảnh chính"
+                             style="height: 300px; object-fit: cover;"
+                             onerror="this.src='/images/noimage.jpg'">
+                    </div>
+                    
+                    @if (Model.AnhSanPhams.Count > 0)
+                    {
+                        <div class="row thumbnail-gallery g-2">
+                            @foreach (var img in allImages.Take(4))
+                            {
+                                var isMainImage = img.DuongDan == anhChinh;
+                                <div class="col-3">
+                                    <img src="@img.DuongDan" 
+                                         class="thumbnail-image w-100 rounded @(isMainImage ? "active" : "")" 
+                                         data-src="@img.DuongDan"
+                                         style="height: 70px; object-fit: cover; cursor: pointer; border: 2px solid @(isMainImage ? "#0d6efd" : "transparent");"
+                                         onerror="this.src='/images/noimage.jpg'">
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                
+                <!-- Product Info -->
+                <div class="col-md-4">
+                    <h5 class="mb-3">@Model.TenSanPham</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Danh mục:</dt>
+                        <dd class="col-sm-7">@(Model.IdDanhMucNavigation?.TenDanhMuc ?? "Chưa phân loại")</dd>
+                        
+                        <dt class="col-sm-5">Giá bán:</dt>
+                        <dd class="col-sm-7 fw-bold" style="color: var(--primary-color);">
+                            @(Model.BienTheSanPhams.Any() ? Model.BienTheSanPhams.Min(bt => bt.GiaBan)?.ToString("N0") : "0") ₫
+                        </dd>
+                        
+                        <dt class="col-sm-5">Trạng thái:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.TrangThai == true)
+                            {
+                                <span class="badge bg-success">Đang bán</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Ngừng bán</span>
+                            }
+                        </dd>
+                        
+                        <dt class="col-sm-5">Ngày tạo:</dt>
+                        <dd class="col-sm-7">@Model.NgayTao?.ToString("dd/MM/yyyy")</dd>
+                        
+                        <dt class="col-sm-5">Tổng tồn kho:</dt>
+                        <dd class="col-sm-7 fw-bold">
+                            @Model.BienTheSanPhams.Sum(b => b.SoLuongTonKho ?? 0)
+                        </dd>
+                    </dl>
+                </div>
+                
+                <!-- Product Variants -->
+                <div class="col-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Biến thể sản phẩm (@Model.BienTheSanPhams.Count())</h6>
+                    </div>
+                    
+                    @if (Model.BienTheSanPhams.Any())
+                    {
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-sm table-striped table-hover mb-0">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Thuộc tính</th>
+                                        <th class="text-end">Giá</th>
+                                        <th class="text-center">Kho</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var bt in Model.BienTheSanPhams.OrderBy(x => x.IdBienThe))
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(bt.Sku))
+                                            {
+                                                <code class="small">@bt.Sku</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (bt.IdGiaTris.Any())
+                                            {
+                                                var groupedAttributes = bt.IdGiaTris
+                                                    .GroupBy(g => g.IdThuocTinhNavigation?.TenThuocTinh)
+                                                    .Where(group => !string.IsNullOrEmpty(group.Key));
+                                                
+                                                @foreach (var group in groupedAttributes)
+                                                {
+                                                    @foreach (var giaTri in group)
+                                                    {
+                                                        <span class="badge bg-secondary small">@giaTri.GiaTri</span>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">-</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="fw-bold small" style="color: var(--primary-color);">@((bt.GiaBan ?? 0).ToString("N0"))₫</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @{
+                                                var soLuong = bt.SoLuongTonKho ?? 0;
+                                                var badgeClass = soLuong > 10 ? "bg-success" : soLuong > 0 ? "bg-warning text-dark" : "bg-danger";
+                                            }
+                                            <span class="badge @badgeClass small">@soLuong</span>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info small mb-0">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Chưa có biến thể.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        // Thumbnail click handler
+        $('.thumbnail-image').on('click', function() {
+            var newSrc = $(this).data('src');
+            $('.main-product-image').attr('src', newSrc);
+            
+            $('.thumbnail-image').removeClass('active').css('border', '2px solid transparent');
+            $(this).addClass('active').css('border', '2px solid var(--primary-color)');
+        });
+    });
+</script>
+}

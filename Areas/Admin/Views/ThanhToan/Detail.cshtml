@@ -1,0 +1,90 @@
+@model Final_VS1.Data.ThanhToan
+@{
+    ViewData["Title"] = "CHI TIẾT GIAO DỊCH";
+    ViewData["PageTitle"] = "CHI TIẾT GIAO DỊCH";
+}
+
+<link rel="stylesheet" href="~/css/Admin/donhang-detail.css" asp-append-version="true" />
+
+@functions {
+    private string StatusClass(string status)
+    {
+        if (string.IsNullOrEmpty(status)) return "bg-secondary text-white";
+        var s = status.ToLowerInvariant();
+        if (s.Contains("success") || s.Contains("thanh") || s.Contains("thành") || s.Contains("paid") || s.Contains("complete") || s.Contains("hoàn"))
+            return "bg-success text-white";
+        if (s.Contains("fail") || s.Contains("thất") || s.Contains("that") || s.Contains("cancel") || s.Contains("error"))
+            return "bg-danger text-white";
+        if (s.Contains("pending") || s.Contains("cho") || s.Contains("chờ"))
+            return "bg-warning text-dark";
+        return "bg-secondary text-white";
+    }
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "ThanhToan", new { area = "Admin" })" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3"><i class="fas fa-receipt me-2"></i>THÔNG TIN GIAO DỊCH</h5>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-5">Mã giao dịch</dt>
+                        <dd class="col-sm-7">@Model.IdThanhToan</dd>
+
+                        <dt class="col-sm-5">Đơn hàng</dt>
+                        <dd class="col-sm-7"><a href="@Url.Action("Detail", "Donhang", new { area = "Admin", id = Model.IdDonHang })">HD-@Model.IdDonHang</a></dd>
+
+                        <dt class="col-sm-5">Khách hàng</dt>
+                        <dd class="col-sm-7">@(Model.IdDonHangNavigation?.IdTaiKhoanNavigation?.HoTen ?? "-")</dd>
+
+                        <dt class="col-sm-5">Số tiền</dt>
+                        <dd class="col-sm-7 text-success fw-bold">@Model.SoTien.ToString("N0")₫</dd>
+
+                        <dt class="col-sm-5">Phương thức</dt>
+                        <dd class="col-sm-7">@Model.PhuongThuc</dd>
+
+                        <dt class="col-sm-5">Transaction ID</dt>
+                        <dd class="col-sm-7">@(Model.MaGiaoDichNganHang ?? Model.MaPhanHoi ?? "-")</dd>
+
+                        <dt class="col-sm-5">Cổng/Ngân hàng</dt>
+                        <dd class="col-sm-7">@(Model.MaNganHang ?? "-")</dd>
+
+                        <dt class="col-sm-5">Trạng thái</dt>
+                        <dd class="col-sm-7"><span class="badge @StatusClass(Model.TrangThai)">@Model.TrangThai</span></dd>
+
+                        <dt class="col-sm-5">Thời gian</dt>
+                        <dd class="col-sm-7">@(Model.ThoiGianThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? Model.NgayTao.ToString("dd/MM/yyyy HH:mm"))</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <h6>Thông tin đơn hàng</h6>
+                    @if (Model.IdDonHangNavigation != null)
+                    {
+                        <p><strong>Tổng tiền:</strong> @((Model.IdDonHangNavigation.TongTien ?? 0).ToString("N0"))₫</p>
+                        <p><strong>Địa chỉ:</strong> @(Model.IdDonHangNavigation.IdDiaChiNavigation?.DiaChiChiTiet ?? "-")</p>
+                        <p><strong>Phương thức TT:</strong> @(Model.IdDonHangNavigation.PhuongThucThanhToan ?? "-")</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có thông tin đơn hàng.</p>
+                    }
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.NoiDungThanhToan))
+            {
+                <hr />
+                <h6>Nội dung trả về</h6>
+                <pre class="small">@Model.NoiDungThanhToan</pre>
+            }
+        </div>
+    </div>
+</div>

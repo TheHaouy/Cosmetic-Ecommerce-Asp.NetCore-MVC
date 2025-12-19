@@ -1,0 +1,275 @@
+@using Final_VS1.Data
+@model Final_VS1.Data.SanPham
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    ViewData["PageTitle"] = "CHI TIẾT SẢN PHẨM";
+    
+    // Mảng các giá trị LoaiAnh cho ảnh chính
+    string[] mainImageTypes = new[] { "Chính", "Chinh", "Primary", "Main" };
+
+    // Tìm ảnh chính - case insensitive comparison
+    var anhChinh = Model.AnhSanPhams
+        .FirstOrDefault(a => !string.IsNullOrEmpty(a.LoaiAnh) && 
+                           mainImageTypes.Contains(a.LoaiAnh, StringComparer.OrdinalIgnoreCase))?.DuongDan;
+
+    if (string.IsNullOrEmpty(anhChinh) && Model.AnhSanPhams.Any())
+    {
+        anhChinh = Model.AnhSanPhams.First().DuongDan;
+    }
+
+    if (string.IsNullOrEmpty(anhChinh))
+    {
+        anhChinh = "/images/no-image.png";
+    }
+
+    // Lấy danh sách tất cả ảnh
+    var allImages = new List<AnhSanPham>();
+    var mainImage = Model.AnhSanPhams.FirstOrDefault(a => a.DuongDan == anhChinh);
+    if (mainImage != null)
+    {
+        allImages.Add(mainImage);
+    }
+    allImages.AddRange(Model.AnhSanPhams.Where(a => a.DuongDan != anhChinh));
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>Chi tiết sản phẩm: @Model.TenSanPham
+        </h5>
+    </div>
+    @Html.AntiForgeryToken()
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="main-image-container">
+                    <img src="@anhChinh" 
+                         class="main-product-image" 
+                         alt="Ảnh chính sản phẩm"
+                         onerror="this.src='/images/noimage.jpg'">
+                </div>
+                
+                <!-- Gallery thumbnails -->
+                <div class="row thumbnail-gallery mt-2">
+                    @if (Model.AnhSanPhams.Count > 0)
+                    {
+                        @foreach (var img in allImages.Take(4))
+                        {
+                            var isMainImage = img.DuongDan == anhChinh;
+                            <div class="col-3 mb-1">
+                                <div class="thumbnail-container">
+                                    <img src="@img.DuongDan" 
+                                         class="thumbnail-image @(isMainImage ? "active" : "")" 
+                                         data-src="@img.DuongDan"
+                                         title="@(isMainImage ? "Ảnh chính" : "Ảnh phụ")"
+                                         onerror="this.src='/images/noimage.jpg'">
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            
+            <!-- Phần thông tin sản phẩm -->
+            <div class="col-md-4">
+                <h5 class="mb-2">@Model.TenSanPham</h5>
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-5">Danh mục:</dt>
+                    <dd class="col-sm-7">@(Model.IdDanhMucNavigation?.TenDanhMuc ?? "Chưa phân loại")</dd>
+                    <dt class="col-sm-5">Giá bán:</dt>
+                    <dd class="col-sm-7 text-success fw-bold">@(Model.BienTheSanPhams.Any() ? Model.BienTheSanPhams.Min(bt => bt.GiaBan)?.ToString("N0") : "0") ₫</dd>
+                    <dt class="col-sm-5">Trạng thái:</dt>
+                    <dd class="col-sm-7">
+                        @if (Model.TrangThai == true)
+                        {
+                            <span class="badge bg-success">Đang bán</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Ngừng bán</span>
+                        }
+                    </dd>
+                    <dt class="col-sm-5">Ngày tạo:</dt>
+                    <dd class="col-sm-7">@Model.NgayTao?.ToString("dd/MM/yyyy")</dd>
+                    <dt class="col-sm-5">Tổng tồn kho:</dt>
+                    <dd class="col-sm-7 fw-bold">
+                        @Model.BienTheSanPhams.Sum(b => b.SoLuongTonKho ?? 0)
+                    </dd>
+            </div>
+            
+            <!-- Phần biến thể sản phẩm -->
+            <div class="col-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Biến thể sản phẩm (@Model.BienTheSanPhams.Count())</h6>
+                    <a href="@Url.Action("QuanLyBienThe", "Sanpham", new { id = Model.IdSanPham, area = "Admin" })" 
+                       class="btn btn-primary btn-sm">
+                        <i class="fas fa-cog me-1"></i>Quản lý biến thể
+                    </a>
+                </div>
+                
+                @if (Model.BienTheSanPhams.Any())
+                {
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-striped table-hover mb-0">
+                            <thead class="sticky-top bg-white">
+                                <tr>
+                                    <th class="small">SKU</th>
+                                    <th class="small">Thuộc tính</th>
+                                    <th class="small text-end">Giá</th>
+                                    <th class="small text-center">Kho</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var bt in Model.BienTheSanPhams.OrderBy(x => x.IdBienThe))
+                            {
+                                <tr>
+                                    <td class="small">
+                                        @if (!string.IsNullOrEmpty(bt.Sku))
+                                        {
+                                            <code style="font-size: 0.75rem;">@bt.Sku</code>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="small">
+                                        @if (bt.IdGiaTris.Any())
+                                        {
+                                            var groupedAttributes = bt.IdGiaTris
+                                                .GroupBy(g => g.IdThuocTinhNavigation?.TenThuocTinh)
+                                                .Where(group => !string.IsNullOrEmpty(group.Key));
+                                            
+                                            @foreach (var group in groupedAttributes)
+                                            {
+                                                @foreach (var giaTri in group)
+                                                {
+                                                    <span class="badge bg-secondary" style="font-size: 0.65rem;">@giaTri.GiaTri</span>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-end small">
+                                        <span class="text-success fw-bold">@((bt.GiaBan ?? 0).ToString("N0"))₫</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @{
+                                            var soLuong = bt.SoLuongTonKho ?? 0;
+                                            var badgeClass = soLuong > 10 ? "bg-success" : soLuong > 0 ? "bg-warning text-dark" : "bg-danger";
+                                        }
+                                        <span class="badge @badgeClass" style="font-size: 0.7rem;">@soLuong</span>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info small mb-0 py-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Chưa có biến thể. <a href="@Url.Action("QuanLyBienThe", "Sanpham", new { id = Model.IdSanPham, area = "Admin" })">Nhấn vào đây</a> để tạo.
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Thêm phần nút hành động -->
+        <div class="mt-4 d-flex justify-content-between gap-2 border-top pt-3">
+            <a href="@Url.Action("Index", "Sanpham", new { area = "Admin" })" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+            <div class="d-flex gap-2">
+                @{
+                    var editUrl = !string.IsNullOrEmpty(Model.Slug)
+                        ? Url.RouteUrl("admin_product_edit", new { slug = Model.Slug })
+                        : Url.Action("ThemSua", "Sanpham", new { id = Model.IdSanPham, area = "Admin" });
+                }
+                <a href="@editUrl" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                </a>
+                <button type="button" class="btn btn-danger" id="deleteProductBtn" data-id="@Model.IdSanPham">
+                    <i class="fas fa-trash me-1"></i> Xóa sản phẩm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<link rel="stylesheet" href="~/css/Admin/sanpham-chitiet.css" asp-append-version="true" />
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        // Xử lý đổi ảnh khi click vào thumbnail
+        $('.thumbnail-image').on('click', function() {
+            var newSrc = $(this).data('src');
+            $('.main-product-image').attr('src', newSrc);
+            
+            $('.thumbnail-image').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        // Xử lý xóa sản phẩm
+        $('#deleteProductBtn').on('click', function() {
+            var productId = $(this).data('id');
+            
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa sản phẩm này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Sanpham", new { area = "Admin" })',
+                        type: 'POST',
+                        data: { 
+                            id: productId,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công',
+                                    text: response.message || 'Xóa sản phẩm thành công!',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.href = '@Url.Action("Index", "Sanpham", new { area = "Admin" })';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi',
+                                    text: response.message || 'Không thể xóa sản phẩm'
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: 'Lỗi kết nối. Vui lòng thử lại.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+}

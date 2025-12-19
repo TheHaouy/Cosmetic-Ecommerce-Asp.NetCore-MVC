@@ -1,0 +1,971 @@
+        body, html {
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* Hide scrollbar for WebKit browsers */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+        
+        body::-webkit-scrollbar,
+        html::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* Chrome/Safari/Webkit */
+        }
+        
+        body::-webkit-scrollbar-thumb,
+        html::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+        
+        .form-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            overflow: hidden;
+        }
+        .login-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        /* Hide scrollbars on all elements */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+        
+        *::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* Chrome/Safari/Webkit */
+        }
+        
+        *::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+
+
+
+
+
+:root {
+            /* Màu xanh lá thiên nhiên chính */
+            --nature-green: #2d5016;
+            --nature-green-light: #4a7c59;
+            --nature-green-lighter: #52b788;
+            --nature-green-dark: #1b3409;
+            --nature-green-accent: #74c69d;
+            --nature-green-soft: #95d5b2;
+            --nature-green-pale: #b7e4c7;
+            --nature-green-very-pale: #d8f3dc;
+            
+            /* Override Bootstrap colors */
+            --bs-primary: var(--nature-green);
+            --bs-primary-rgb: 45, 80, 22;
+            --bs-success: var(--nature-green-light);
+            --bs-success-rgb: 74, 124, 89;
+        }
+
+        body {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, var(--nature-green-very-pale) 0%, #ffffff 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        [data-bs-theme="dark"] body {
+            background: linear-gradient(135deg, var(--nature-green-dark) 0%, #1a1a1a 100%);
+        }
+
+        /* Animated background effects */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Floating bubbles for cosmetic effect */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, 
+                rgba(116, 198, 157, 0.3), 
+                rgba(149, 213, 178, 0.2), 
+                rgba(183, 228, 199, 0.1));
+            animation: bubble-float 8s infinite ease-in-out;
+            box-shadow: 0 0 20px rgba(116, 198, 157, 0.3);
+        }
+
+        .bubble:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 6s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            left: 20%;
+            animation-delay: -2s;
+            animation-duration: 8s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            left: 35%;
+            animation-delay: -4s;
+            animation-duration: 7s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 40px;
+            height: 40px;
+            left: 50%;
+            animation-delay: -6s;
+            animation-duration: 9s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 70px;
+            height: 70px;
+            left: 65%;
+            animation-delay: -3s;
+            animation-duration: 6.5s;
+        }
+
+        .bubble:nth-child(6) {
+            width: 90px;
+            height: 90px;
+            left: 80%;
+            animation-delay: -5s;
+            animation-duration: 8.5s;
+        }
+
+        @keyframes bubble-float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            5% {
+                transform: translateY(90vh) scale(1);
+                opacity: 1;
+            }
+            90% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Sparkle effect */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, var(--nature-green-accent));
+            border-radius: 50%;
+            animation: sparkle 3s infinite;
+            box-shadow: 0 0 6px var(--nature-green-accent);
+        }
+
+        .sparkle:nth-child(odd) {
+            animation-duration: 2s;
+            background: linear-gradient(45deg, var(--nature-green-soft), #fff);
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+        }
+
+        /* Geometric shapes floating */
+        .geo-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: geo-float 12s infinite linear;
+        }
+
+        .geo-shape.circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--nature-green-accent);
+        }
+
+        .geo-shape.triangle {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid var(--nature-green-soft);
+        }
+
+        .geo-shape.square {
+            width: 18px;
+            height: 18px;
+            background: var(--nature-green-light);
+            transform: rotate(45deg);
+        }
+
+        .geo-shape.diamond {
+            width: 16px;
+            height: 16px;
+            background: var(--nature-green);
+            transform: rotate(45deg);
+            border-radius: 2px;
+        }
+
+        @keyframes geo-float {
+            0% {
+                transform: translateY(100vh) translateX(-50px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Aurora effect */
+        .aurora {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                transparent 40%, 
+                rgba(116, 198, 157, 0.1) 50%, 
+                rgba(149, 213, 178, 0.1) 60%, 
+                transparent 70%);
+            animation: aurora-move 8s infinite ease-in-out;
+            transform: rotate(-15deg) scale(1.5);
+        }
+
+        @keyframes aurora-move {
+            0%, 100% {
+                transform: rotate(-15deg) scale(1.5) translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                transform: rotate(-15deg) scale(1.5) translateX(100%);
+                opacity: 0.8;
+            }
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border: 2px solid rgba(116, 198, 157, 0.3);
+            border-radius: 50%;
+            animation: ripple-expand 4s infinite;
+        }
+
+        .ripple:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .ripple:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 20%;
+            animation-delay: -2s;
+        }
+
+        .ripple:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 30%;
+            left: 60%;
+            animation-delay: -3s;
+        }
+
+        @keyframes ripple-expand {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Floating makeup icons */
+        .floating-icons {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.1;
+            color: var(--nature-green);
+            filter: drop-shadow(0 0 10px rgba(116, 198, 157, 0.3));
+        }
+
+        /* Nature leaves floating */
+        .leaf {
+            position: absolute;
+            opacity: 0.15;
+            animation: leaf-fall 15s infinite linear;
+            transform-origin: center;
+        }
+
+        .leaf.maple {
+            font-size: 2.5rem;
+            color: var(--nature-green-light);
+            filter: drop-shadow(0 0 8px rgba(74, 124, 89, 0.4));
+        }
+
+        .leaf.oak {
+            font-size: 2rem;
+            color: var(--nature-green);
+            filter: drop-shadow(0 0 6px rgba(45, 80, 22, 0.5));
+        }
+
+        .leaf.birch {
+            font-size: 1.8rem;
+            color: var(--nature-green-accent);
+            filter: drop-shadow(0 0 10px rgba(116, 198, 157, 0.3));
+        }
+
+        .leaf.small {
+            font-size: 1.2rem;
+            color: var(--nature-green-soft);
+        }
+
+        @keyframes leaf-fall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.15;
+            }
+            90% {
+                opacity: 0.15;
+            }
+            100% {
+                transform: translateY(110vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Flower petals floating */
+        .flower-petal {
+            position: absolute;
+            opacity: 0.2;
+            animation: petal-dance 12s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        .flower-petal.sakura {
+            font-size: 1.8rem;
+            color: #ffb3ba;
+            filter: drop-shadow(0 0 8px rgba(255, 179, 186, 0.5));
+        }
+
+        .flower-petal.rose {
+            font-size: 2rem;
+            color: #ff9999;
+            filter: drop-shadow(0 0 10px rgba(255, 153, 153, 0.4));
+        }
+
+        .flower-petal.daisy {
+            font-size: 1.5rem;
+            color: #fff8dc;
+            filter: drop-shadow(0 0 6px rgba(255, 248, 220, 0.6));
+        }
+
+        .flower-petal.lavender {
+            font-size: 1.6rem;
+            color: #e6e6fa;
+            filter: drop-shadow(0 0 8px rgba(230, 230, 250, 0.4));
+        }
+
+        @keyframes petal-dance {
+            0%, 100% {
+                transform: translateY(-5vh) translateX(0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            25% {
+                transform: translateY(25vh) translateX(-30px) rotate(90deg) scale(1.2);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateY(50vh) translateX(30px) rotate(180deg) scale(0.8);
+                opacity: 0.25;
+            }
+            75% {
+                transform: translateY(75vh) translateX(-20px) rotate(270deg) scale(1.1);
+                opacity: 0.15;
+            }
+        }
+
+        /* Nature elements floating */
+        .nature-element {
+            position: absolute;
+            opacity: 0.12;
+            animation: nature-float 20s infinite linear;
+        }
+
+        .nature-element.seed {
+            font-size: 1rem;
+            color: var(--nature-green-dark);
+            animation-duration: 25s;
+        }
+
+        .nature-element.branch {
+            font-size: 3rem;
+            color: var(--nature-green-light);
+            animation-duration: 18s;
+            filter: drop-shadow(0 0 12px rgba(74, 124, 89, 0.3));
+        }
+
+        .nature-element.grass {
+            font-size: 1.5rem;
+            color: var(--nature-green-accent);
+            animation-duration: 22s;
+        }
+
+        @keyframes nature-float {
+            0% {
+                transform: translateY(105vh) translateX(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.12;
+            }
+            95% {
+                opacity: 0.12;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(200px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Organic background patterns */
+        .organic-pattern {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(116, 198, 157, 0.05) 0%, 
+                rgba(149, 213, 178, 0.03) 50%, 
+                transparent 100%);
+            animation: organic-pulse 8s infinite ease-in-out;
+        }
+
+        .organic-pattern:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .organic-pattern:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: -2s;
+            width: 150px;
+            height: 150px;
+        }
+
+        .organic-pattern:nth-child(3) {
+            bottom: 20%;
+            left: 30%;
+            animation-delay: -4s;
+            width: 180px;
+            height: 180px;
+        }
+
+        @keyframes organic-pulse {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.05;
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                opacity: 0.1;
+            }
+        }
+
+        .floating-icons:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            font-size: 2rem;
+        }
+
+        .floating-icons:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: -1s;
+            font-size: 1.5rem;
+        }
+
+        .floating-icons:nth-child(3) {
+            top: 50%;
+            left: 5%;
+            animation-delay: -2s;
+            font-size: 1.8rem;
+        }
+
+        .floating-icons:nth-child(4) {
+            top: 70%;
+            right: 20%;
+            animation-delay: -3s;
+            font-size: 2.2rem;
+        }
+
+        .floating-icons:nth-child(5) {
+            top: 80%;
+            left: 25%;
+            animation-delay: -4s;
+            font-size: 1.6rem;
+        }
+
+        .floating-icons:nth-child(6) {
+            top: 30%;
+            right: 5%;
+            animation-delay: -5s;
+            font-size: 1.4rem;
+        }
+
+        .floating-icons:nth-child(7) {
+            top: 60%;
+            left: 70%;
+            animation-delay: -2.5s;
+            font-size: 1.9rem;
+        }
+
+        .floating-icons:nth-child(8) {
+            top: 15%;
+            left: 80%;
+            animation-delay: -4.5s;
+            font-size: 1.7rem;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 0.2;
+            }
+        }
+
+        /* Particle effect */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--nature-green-soft);
+            border-radius: 50%;
+            animation: particle-float 8s linear infinite;
+            opacity: 0.3;
+        }
+
+        .particle:nth-child(odd) {
+            background: var(--nature-green-accent);
+            animation-duration: 10s;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Gradient wave animation */
+        .wave-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(90deg, transparent, var(--nature-green-very-pale), transparent);
+            animation: wave-move 4s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: -2s;
+            opacity: 0.2;
+            height: 80px;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: -3s;
+            opacity: 0.1;
+            height: 120px;
+        }
+
+        @keyframes wave-move {
+            0%, 100% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(0);
+            }
+        }
+
+        [data-bs-theme="dark"] .floating-icons {
+            color: var(--nature-green-accent);
+            filter: drop-shadow(0 0 15px rgba(116, 198, 157, 0.5));
+        }
+
+        [data-bs-theme="dark"] .particle {
+            background: var(--nature-green-accent);
+            box-shadow: 0 0 10px var(--nature-green-accent);
+        }
+
+        [data-bs-theme="dark"] .particle:nth-child(odd) {
+            background: var(--nature-green-soft);
+        }
+
+        [data-bs-theme="dark"] .wave {
+            background: linear-gradient(90deg, transparent, var(--nature-green-dark), transparent);
+        }
+
+        [data-bs-theme="dark"] .bubble {
+            background: linear-gradient(45deg, 
+                rgba(116, 198, 157, 0.4), 
+                rgba(45, 80, 22, 0.3), 
+                rgba(27, 52, 9, 0.2));
+            box-shadow: 0 0 25px rgba(116, 198, 157, 0.4);
+        }
+
+        [data-bs-theme="dark"] .sparkle {
+            background: linear-gradient(45deg, var(--nature-green-accent), #fff);
+            box-shadow: 0 0 8px var(--nature-green-accent);
+        }
+
+        [data-bs-theme="dark"] .geo-shape.circle {
+            background: var(--nature-green-accent);
+            box-shadow: 0 0 10px rgba(116, 198, 157, 0.5);
+        }
+
+        [data-bs-theme="dark"] .geo-shape.triangle {
+            border-bottom-color: var(--nature-green-accent);
+            filter: drop-shadow(0 0 8px rgba(116, 198, 157, 0.4));
+        }
+
+        [data-bs-theme="dark"] .geo-shape.square {
+            background: var(--nature-green-light);
+            box-shadow: 0 0 12px rgba(74, 124, 89, 0.6);
+        }
+
+        [data-bs-theme="dark"] .geo-shape.diamond {
+            background: var(--nature-green);
+            box-shadow: 0 0 10px rgba(45, 80, 22, 0.7);
+        }
+
+        [data-bs-theme="dark"] .ripple {
+            border-color: rgba(116, 198, 157, 0.5);
+            box-shadow: 0 0 20px rgba(116, 198, 157, 0.3);
+        }
+
+        [data-bs-theme="dark"] .aurora {
+            background: linear-gradient(45deg, 
+                transparent 40%, 
+                rgba(116, 198, 157, 0.2) 50%, 
+                rgba(45, 80, 22, 0.15) 60%, 
+                transparent 70%);
+        }
+
+        [data-bs-theme="dark"] .leaf.maple {
+            color: var(--nature-green-accent);
+            filter: drop-shadow(0 0 12px rgba(116, 198, 157, 0.6));
+        }
+
+        [data-bs-theme="dark"] .leaf.oak {
+            color: var(--nature-green-light);
+            filter: drop-shadow(0 0 10px rgba(74, 124, 89, 0.7));
+        }
+
+        [data-bs-theme="dark"] .leaf.birch {
+            color: var(--nature-green-soft);
+            filter: drop-shadow(0 0 15px rgba(149, 213, 178, 0.5));
+        }
+
+        [data-bs-theme="dark"] .flower-petal.sakura {
+            color: #ffcccb;
+            filter: drop-shadow(0 0 12px rgba(255, 204, 203, 0.7));
+        }
+
+        [data-bs-theme="dark"] .flower-petal.rose {
+            color: #ffb3b3;
+            filter: drop-shadow(0 0 15px rgba(255, 179, 179, 0.6));
+        }
+
+        [data-bs-theme="dark"] .flower-petal.daisy {
+            color: #fffacd;
+            filter: drop-shadow(0 0 10px rgba(255, 250, 205, 0.8));
+        }
+
+        [data-bs-theme="dark"] .flower-petal.lavender {
+            color: #dda0dd;
+            filter: drop-shadow(0 0 12px rgba(221, 160, 221, 0.6));
+        }
+
+        [data-bs-theme="dark"] .nature-element.branch {
+            color: var(--nature-green-accent);
+            filter: drop-shadow(0 0 18px rgba(116, 198, 157, 0.5));
+        }
+
+        [data-bs-theme="dark"] .nature-element.grass {
+            color: var(--nature-green-soft);
+            filter: drop-shadow(0 0 8px rgba(149, 213, 178, 0.4));
+        }
+
+        [data-bs-theme="dark"] .organic-pattern {
+            background: radial-gradient(circle, 
+                rgba(116, 198, 157, 0.08) 0%, 
+                rgba(45, 80, 22, 0.05) 50%, 
+                transparent 100%);
+        }
+
+        .card {
+            box-shadow: 0 0.5rem 1rem rgba(45, 80, 22, 0.1);
+            border: 1px solid var(--nature-green-pale);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        [data-bs-theme="dark"] .card {
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid var(--nature-green-dark);
+        }
+
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .btn-theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 4px 8px rgba(45, 80, 22, 0.3);
+            background: var(--nature-green) !important;
+            border-color: var(--nature-green) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--nature-green), var(--nature-green-light));
+            border: none;
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, var(--nature-green-dark), var(--nature-green));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(45, 80, 22, 0.4);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--nature-green);
+            color: var(--nature-green);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--nature-green);
+            border-color: var(--nature-green);
+            color: white !important;
+        }
+
+        /* Password toggle button enhancements */
+        .btn-outline-secondary {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--nature-green-soft);
+            border-color: var(--nature-green-soft);
+            transform: scale(1.05);
+        }
+
+        .btn-outline-secondary i {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .btn-outline-secondary:hover i {
+            transform: rotateZ(10deg) scale(1.1);
+        }
+
+        .btn-outline-primary {
+            background-color: rgba(45, 80, 22, 0.1) !important;
+            border-color: var(--nature-green) !important;
+            color: var(--nature-green) !important;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--nature-green) !important;
+            border-color: var(--nature-green) !important;
+            color: white !important;
+        }
+
+        /* Eye icon animations */
+        @keyframes eye-blink {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
+            100% { transform: scaleY(1); }
+        }
+
+        .bi-eye, .bi-eye-slash {
+            animation: eye-blink 0.3s ease-in-out;
+        }
+
+        /* Strength bar pulse animation */
+        @keyframes strength-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(45, 80, 22, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(45, 80, 22, 0);
+            }
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .strength-meter {
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .strength-weak {
+            background: linear-gradient(90deg, #dc3545, #ff6b6b);
+            animation: strength-pulse 0.5s ease-out;
+        }
+
+        .strength-medium {
+            background: linear-gradient(90deg, #ffc107, #ffed4e);
+            animation: strength-pulse 0.5s ease-out;
+        }
+
+        .strength-strong {
+            background: linear-gradient(90deg, var(--nature-green), var(--nature-green-light));
+            animation: strength-pulse 0.5s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .strength-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Password match indicator styling */
+        #passwordMatchIndicator {
+            font-size: 0.875rem;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        /* Enhanced form validation styles */
+        .form-control.is-valid {
+            border-color: var(--nature-green);
+            box-shadow: 0 0 0 0.2rem rgba(45, 80, 22, 0.25);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        /* Dark mode support for password strength */
+        [data-bs-theme="dark"] .strength-meter {
+            background-color: #343a40;
+        }
+
+        [data-bs-theme="dark"] .strength-strong {
+            background: linear-gradient(90deg, var(--nature-green-accent), var(--nature-green-soft));
+        }
+
+        /* ...existing code... */

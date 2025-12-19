@@ -1,0 +1,317 @@
+@{
+    ViewData["Title"] = "Chính sách đổi trả";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<link href="~/css/KhachHang/quanlitaikhoan.css" rel="stylesheet" />
+
+<style>
+    .guide-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+    
+    .guide-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        background: var(--nature-green);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    
+    .guide-header h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .guide-header p {
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    .step-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        border-left: 4px solid var(--nature-green);
+    }
+    
+    .step-title {
+        color: var(--nature-green);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .step-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 0.8rem;
+    }
+    
+    .step-content ul {
+        padding-left: 1.2rem;
+        margin: 1rem 0;
+    }
+    
+    .step-content li {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-content ol {
+        padding-left: 1.2rem;
+        margin: 1rem 0;
+    }
+    
+    .step-content ol li {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.8rem;
+    }
+    
+    .payment-list {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    
+    .payment-list li {
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .payment-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .info-note {
+        background: #e8f5e8;
+        border-left: 4px solid var(--nature-green);
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .highlight-box {
+        background: #e8f5e8;
+        border: 1px solid var(--nature-green);
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 8px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .info-card {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--nature-green);
+    }
+    
+    .info-card h6 {
+        color: var(--nature-green);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-card p {
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+    }
+    
+    .info-card small {
+        color: #666;
+        font-size: 0.85rem;
+    }
+    
+    .process-steps {
+        margin: 1rem 0;
+    }
+    
+    .process-steps ol li {
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+    }
+    
+    .contact-section {
+        background: var(--nature-green);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        text-align: center;
+    }
+    
+    .contact-section h4 {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .contact-section p {
+        margin: 0.3rem 0;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="guide-container">
+    <!-- Header -->
+    <div class="guide-header">
+        <h1><i class="bi bi-arrow-left-right me-3"></i>Chính Sách Đổi Trả</h1>
+        <p>Quy định về đổi trả sản phẩm và hoàn tiền tại LittleFish Beauty</p>
+    </div>
+
+    <!-- Đối tượng và phạm vi áp dụng -->
+    <div class="step-section">
+        <h3 class="step-title">1. ĐỐI TƯỢNG VÀ PHẠM VI ÁP DỤNG</h3>
+        <div class="step-content">
+            <p><strong>1.1. Đối tượng áp dụng</strong></p>
+            <p>Chính sách này được áp dụng cho tất cả khách hàng mua sản phẩm mỹ phẩm, chăm sóc da và các sản phẩm làm đẹp khác từ LittleFish Beauty, thông qua website chính thức www.littlefishbeauty.vn, fanpage hoặc các kênh phân phối trực thuộc thương hiệu.</p>
+            
+            <p><strong>1.2. Phạm vi áp dụng</strong></p>
+            <p>Chính sách quy định quyền lợi của khách hàng trong việc yêu cầu trả hàng hoặc hoàn tiền, cùng với trách nhiệm của LittleFish Beauty trong việc tiếp nhận, xử lý và phản hồi yêu cầu một cách minh bạch, đúng quy trình.</p>
+        </div>
+    </div>
+
+    <!-- Điều kiện áp dụng -->
+    <div class="step-section">
+        <h3 class="step-title">2. ĐIỀU KIỆN ÁP DỤNG</h3>
+        <div class="step-content">
+            <p>Khách hàng có thể gửi yêu cầu trả hàng hoặc hoàn tiền khi đáp ứng đầy đủ các điều kiện sau:</p>
+            <ul>
+                <li>Sản phẩm được mua chính hãng từ LittleFish Beauty, có hóa đơn hoặc thông tin đơn hàng hợp lệ.</li>
+                <li>Sản phẩm còn nguyên tem, nhãn, bao bì, chưa qua sử dụng hoặc mở nắp.</li>
+                <li>Yêu cầu được gửi trong vòng <strong>07 ngày</strong> kể từ ngày nhận hàng.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Các trường hợp được trả hàng -->
+    <div class="step-section">
+        <h3 class="step-title">3. CÁC TRƯỜNG HỢP ĐƯỢC TRẢ HÀNG / HOÀN TIỀN</h3>
+        <div class="step-content">
+            <p>Khách hàng được quyền yêu cầu trả hàng/hoàn tiền trong các trường hợp:</p>
+            <ul>
+                <li>Sản phẩm bị lỗi kỹ thuật, hư hỏng, biến chất do nhà sản xuất.</li>
+                <li>Sản phẩm bị sai loại, sai dung tích, sai mẫu mã hoặc sai số lượng so với đơn đặt hàng.</li>
+                <li>Sản phẩm có dấu hiệu hết hạn sử dụng tại thời điểm giao hàng.</li>
+                <li>Hai bên (khách hàng và LittleFish Beauty) có thỏa thuận khác được xác nhận bằng văn bản hoặc email.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Các trường hợp không áp dụng -->
+    <div class="step-section">
+        <h3 class="step-title">4. CÁC TRƯỜNG HỢP KHÔNG ÁP DỤNG ĐỔI TRẢ</h3>
+        <div class="step-content">
+            <p>LittleFish Beauty từ chối tiếp nhận yêu cầu đổi trả trong các trường hợp:</p>
+            <div class="warning-box">
+                <p><i class="bi bi-exclamation-triangle me-2"></i><strong>Lưu ý:</strong> Những trường hợp sau sẽ không được chấp nhận đổi trả</p>
+            </div>
+            <ul>
+                <li>Sản phẩm đã qua sử dụng, mở nắp, hoặc có dấu hiệu can thiệp, làm thay đổi hiện trạng ban đầu.</li>
+                <li>Sản phẩm bị hư hại do lỗi bảo quản hoặc sử dụng không đúng hướng dẫn.</li>
+                <li>Sản phẩm nằm trong chương trình giảm giá, khuyến mãi hoặc quà tặng kèm (trừ trường hợp lỗi sản xuất).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Quy trình trả hàng -->
+    <div class="step-section">
+        <h3 class="step-title">5. QUY TRÌNH TRẢ HÀNG / HOÀN TIỀN</h3>
+        <div class="step-content">
+            <div class="process-steps">
+                <ol>
+                    <li><strong>Liên hệ Bộ phận Chăm sóc khách hàng:</strong>
+                        <br>Email: 2200004133@nttu.edu.vn
+                        <br>Hotline: 038 844 2230
+                    </li>
+                    <li><strong>Cung cấp thông tin</strong> đơn hàng, lý do yêu cầu và hình ảnh minh chứng (nếu có).</li>
+                    <li><strong>Gửi sản phẩm</strong> về địa chỉ trung tâm xử lý đổi trả theo hướng dẫn của nhân viên hỗ trợ.</li>
+                    <li><strong>Chờ xử lý:</strong> LittleFish Beauty kiểm tra tình trạng sản phẩm và phản hồi kết quả trong vòng 03–05 ngày làm việc kể từ khi nhận được hàng.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi phí vận chuyển -->
+    <div class="step-section">
+        <h3 class="step-title">6. CHI PHÍ VẬN CHUYỂN</h3>
+        <div class="step-content">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h6><i class="bi bi-shield-check"></i> Lỗi của LittleFish Beauty</h6>
+                    <p>Thương hiệu chịu toàn bộ chi phí vận chuyển</p>
+                    <small>(Giao sai, hàng lỗi, hư hỏng)</small>
+                </div>
+                <div class="info-card">
+                    <h6><i class="bi bi-person-check"></i> Nhu cầu cá nhân</h6>
+                    <p>Khách hàng chịu phí vận chuyển hai chiều</p>
+                    <small>(Thay đổi màu, dòng sản phẩm...)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phương thức hoàn tiền -->
+    <div class="step-section">
+        <h3 class="step-title">7. PHƯƠNG THỨC HOÀN TIỀN</h3>
+        <div class="step-content">
+            <p>Hoàn tiền qua phương thức thanh toán ban đầu (thẻ ngân hàng, ví điện tử, v.v.) hoặc chuyển khoản theo thông tin do khách hàng cung cấp.</p>
+            
+            <p><strong>Thời gian xử lý hoàn tiền:</strong></p>
+            <ul>
+                <li><strong>07 ngày làm việc</strong> đối với thanh toán điện tử.</li>
+                <li><strong>07–10 ngày làm việc</strong> đối với đơn hàng thanh toán COD.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Giải quyết tranh chấp -->
+    <div class="step-section">
+        <h3 class="step-title">8. GIẢI QUYẾT TRANH CHẤP</h3>
+        <div class="step-content">
+            <p>Mọi thắc mắc, khiếu nại hoặc tranh chấp phát sinh trong quá trình đổi trả – hoàn tiền sẽ được LittleFish Beauty tiếp nhận, xử lý dựa trên nguyên tắc thiện chí, minh bạch và tôn trọng quyền lợi người tiêu dùng.</p>
+            
+            <div class="highlight-box">
+                <p><i class="bi bi-info-circle me-2"></i>Trong trường hợp hai bên không đạt được thỏa thuận, vấn đề sẽ được chuyển đến cơ quan nhà nước có thẩm quyền để giải quyết theo quy định pháp luật Việt Nam.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hiệu lực thi hành -->
+    <div class="step-section">
+        <h3 class="step-title">9. HIỆU LỰC THI HÀNH</h3>
+        <div class="step-content">
+            <p>Chính sách này có hiệu lực kể từ ngày <strong>01/01/2025</strong> và có thể được điều chỉnh, cập nhật tùy theo quy định mới của pháp luật hoặc chính sách nội bộ của LittleFish Beauty.</p>
+            <p>Mọi thay đổi (nếu có) sẽ được công bố công khai trên website chính thức.</p>
+            
+            <div class="highlight-box">
+                <p><strong>LittleFish Beauty trân trọng cảm ơn Quý khách đã tin tưởng và lựa chọn sản phẩm của chúng tôi.</strong></p>
+                <p><strong>Chúng tôi cam kết luôn đồng hành và bảo vệ quyền lợi chính đáng của người tiêu dùng.</strong></p>
+            </div>
+        </div>
+    </div>
+</div>

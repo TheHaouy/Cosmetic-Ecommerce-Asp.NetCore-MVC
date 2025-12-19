@@ -1,0 +1,90 @@
+﻿@model Final_VS1.Models.DangKiViewModel
+@{
+    ViewData["Title"] = "DangKi";
+    Layout = "~/Views/Shared/_Layout_Dang_Ki.cshtml";
+}
+
+<!-- Register Section -->
+<div id="registerSection" class="form-section active">
+    <div class="login-container">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                    <div class="card shadow">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-3">
+                                <h4 class="card-title mb-2">Đăng Ký Tài Khoản</h4>
+                                <small class="text-muted">Tạo tài khoản mới</small>
+                            </div>
+                            
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                            }
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                            }
+                            
+                            <form asp-controller="DangKi" asp-action="Index" method="post" id="registerForm">
+                                @Html.AntiForgeryToken()
+                                <div class="mb-3">
+                                    <label asp-for="HoTen" class="form-label">Họ và tên</label>
+                                    <input type="text" class="form-control" asp-for="HoTen" required>
+                                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" asp-for="Email" required>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                                    <input type="text" class="form-control" asp-for="TenDangNhap" required>
+                                    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="MatKhau" class="form-label">Mật khẩu</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" asp-for="MatKhau" id="registerPassword" required>
+                                    </div>
+                                    <span asp-validation-for="MatKhau" class="text-danger"></span>
+                                    <div class="strength-meter mt-1">
+                                        <div class="strength-bar" id="strengthBar"></div>
+                                    </div>
+                                    <small id="strengthText" class="text-muted">Nhập mật khẩu để kiểm tra độ mạnh</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="XacNhanMatKhau" class="form-label">Xác nhận mật khẩu</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" asp-for="XacNhanMatKhau" required>
+                                    </div>
+                                    <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
+                                    <div id="passwordMismatchWarning" class="mt-1" style="display: none;">
+                                        <small class="text-danger">
+                                            <i class="bi bi-exclamation-circle"></i> Mật khẩu không khớp
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        Tôi đồng ý với <a href="#" class="text-decoration-none">điều khoản sử dụng</a>
+                                    </label>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Đăng Ký</button>
+                                </div>
+                            </form>
+                            <div class="text-center mt-3">
+                                <span class="text-muted">Đã có tài khoản? </span>
+                                <a href="@Url.Action("Index", "DangNhap")" class="text-decoration-none">Đăng nhập</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

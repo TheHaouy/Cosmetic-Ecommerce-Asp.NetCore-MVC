@@ -1,0 +1,99 @@
+@model IEnumerable<Final_VS1.Areas.KhachHang.ViewComponents.CategoryViewModel>
+
+@{
+    // Định nghĩa icon mặc định cho các danh mục
+    var categoryIcons = new Dictionary<string, string>
+    {
+        { "default", "fas fa-tag" },
+        { "da", "fas fa-spa" },
+        { "chăm sóc da", "fas fa-spa" },
+        { "skincare", "fas fa-spa" },
+        { "trang điểm", "fas fa-palette" },
+        { "makeup", "fas fa-palette" },
+        { "son", "fas fa-kiss-wink-heart" },
+        { "tóc", "fas fa-cut" },
+        { "dưỡng tóc", "fas fa-cut" },
+        { "haircare", "fas fa-cut" },
+        { "nắng", "fas fa-sun" },
+        { "chống nắng", "fas fa-sun" },
+        { "suncare", "fas fa-sun" },
+        { "tinh dầu", "fas fa-seedling" },
+        { "essential", "fas fa-seedling" },
+        { "cơ thể", "fas fa-heart" },
+        { "body", "fas fa-heart" },
+        { "mặt", "fas fa-smile" },
+        { "face", "fas fa-smile" },
+        { "môi", "fas fa-kiss" },
+        { "lip", "fas fa-kiss" },
+        { "mắt", "fas fa-eye" },
+        { "eye", "fas fa-eye" },
+        { "nail", "fas fa-hand-sparkles" },
+        { "móng", "fas fa-hand-sparkles" }
+    };
+
+    string GetIconForCategory(string categoryName)
+    {
+        if (string.IsNullOrEmpty(categoryName))
+            return categoryIcons["default"];
+
+        var lowerName = categoryName.ToLower();
+        foreach (var key in categoryIcons.Keys)
+        {
+            if (lowerName.Contains(key))
+            {
+                return categoryIcons[key];
+            }
+        }
+        return categoryIcons["default"];
+    }
+}
+
+<ul class="footer-links">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var category in Model)
+        {
+            <li class="footer-category-item @(category.SubCategories != null && category.SubCategories.Any() ? "has-subcategories" : "")">
+                <a asp-area="KhachHang" 
+                   asp-controller="SanPham" 
+                   asp-action="Index" 
+                   asp-route-category="@category.IdDanhMuc"
+                   class="footer-category-link">
+                    <i class="@GetIconForCategory(category.TenDanhMuc)"></i>@category.TenDanhMuc
+                    <span class="link-count">(@category.SoLuongBan)</span>
+                    @if (category.SubCategories != null && category.SubCategories.Any())
+                    {
+                        <i class="fas fa-chevron-down subcategory-arrow"></i>
+                    }
+                </a>
+                
+                @* Danh sách danh mục con *@
+                @if (category.SubCategories != null && category.SubCategories.Any())
+                {
+                    <ul class="footer-subcategories">
+                        @foreach (var subCategory in category.SubCategories)
+                        {
+                            <li>
+                                <a asp-area="KhachHang" 
+                                   asp-controller="SanPham" 
+                                   asp-action="Index" 
+                                   asp-route-category="@subCategory.IdDanhMuc">
+                                    <i class="fas fa-angle-right"></i>@subCategory.TenDanhMuc
+                                    <span class="link-count">(@subCategory.SoLuongSanPham)</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    }
+    else
+    {
+        <li>
+            <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index">
+                <i class="fas fa-shopping-bag"></i>Xem tất cả sản phẩm
+            </a>
+        </li>
+    }
+</ul>

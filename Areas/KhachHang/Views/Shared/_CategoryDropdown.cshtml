@@ -1,0 +1,84 @@
+@model List<Final_VS1.Data.DanhMuc>
+
+<div class="dropdown category-dropdown">
+    <button class="nav-link" type="button" id="categoryDropdown" 
+            data-bs-toggle="dropdown" 
+            data-bs-auto-close="true"
+            data-bs-display="static"
+            aria-expanded="false">
+        <i class="fas fa-th-large"></i>
+        <span>Danh mục</span>
+    </button>
+    
+    <div class="dropdown-menu category-dropdown-menu" aria-labelledby="categoryDropdown">
+        <!-- All Products - Featured Item -->
+        <a class="dropdown-item category-item featured-all" asp-area="KhachHang" asp-controller="SanPham" asp-action="Index">
+            <span class="category-name">Tất cả sản phẩm</span>
+        </a>
+        
+        @if (Model != null && Model.Any())
+        {
+            <div class="dropdown-divider"></div>
+            
+            @foreach (var danhMuc in Model)
+            {
+                <div class="category-item-wrapper">
+                    <a class="dropdown-item category-item @(danhMuc.InverseIdDanhMucChaNavigation.Any() ? "has-children" : "")" 
+                       asp-area="KhachHang" 
+                       asp-controller="SanPham" 
+                       asp-action="Index" 
+                       asp-route-category="@danhMuc.IdDanhMuc">
+                        <span class="category-name">@danhMuc.TenDanhMuc</span>
+                        @if (danhMuc.InverseIdDanhMucChaNavigation.Any())
+                        {
+                            <i class="fas fa-chevron-down category-arrow"></i>
+                        }
+                    </a>
+                    
+                    @* Danh mục con hiển thị khi hover *@
+                    @if (danhMuc.InverseIdDanhMucChaNavigation.Any())
+                    {
+                        <div class="category-children-dropdown">
+                            <div class="children-list">
+                                @foreach (var subCategory in danhMuc.InverseIdDanhMucChaNavigation.OrderBy(s => s.ThuTuHienThi ?? 0))
+                                {
+                                    <a class="child-item" 
+                                       asp-area="KhachHang" 
+                                       asp-controller="SanPham" 
+                                       asp-action="Index" 
+                                       asp-route-category="@subCategory.IdDanhMuc">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span>@subCategory.TenDanhMuc</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="dropdown-item-text text-center py-3 text-muted">
+                <i class="fas fa-inbox mb-2 d-block" style="font-size: 24px; opacity: 0.5;"></i>
+                <small>Chưa có danh mục nào</small>
+            </div>
+        }
+    </div>
+</div>
+<!--cai nay moi dung-->
+@functions {
+    private string GetCategoryIcon(int categoryId)
+    {
+        return categoryId switch
+        {
+            1 => "<i class=\"fas fa-spa\"></i>",
+            2 => "<i class=\"fas fa-palette\"></i>",
+            3 => "<i class=\"fas fa-cut\"></i>",
+            4 => "<i class=\"fas fa-sun\"></i>",
+            5 => "<i class=\"fas fa-seedling\"></i>",
+            6 => "<i class=\"fas fa-heart\"></i>",
+            _ => "<i class=\"fas fa-box\"></i>"
+        };
+    }
+}

@@ -1,0 +1,1279 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    ViewData["Title"] = "LittleBeauty";
+}
+@using Final_VS1.Helpers
+@using Final_VS1.Models
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    @{
+        var seoData = ViewBag.SeoData as SeoViewModel;
+        var pageTitle = seoData?.Title ?? ViewData["Title"] ?? "LittleBeauty";
+        var pageDescription = seoData?.Description ?? "Mỹ phẩm chính hãng, chất lượng cao tại LittleFish Beauty";
+        var pageKeywords = seoData?.Keywords ?? "mỹ phẩm, làm đẹp, LittleFish Beauty";
+        var pageImage = seoData?.GetOgImage() ?? Url.Content("~/logo.png");
+        var pageUrl = seoData?.CanonicalUrl ?? Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path;
+        
+        // Make image absolute URL
+        if (pageImage.StartsWith("~/"))
+        {
+            pageImage = Url.Content(pageImage);
+        }
+        if (!pageImage.StartsWith("http"))
+        {
+            pageImage = Context.Request.Scheme + "://" + Context.Request.Host + pageImage;
+        }
+    }
+    
+    <title>@pageTitle</title>
+    <meta name="description" content="@pageDescription" />
+    <meta name="keywords" content="@pageKeywords" />
+    
+    @if (!string.IsNullOrEmpty(seoData?.CanonicalUrl))
+    {
+        <link rel="canonical" href="@seoData.CanonicalUrl" />
+    }
+
+    <!-- Open Graph Meta Tags (Facebook) -->
+    <meta property="og:title" content="@seoData?.GetOgTitle()" />
+    <meta property="og:description" content="@seoData?.GetOgDescription()" />
+    <meta property="og:image" content="@pageImage" />
+    <meta property="og:image:secure_url" content="@pageImage" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="@pageUrl" />
+    <meta property="og:type" content="@(seoData?.OgType ?? "website")" />
+    <meta property="og:site_name" content="@(seoData?.OgSiteName ?? "LittleFish Beauty")" />
+    <meta property="og:locale" content="@(seoData?.Locale ?? "vi_VN")" />
+    
+    @if (seoData?.Price.HasValue == true)
+    {
+        <meta property="product:price:amount" content="@seoData.FormatPrice()" />
+        <meta property="product:price:currency" content="@(seoData.Currency ?? "VND")" />
+    }
+    
+    @if (!string.IsNullOrEmpty(seoData?.Availability))
+    {
+        <meta property="product:availability" content="@seoData.Availability" />
+    }
+    
+    @if (!string.IsNullOrEmpty(seoData?.Brand))
+    {
+        <meta property="product:brand" content="@seoData.Brand" />
+    }
+    
+    @if (!string.IsNullOrEmpty(seoData?.Category))
+    {
+        <meta property="product:category" content="@seoData.Category" />
+    }
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="@(seoData?.TwitterCard ?? "summary_large_image")" />
+    <meta name="twitter:title" content="@seoData?.GetTwitterTitle()" />
+    <meta name="twitter:description" content="@seoData?.GetTwitterDescription()" />
+    <meta name="twitter:image" content="@pageImage" />
+    
+    @if (!string.IsNullOrEmpty(seoData?.ImageAlt))
+    {
+        <meta name="twitter:image:alt" content="@seoData.ImageAlt" />
+    }
+
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="LittleFish Beauty" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/logomini.png">
+    
+    <!-- Sitemap Link for SEO -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+    
+    <!-- Google Analytics -->
+    @await Html.PartialAsync("_GoogleAnalytics")
+    
+    <!-- Structured Data (JSON-LD) -->
+    @if (ViewBag.StructuredData != null)
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.StructuredData)
+        </script>
+    }
+    
+    @if (ViewBag.BreadcrumbStructuredData != null)
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.BreadcrumbStructuredData)
+        </script>
+    }
+    
+    <!-- Organization Structured Data (for all pages) -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "Organization",
+      "name": "LittleFish Beauty",
+      "url": "@(Context.Request.Scheme)://@(Context.Request.Host)",
+      "logo": "@(Context.Request.Scheme)://@(Context.Request.Host)/logo.png",
+      "description": "Mỹ phẩm chính hãng, chất lượng cao",
+      "contactPoint": {
+        "@@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "availableLanguage": "Vietnamese"
+      }
+    }
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Modal CSS -->
+    <style>
+        /* Ensure logout modal appears on top of everything */
+        #logoutModal {
+            z-index: 999999 !important;
+            position: fixed !important;
+        }
+        #logoutModal .modal-dialog {
+            z-index: 1000000 !important;
+            position: relative !important;
+        }
+        #logoutModal .modal-content {
+            z-index: 1000001 !important;
+            position: relative !important;
+        }
+        /* Fix modal backdrop */
+        .modal-backdrop {
+            z-index: 999998 !important;
+        }
+        .modal-backdrop.show {
+            opacity: 0.5 !important;
+            z-index: 999998 !important;
+        }
+        /* CRITICAL FIX: Force modal to display when shown */
+        #logoutModal.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        .modal.show {
+            display: block !important;
+        }
+    </style>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lobster:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/KhachHang/footer.css">
+    <link rel="stylesheet" href="~/css/KhachHang/header.css">
+    <link rel="stylesheet" href="~/css/KhachHang/chitiet-sanpham.css">
+    <link rel="stylesheet" href="~/css/KhachHang/sanpham.css">
+    <link rel="stylesheet" href="~/css/KhachHang/trangchu.css">
+    <link rel="stylesheet" href="~/css/KhachHang/quanlitaikhoan.css">
+
+  
+    @RenderSection("Styles", required: false)  
+
+</head>
+<body class="bg-light">
+    @Html.AntiForgeryToken()
+    <!-- Header Section -->
+    <header class="header-container">
+        <nav class="main-navbar navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <div style="padding-left: 20px;">
+                <!-- Brand -->
+                <a class="navbar-brand" asp-area="KhachHang" asp-controller="TrangChu" asp-action="Index">
+                    <img src="~/logo.png" alt="LittleFish Beauty Logo">
+                    LittleFishBeauty
+                </a>
+                </div>
+
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Content -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <!-- Search Container -->
+                    <div class="search-container">
+                        <form class="search-form" asp-action="Index" asp-controller="SanPham" asp-area="KhachHang" method="get">
+                            <div class="search-wrapper">
+                                <input type="text" name="search" class="search-input" placeholder="Tìm kiếm sản phẩm..." value="@ViewBag.SearchQuery" autocomplete="off">
+                                <div class="search-suggestions" id="searchSuggestions"></div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <ul class="main-nav navbar-nav" style="padding-left: 15px;">
+                        <li class="nav-item" style="padding-left:0px;">
+                            <a class="nav-link" asp-area="KhachHang" asp-controller="TrangChu" asp-action="Index">
+                                <i class="fas fa-home me-1"></i>Trang chủ
+                            </a>
+                        </li>
+                        <li class="nav-item category-nav-item" style="padding-left:0px;" >
+                            <!-- Category Dropdown will be loaded here -->
+                            <div id="categoryDropdownContainer">
+                                <div class="category-loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Đang tải...</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item" style="padding-left:0px;">
+                            <a class="nav-link" asp-area="KhachHang" asp-controller="SanPham" asp-action="Index">
+                                <i class="fas fa-shopping-bag me-1"></i>Sản phẩm
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="KhachHang" asp-controller="About" asp-action="Index"style="padding-left:0px;">
+                                <i class="me-1"></i>Tác giả
+                            </a>
+                        </li>
+
+
+                    <!-- User Actions -->
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <ul class="main-nav navbar-nav">
+                        <!-- Đã đăng nhập -->
+                        <div class="user-actions-logged">
+                            <!-- Cart Icon -->
+                            <div class="d-flex align-items-center" style="padding-left:20px;">
+                            <a asp-area="KhachHang" asp-controller="Cart" asp-action="Index" class="nav-link me-2 cart-button">
+                                <i class="fas fa-shopping-cart me-1"></i>Giỏ hàng
+                                <span class="cart-count-badge" id="cartCount" style="display:none;">0</span>
+                            </a>
+                            </div>
+                            <!-- User Dropdown - Fixed Bootstrap Implementation -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i>
+                                    <span id="headerProfileName" class="user-display-name">@(VietnameseTextHelper.GetFirstWords(User?.Identity?.Name ?? "Tài khoản", 2))</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-area="KhachHang" asp-controller="ThongTin" asp-action="Index">
+                                        <i class="bi bi-person-circle me-2"></i>Thông tin cá nhân</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-area="KhachHang" asp-controller="ThongTin" asp-action="ChangePassword">
+                                        <i class="bi bi-key me-2"></i>Đổi mật khẩu</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-area="KhachHang" asp-controller="DiaChi" asp-action="Index">
+                                        <i class="bi bi-geo-alt me-2"></i> Địa chỉ</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-area="KhachHang" asp-controller="DonHang" asp-action="Index">
+                                        <i class="bi bi-bag-check me-2"></i>Đơn hàng của tôi</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item text-danger" onclick="showLogoutModal()">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Đăng Xuất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        </ul>
+                    }
+                    else
+                    {
+                        <!-- Chưa đăng nhập -->
+                        <div class="user-actions-guest" style="padding-left:30px;">
+                            <a href="/DangNhap?returnUrl=@(Context.Request.Path + Context.Request.QueryString)" class="btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                            </a>
+                            <a href="@Url.Action("Index", "DangKi", new { area = "", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="btn-register">
+                                <i class="fas fa-user-plus me-1"></i>Đăng ký
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @RenderBody()
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="logoutModalLabel">
+                        <i class="fas fa-question-circle text-warning me-2"></i>
+                        Xác nhận đăng xuất
+                    </h5>
+                    <button type="button" class="btn-close" onclick="closeLogoutModal()" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Bạn có chắc chắn muốn đăng xuất khỏi tài khoản hiện tại?</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" onclick="closeLogoutModal()">
+                        <i class="fas fa-times me-1"></i>Hủy
+                    </button>
+                    <form action="/DangNhap/DangXuat" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt me-1"></i>Đăng xuất
+                        </button>   
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <footer class="modern-footer">
+        <!-- Decorative Wave -->
+        <div class="footer-wave">
+            <svg viewBox="0 0 1920 200" preserveAspectRatio="none">
+                <!-- Sóng pastel xanh nhạt -->
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47c87,66.76,174,100,280,80c106-20,212-80,320-60c108,20,216,100,320,80V0Z" opacity=".3" class="shape-fill" fill="rgba(200, 230, 201, 0.6)"></path>
+                
+                <!-- Sóng xanh lá cây -->
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84c30.2,8.66,59,6.17,87.09-7.5c22.43-10.89,48-26.93,60.65-49.24c12.65,22.31,38.22,38.35,60.65,49.24c28.09,13.67,56.89,16.16,87.09,7.5c55.62-15.96,109.17-44.69,168.9-38.84c41.76,4.05,79.14,21.46,116.92,43.05c37.78,17.59,78.69,35.07,119.13,24.28c41.31-11,71.86-47.61,103.63-73c27.7-22.14,62.34-34.41,98.6-31.56c46.1,3.67,89.91,30.67,130.83,49.67c29.58,13.73,58.52,29.65,89.67,39.8C1755,111,1820.59,111.27,1872.31,72.05c19.05-15.19,34.69-35.13,47.69-56.24V0Z" opacity=".5" class="shape-fill" fill="rgba(129, 199, 132, 0.7)"></path>
+                
+                <!-- Sóng trắng trong suốt -->
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46c59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81c76.34,39.1,162.27,77.81,248.8,84.81c65.2,5.24,123.27-12.78,182.2-38.49c53.08-23.16,106.56-44.03,165.56-35.4c43.38,6.34,84.61,18.82,127.61,26.46C1605.91,71.32,1770.07,59,1920,5.63V0Z" class="shape-fill" fill="rgba(255, 255, 255, 0.8)"></path>
+            </svg>
+        </div>
+
+        <div class="footer-content">
+            <div class="container">
+                <div class="row g-4">
+                    <!-- Brand Section -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-brand">
+                            <div class="brand-logo-section">
+                                <div class="brand-logo-container">
+                                    <img src="~/logo.png" alt="LittleFish Beauty Logo" class="footer-logo">
+                                    <div class="logo-glow"></div>
+                                </div>
+                                <h3 class="brand-title">LittleFish Beauty</h3>
+                            </div>
+                            <p class="brand-description">
+                                🌿 Mỹ phẩm thiên nhiên chất lượng cao, an toàn cho làn da của bạn.
+                                Chúng tôi cam kết mang đến những sản phẩm làm đẹp từ thiên nhiên,
+                                được nghiên cứu kỹ lưỡng và kiểm tra chất lượng nghiêm ngặt.
+                            </p>
+                            <div class="brand-motto">
+                                <span class="motto-icon">✨</span>
+                                <em>"Vẻ đẹp tự nhiên, sự tự tin trong chính bạn"</em>
+                            </div>
+
+                            <!-- Google Map Location -->
+                            <div class="map-container" style="margin-top: 30px;">
+                                <h6 class="social-title" style="margin-bottom: 15px;">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ của chúng tôi
+                                </h6>
+                                <div class="contact-item" style="margin-bottom: 15px;">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <strong>Địa chỉ:</strong>
+                                        <p style="margin-bottom: 0;">3F Đ. Nguyễn Hữu Thọ, Tân Hưng<br>Quận 7, Thành phố Hồ Chí Minh</p>
+                                    </div>
+                                </div>
+                                <iframe 
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.9522374523364!2d106.69632007586937!3d10.74340568932054!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f9e88a52179%3A0x7a92e86fa65f92d4!2zM0YgxJAuIE5ndXnhu4VuIEjhu691IFRo4buNLCBUw6JuIEjGsG5nLCBRdeG6rW4gNywgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1730289745832!5m2!1svi!2s" 
+                                    width="100%" 
+                                    height="250" 
+                                    style="border:0; display: block;" 
+                                    allowfullscreen="" 
+                                    loading="lazy" 
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    title="Bản đồ địa chỉ LittleFish Beauty - 3F Đ. Nguyễn Hữu Thọ, Tân Hưng, Quận 7, TP. Hồ Chí Minh"
+                                    aria-label="Google Maps hiển thị vị trí cửa hàng LittleFish Beauty">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Categories -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-section">
+                            <h5 class="footer-heading">
+                                <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+                                    <i class="fas fa-leaf me-2"></i>Danh Mục Sản Phẩm
+                                </a>
+                            </h5>
+                            @await Component.InvokeAsync("FooterCategories")
+                        </div>
+                    </div>
+
+                    <!-- Customer Service -->
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-section">
+                            <h5 class="footer-heading">
+                                <i class="fas fa-headset me-2"></i>Hỗ Trợ
+                            </h5>
+                            <ul class="footer-links">
+                                <li><a asp-area="KhachHang" asp-controller="Huongdandathang" asp-action="Index"><i class="fas fa-question-circle"></i>Hướng dẫn đặt hàng</a></li>
+                                <li><a asp-area="KhachHang" asp-controller="Chinhsachdoitra" asp-action="Index"><i class="fas fa-exchange-alt"></i>Chính sách đổi trả</a></li>
+                                <li><a asp-area="KhachHang" asp-controller="Chinhsachbaomat" asp-action="Index"><i class="fas fa-shield-alt"></i>Chính sách bảo mật</a></li>
+                                <li><a asp-area="KhachHang" asp-controller="Chinhsachvanchuyen" asp-action="Index"><i class="fas fa-truck"></i>Vận chuyển</a></li>
+                                <li><a asp-area="KhachHang" asp-controller="Chinhsachthanhtoan" asp-action="Index"><i class="fas fa-credit-card"></i>Thanh toán</a></li>
+                                <li><a asp-area="KhachHang" asp-controller="Uudaithanhvien" asp-action="Index"><i class="fas fa-gift"></i>Ưu đãi thành viên</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-section">
+                            <h5 class="footer-heading">
+                                <i class="fas fa-map-marker-alt me-2"></i>Thông Tin Liên Hệ
+                            </h5>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <strong>Hotline:</strong>
+                                        <p><a href="tel:0388442230">038 844 2230</a></p>
+                                        <small>Thứ 2 - Chủ nhật: 8:00 - 22:00</small>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <strong>Email:</strong>
+                                        <p><a href="mailto:mr.nghiaenglish2230@littlefish.com">mr.nghiaenglish2230@littlefish.com</a></p>
+                                    </div>
+                                </div>
+
+                                <!-- Social Media -->
+                                <div class="social-media" style="margin-top: 20px;">
+                                    <h6 class="social-title">Kết nối với chúng tôi</h6>
+                                    <div class="social-links">
+                                        <a href="#" class="social-link facebook" title="Facebook">
+                                            <i class="fab fa-facebook-f"></i>
+                                            <span class="social-tooltip">Facebook</span>
+                                        </a>
+                                        <a href="#" class="social-link instagram" title="Instagram">
+                                            <i class="fab fa-instagram"></i>
+                                            <span class="social-tooltip">Instagram</span>
+                                        </a>
+                                        <a href="#" class="social-link youtube" title="YouTube">
+                                            <i class="fab fa-youtube"></i>
+                                            <span class="social-tooltip">YouTube</span>
+                                        </a>
+                                        <a href="#" class="social-link tiktok" title="TikTok">
+                                            <i class="fab fa-tiktok"></i>
+                                            <span class="social-tooltip">TikTok</span>
+                                        </a>
+                                        <a href="#" class="social-link zalo" title="Zalo">
+                                            <i class="fas fa-comments"></i>
+                                            <span class="social-tooltip">Zalo</span>
+                                        </a>
+                                    </div>
+
+                                    <div class="trust-badges" style="padding-top: 10px; justify-content: flex-start;">
+                                        <span class="trust-badge">
+                                            <i class="fas fa-shield-check"></i>
+                                            Bảo mật SSL
+                                        </span>
+                                        <span class="trust-badge">
+                                            <i class="fas fa-award"></i>
+                                            Chất lượng đảm bảo
+                                        </span>
+                                        <span class="trust-badge">
+                                            <i class="fas fa-leaf"></i>
+                                            100% Thiên nhiên
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-bottom-content" style="justify-content: space-around;">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="copyright">
+                                <p class="mb-0">
+                                    <i class="fas fa-copyright me-1"></i>
+                                    <strong>2025 LittleFish Beauty.</strong>
+                                    Tất cả quyền được bảo lưu.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="footer-floating-elements">
+            <div class="floating-leaf leaf-1">🌿</div>
+            <div class="floating-leaf leaf-2">🍃</div>
+            <div class="floating-leaf leaf-3">🌱</div>
+            <div class="floating-flower flower-1">🌸</div>
+            <div class="floating-flower flower-2">🌺</div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Manual modal control functions
+        let logoutModalInstance = null;
+        
+        function showLogoutModal() {
+            console.log('showLogoutModal called');
+            const modalEl = document.getElementById('logoutModal');
+            if (!logoutModalInstance) {
+                logoutModalInstance = new bootstrap.Modal(modalEl, {
+                    backdrop: true,
+                    keyboard: true
+                });
+            }
+            logoutModalInstance.show();
+            console.log('Modal show() called');
+        }
+        
+        function closeLogoutModal() {
+            if (logoutModalInstance) {
+                logoutModalInstance.hide();
+            }
+        }
+        
+        // Test Bootstrap and Modal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== LOGOUT MODAL DEBUG ===');
+            console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+            
+            const modalEl = document.getElementById('logoutModal');
+            console.log('Modal element found:', modalEl !== null);
+            
+            if (modalEl) {
+                console.log('Modal HTML:', modalEl.outerHTML.substring(0, 100));
+                
+                // Test modal can be created
+                try {
+                    const testModal = new bootstrap.Modal(modalEl);
+                    console.log('Modal object created successfully');
+                } catch(e) {
+                    console.error('Error creating modal:', e);
+                }
+                
+                // Add event listeners to debug modal show/hide
+                modalEl.addEventListener('show.bs.modal', function (e) {
+                    console.log('Modal SHOW event triggered');
+                });
+                
+                modalEl.addEventListener('shown.bs.modal', function (e) {
+                    console.log('Modal SHOWN (fully visible)');
+                    console.log('Modal classes:', modalEl.className);
+                    console.log('Modal display:', window.getComputedStyle(modalEl).display);
+                });
+                
+                modalEl.addEventListener('hide.bs.modal', function (e) {
+                    console.log('Modal HIDE event triggered');
+                });
+            }
+            
+            // Check trigger button
+            const triggerBtn = document.querySelector('[data-bs-target="#logoutModal"]');
+            console.log('Trigger button found:', triggerBtn !== null);
+            console.log('=== END DEBUG ===');
+        });
+    </script>
+
+    <!-- Header JavaScript -->
+    <script>
+        // Global variable to track if categories are loaded
+        let categoriesLoaded = false;
+
+        // Load categories on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // CRITICAL: Chặn backdrop TRƯỚC KHI load categories
+            preventBackdropCreation();
+
+            // Load categories immediately for better UX
+            loadCategories();
+
+            // Initialize mobile-friendly category dropdown
+            initMobileCategoryDropdown();
+
+            // Xóa backdrop của Bootstrap nếu xuất hiện trên mobile
+            removeBootstrapBackdrop();
+
+            // ...existing code...
+        });
+
+        // Function để xóa backdrop của Bootstrap khi dropdown mở
+        // Prevent backdrop creation - chặn Bootstrap tạo backdrop CHỈ cho dropdown
+        function preventBackdropCreation() {
+            // Override Bootstrap Dropdown._addBackdrop method
+            if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                const originalAddBackdrop = bootstrap.Dropdown.prototype._addBackdrop;
+                bootstrap.Dropdown.prototype._addBackdrop = function() {
+                    // Do nothing - không tạo backdrop cho dropdown
+                };
+            }
+
+            // Chặn CHỈ dropdown và offcanvas backdrop, KHÔNG chặn modal backdrop
+            const backdropBlocker = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1 && node.className && typeof node.className === 'string') {
+                            // CHỈ chặn dropdown và offcanvas backdrop
+                            if (node.className.includes('dropdown-backdrop') || 
+                                node.className.includes('offcanvas-backdrop')) {
+                                node.remove();
+                            }
+                        }
+                    });
+                });
+            });
+
+            backdropBlocker.observe(document.body, {
+                childList: true,
+                subtree: false
+            });
+        }
+
+        function removeBootstrapBackdrop() {
+            // CHỈ xóa dropdown-backdrop và offcanvas-backdrop, GIỮ LẠI modal-backdrop
+            function removeDropdownBackdrops() {
+                document.querySelectorAll('.dropdown-backdrop, .offcanvas-backdrop').forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+            }
+
+            // Xóa dropdown backdrop ban đầu
+            removeDropdownBackdrops();
+
+            // Theo dõi sự xuất hiện của backdrop mới
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        // Kiểm tra nếu node là backdrop của Bootstrap
+                        if (node.nodeType === 1 && node.classList) {
+                            // CHỈ xóa dropdown và offcanvas backdrop, KHÔNG xóa modal backdrop
+                            if (node.classList.contains('dropdown-backdrop') ||
+                                node.classList.contains('offcanvas-backdrop')) {
+                                // Xóa backdrop ngay lập tức
+                                node.remove();
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Theo dõi body để phát hiện backdrop được thêm vào
+            observer.observe(document.body, {
+                childList: true,
+                subtree: false
+            });
+
+            // Thêm event listener để xóa backdrop khi dropdown mở
+            document.addEventListener('shown.bs.dropdown', function() {
+                removeDropdownBackdrops();
+            });
+
+            // Xóa backdrop mỗi 100ms (fallback)
+            setInterval(removeDropdownBackdrops, 100);
+        }
+
+        // Initialize mobile category dropdown - chỉ xử lý children dropdown
+        function initMobileCategoryDropdown() {
+            const isSmallScreen = window.innerWidth <= 991;
+            
+            if (isSmallScreen) {
+                // Xử lý children dropdown trên mobile sau khi categories load xong
+                const categoryItems = document.querySelectorAll('.category-item.has-children');
+                
+                categoryItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        const childrenDropdown = this.parentElement.querySelector('.category-children-dropdown');
+                        
+                        if (childrenDropdown) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Đóng tất cả children dropdowns khác
+                            document.querySelectorAll('.category-children-dropdown.show').forEach(dropdown => {
+                                if (dropdown !== childrenDropdown) {
+                                    dropdown.classList.remove('show');
+                                    dropdown.previousElementSibling?.classList.remove('active');
+                                }
+                            });
+                            
+                            // Toggle children dropdown hiện tại
+                            this.classList.toggle('active');
+                            childrenDropdown.classList.toggle('show');
+                            
+                            // Thêm backdrop nếu children dropdown được mở
+                            if (childrenDropdown.classList.contains('show')) {
+                                showChildrenBackdrop(childrenDropdown);
+                            } else {
+                                hideChildrenBackdrop();
+                            }
+                        }
+                    });
+                });
+
+                // Xử lý click vào nút đóng (::before element) của children dropdown
+                document.addEventListener('click', function(e) {
+                    const childrenDropdowns = document.querySelectorAll('.category-children-dropdown');
+                    
+                    childrenDropdowns.forEach(dropdown => {
+                        const rect = dropdown.getBoundingClientRect();
+                        const closeButtonArea = {
+                            top: rect.top + 10,
+                            bottom: rect.top + 45,
+                            left: rect.right - 60,
+                            right: rect.right - 15
+                        };
+                        
+                        // Kiểm tra click vào vùng close button
+                        if (e.clientX >= closeButtonArea.left && 
+                            e.clientX <= closeButtonArea.right &&
+                            e.clientY >= closeButtonArea.top && 
+                            e.clientY <= closeButtonArea.bottom &&
+                            dropdown.classList.contains('show')) {
+                            
+                            dropdown.classList.remove('show');
+                            dropdown.previousElementSibling?.classList.remove('active');
+                            hideChildrenBackdrop();
+                        }
+                    });
+                });
+            }
+        }
+
+        // Hiển thị backdrop cho children dropdown
+        function showChildrenBackdrop(childrenDropdown) {
+            // Tạo backdrop nếu chưa có
+            let backdrop = document.getElementById('children-dropdown-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.id = 'children-dropdown-backdrop';
+                backdrop.className = 'children-dropdown-backdrop';
+                document.body.appendChild(backdrop);
+                
+                // Click backdrop để đóng
+                backdrop.addEventListener('click', function() {
+                    hideChildrenBackdrop();
+                    document.querySelectorAll('.category-children-dropdown.show').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                    document.querySelectorAll('.category-item.active').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                });
+            }
+            
+            // Hiển thị backdrop
+            setTimeout(() => {
+                backdrop.classList.add('show');
+            }, 10);
+        }
+
+        // Ẩn backdrop
+        function hideChildrenBackdrop() {
+            const backdrop = document.getElementById('children-dropdown-backdrop');
+            if (backdrop) {
+                backdrop.classList.remove('show');
+                setTimeout(() => {
+                    backdrop.remove();
+                }, 300);
+            }
+        }
+
+        // Load categories function
+        function loadCategories() {
+            if (categoriesLoaded) return;
+
+            fetch('@Url.Action("GetCategories", "TrangChu", new { area = "KhachHang" })')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('categoryDropdownContainer').innerHTML = html;
+                    categoriesLoaded = true;
+                    
+                    // Initialize Bootstrap dropdown sau khi HTML đã được inject
+                    const dropdownElement = document.querySelector('#categoryDropdown');
+                    if (dropdownElement) {
+                        new bootstrap.Dropdown(dropdownElement);
+                    }
+                    
+                    // Initialize mobile behavior cho children dropdown
+                    initMobileCategoryDropdown();
+                })
+                .catch(error => {
+                    console.error('Error loading categories:', error);
+                    // Show fallback UI
+                    document.getElementById('categoryDropdownContainer').innerHTML = `
+                        <a class="nav-link" href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })">
+                            <i class="fas fa-th-large me-1"></i>Danh Mục
+                        </a>
+                    `;
+                });
+        }
+
+        // Legacy function for backwards compatibility
+        function loadCategoryDropdown() {
+            loadCategories();
+        }
+
+        // Search functionality with suggestions
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.querySelector('.search-form');
+            const searchInput = document.querySelector('.search-input');
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            let searchTimeout;
+            let selectedIndex = -1;
+            let currentSuggestions = [];
+            
+            if (searchForm && searchInput && suggestionsContainer) {
+                // Form submit handler
+                searchForm.addEventListener('submit', function(e) {
+                    const query = searchInput.value.trim();
+                    if (!query) {
+                        e.preventDefault();
+                        searchInput.focus();
+                        return false;
+                    }
+                    hideSuggestions();
+                });
+
+                // Search input handler for suggestions
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    selectedIndex = -1;
+                    
+                    clearTimeout(searchTimeout);
+                    
+                    if (query.length >= 1) { // Show suggestions from first character
+                        showLoadingState();
+                        searchTimeout = setTimeout(() => {
+                            fetchSearchSuggestions(query);
+                        }, 200); // Reduced delay for better UX
+                    } else {
+                        hideSuggestions();
+                    }
+                });
+
+                // Handle keyboard navigation
+                searchInput.addEventListener('keydown', function(e) {
+                    const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+                    
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+                        updateSelectedSuggestion(suggestions);
+                        scrollToSelected();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        selectedIndex = Math.max(selectedIndex - 1, -1);
+                        updateSelectedSuggestion(suggestions);
+                        scrollToSelected();
+                    } else if (e.key === 'Enter') {
+                        if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                            e.preventDefault();
+                            selectSuggestion(suggestions[selectedIndex]);
+                        }
+                    } else if (e.key === 'Escape') {
+                        hideSuggestions();
+                        selectedIndex = -1;
+                        searchInput.blur();
+                    }
+                });
+
+                // Hide suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.search-container')) {
+                        hideSuggestions();
+                        selectedIndex = -1;
+                    }
+                });
+
+                // Show suggestions when focusing on input (if has value)
+                searchInput.addEventListener('focus', function() {
+                    const query = this.value.trim();
+                    if (query.length >= 1 && currentSuggestions.length > 0) {
+                        showSuggestions();
+                    }
+                });
+            }
+
+            // Show loading state
+            function showLoadingState() {
+                suggestionsContainer.innerHTML = `
+                    <div class="suggestion-loading">
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+                        <span>Đang tìm kiếm...</span>
+                    </div>
+                `;
+                suggestionsContainer.style.display = 'block';
+            }
+
+            // Fetch search suggestions with improved error handling
+            function fetchSearchSuggestions(query) {
+                const encodedQuery = encodeURIComponent(query);
+                const url = `@Url.Action("SearchSuggestions", "SanPham", new { area = "KhachHang" })?term=${encodedQuery}`;
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentSuggestions = data || [];
+                    displaySuggestions(currentSuggestions, query);
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    showNoResults();
+                });
+            }
+
+            // Display search suggestions with highlighting
+            function displaySuggestions(suggestions, query) {
+                if (!suggestions || suggestions.length === 0) {
+                    showNoResults();
+                    return;
+                }
+
+                let html = '';
+                suggestions.forEach((item, index) => {
+                    const imageUrl = item.image || '/images/no-image.png';
+                    const price = item.price ? new Intl.NumberFormat('vi-VN', { 
+                        style: 'currency', 
+                        currency: 'VND' 
+                    }).format(item.price) : 'Liên hệ';
+                    
+                    // Highlight matching text
+                    const highlightedName = highlightText(item.name || '', query);
+                    
+                    html += `
+                        <div class="suggestion-item" data-url="${item.url || '#'}" data-name="${item.name || ''}" data-index="${index}">
+                            <div class="suggestion-image">
+                                <img src="${imageUrl}" alt="${item.name || 'Sản phẩm'}" 
+                                     onerror="this.src='/images/no-image.png'">
+                            </div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-name">${highlightedName}</div>
+                                <div class="suggestion-meta">
+                                    <span class="suggestion-category">${item.category || 'Chưa phân loại'}</span>
+                                    <span class="suggestion-price">${price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                suggestionsContainer.innerHTML = html;
+                suggestionsContainer.style.display = 'block';
+                selectedIndex = -1;
+
+                // Add click handlers
+                suggestionsContainer.querySelectorAll('.suggestion-item').forEach((item, index) => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        selectSuggestion(this);
+                    });
+
+                    item.addEventListener('mouseenter', function() {
+                        selectedIndex = index;
+                        updateSelectedSuggestion(suggestionsContainer.querySelectorAll('.suggestion-item'));
+                    });
+                });
+            }
+
+            // Highlight matching text
+            function highlightText(text, query) {
+                if (!text || !query) return text;
+                
+                try {
+                    // Remove Vietnamese diacritics for comparison
+                    const normalizedText = removeDiacritics(text.toLowerCase());
+                    const normalizedQuery = removeDiacritics(query.toLowerCase());
+                    
+                    if (normalizedText.includes(normalizedQuery)) {
+                        // Find the position in the original text
+                        let start = 0;
+                        let result = '';
+                        let remaining = text;
+                        
+                        while (remaining) {
+                            const normalizedRemaining = removeDiacritics(remaining.toLowerCase());
+                            const index = normalizedRemaining.indexOf(normalizedQuery);
+                            
+                            if (index === -1) {
+                                result += remaining;
+                                break;
+                            }
+                            
+                            // Add text before match
+                            result += remaining.substring(0, index);
+                            
+                            // Add highlighted match
+                            const matchedText = remaining.substring(index, index + query.length);
+                            result += `<mark class="search-highlight">${matchedText}</mark>`;
+                            
+                            // Continue with remaining text
+                            remaining = remaining.substring(index + query.length);
+                        }
+                        
+                        return result;
+                    }
+                } catch (e) {
+                    console.error('Error highlighting text:', e);
+                }
+                
+                return text;
+            }
+
+            // Simple diacritics removal for client-side
+            function removeDiacritics(str) {
+                return str.normalize('NFD')
+                         .replace(/[\u0300-\u036f]/g, '')
+                         .replace(/đ/g, 'd')
+                         .replace(/Đ/g, 'D');
+            }
+
+            // Show no results message
+            function showNoResults() {
+                suggestionsContainer.innerHTML = `
+                    <div class="no-suggestions">
+                        <i class="fas fa-search me-2 text-muted"></i>
+                        <span>Chưa tìm thấy sản phẩm nào</span>
+                    </div>
+                `;
+                suggestionsContainer.style.display = 'block';
+                currentSuggestions = [];
+            }
+
+            // Update selected suggestion visual state
+            function updateSelectedSuggestion(suggestions) {
+                suggestions.forEach((item, index) => {
+                    if (index === selectedIndex) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            }
+
+            // Scroll to selected suggestion
+            function scrollToSelected() {
+                const selectedItem = suggestionsContainer.querySelector('.suggestion-item.selected');
+                if (selectedItem) {
+                    selectedItem.scrollIntoView({
+                        block: 'nearest',
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            // Select a suggestion
+            function selectSuggestion(suggestionElement) {
+                const productName = suggestionElement.dataset.name;
+                const productUrl = suggestionElement.dataset.url;
+                
+                if (productUrl && productUrl !== '#') {
+                    // Navigate to product detail page
+                    window.location.href = productUrl;
+                } else {
+                    // Fallback to search
+                    searchInput.value = productName;
+                    hideSuggestions();
+                    searchForm.submit();
+                }
+            }
+
+            // Show suggestions
+            function showSuggestions() {
+                if (currentSuggestions.length > 0) {
+                    suggestionsContainer.style.display = 'block';
+                }
+            }
+
+            // Hide suggestions
+            function hideSuggestions() {
+                suggestionsContainer.style.display = 'none';
+                selectedIndex = -1;
+            }
+
+            // Load cart count
+            loadCartCount();
+            
+            // Initialize Bootstrap dropdowns
+            const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+            dropdownElements.forEach(function(element) {
+                new bootstrap.Dropdown(element);
+            });
+        });
+
+        // Load cart count from session via API
+        function loadCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) {
+                // Gọi API để lấy số lượng sản phẩm trong giỏ hàng từ session
+                fetch('@Url.Action("GetCartCount", "Cart", new { area = "KhachHang" })')
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = data.cartCount || 0;
+                        cartCount.textContent = count;
+                        localStorage.setItem('cartCount', count);
+                        
+                        // Hide badge if count is 0
+                        if (count === 0) {
+                            cartCount.style.display = 'none';
+                        } else {
+                            cartCount.style.display = 'inline';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading cart count:', error);
+                        // Fallback to localStorage
+                        const count = localStorage.getItem('cartCount') || '0';
+                        cartCount.textContent = count;
+                        
+                        if (count === '0') {
+                            cartCount.style.display = 'none';
+                        } else {
+                            cartCount.style.display = 'inline';
+                        }
+                    });
+            }
+        }
+
+        // Update cart count
+        function updateCartCount(count) {
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) {
+                cartCount.textContent = count;
+                localStorage.setItem('cartCount', count);
+                
+                if (count === 0 || count === '0') {
+                    cartCount.style.display = 'none';
+                } else {
+                    cartCount.style.display = 'inline';
+                }
+            }
+        }
+
+        // Mobile search toggle
+        function toggleMobileSearch() {
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer) {
+                searchContainer.style.display = searchContainer.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+    </script>
+    
+
+    <script src="~/js/Login/quanlitaikhoan.js"></script>
+    <script src="~/js/KhachHang/quanlitaikhoan.js"></script>
+    <script src="~/js/KhachHang/giohang.js"></script>
+    <script src="~/js/KhachHang/trangchu.js"></script>
+    <script src="~/js/KhachHang/about.js"></script>
+    <script src="~/js/KhachHang/footer.js"></script>
+
+    @await Component.InvokeAsync("TawkToWidget")
+
+    <!-- Facebook Messenger Chat Button (m.me) - Chỉ hiển thị khi đăng nhập -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <style>
+            .fb-messenger-button {
+                position: fixed;
+                bottom: 20px;
+                right: 100px;
+                z-index: 999;
+                width: 60px;
+                height: 60px;
+                background: #0084ff;
+                border-radius: 50%;
+                box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                animation: pulse-fb 2s infinite;
+            }
+            .fb-messenger-button:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(0, 132, 255, 0.6);
+            }
+            .fb-messenger-button svg {
+                width: 32px;
+                height: 32px;
+                fill: white;
+            }
+            @@keyframes pulse-fb {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            .fb-messenger-tooltip {
+                position: fixed;
+                bottom: 25px;
+                right: 170px;
+                background: white;
+                padding: 10px 15px;
+                border-radius: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                font-size: 14px;
+                color: #333;
+                white-space: nowrap;
+                z-index: 998;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+            .fb-messenger-button:hover + .fb-messenger-tooltip {
+                opacity: 1;
+            }
+        </style>
+        
+        <a href="https://m.me/959229970595960" target="_blank" class="fb-messenger-button" title="Chat với chúng tôi trên Messenger">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12,2C6.36,2,2,6.13,2,11.7c0,2.91,1.19,5.44,3.14,7.17v3.62l3.45-1.89c0.92,0.25,1.89,0.39,2.91,0.39c5.64,0,10.5-4.13,10.5-9.7C22,6.13,17.64,2,12,2z M13.03,14.41l-2.58-2.75l-5.04,2.75l5.54-5.88l2.64,2.75l4.98-2.75L13.03,14.41z"/>
+            </svg>
+        </a>
+        <div class="fb-messenger-tooltip">💬 Facebook Messenger</div>
+    }
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="~/js/KhachHang/thanhtoan.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

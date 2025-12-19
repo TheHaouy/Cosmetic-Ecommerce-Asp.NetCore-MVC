@@ -1,0 +1,559 @@
+@model Final_VS1.Data.DonHang
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.IdDonHang;
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<!-- Animated Background Effects -->
+<div class="animated-background">
+    <!-- Aurora Effect -->
+    <div class="aurora"></div>
+    <!-- Organic Nature Patterns -->
+    <div class="organic-pattern"></div>
+    <div class="organic-pattern"></div>
+    <div class="organic-pattern"></div>
+    <!-- Floating Leaves -->
+    <div class="leaf maple" style="left: 5%; animation-delay: 0s;">🍁</div>
+    <div class="leaf oak" style="left: 15%; animation-delay: -3s;">🍃</div>
+    <div class="leaf birch" style="left: 25%; animation-delay: -6s;">🌿</div>
+    <div class="leaf maple" style="left: 35%; animation-delay: -9s;">🍂</div>
+    <div class="leaf small" style="left: 45%; animation-delay: -12s;">🌱</div>
+    <div class="leaf oak" style="left: 55%; animation-delay: -2s;">🍃</div>
+    <div class="leaf birch" style="left: 65%; animation-delay: -5s;">🌿</div>
+    <div class="leaf maple" style="left: 75%; animation-delay: -8s;">🍁</div>
+    <div class="leaf small" style="left: 85%; animation-delay: -11s;">🌱</div>
+    <div class="leaf oak" style="left: 95%; animation-delay: -14s;">🍃</div>
+    <!-- Floating Flower Petals -->
+    <div class="flower-petal sakura" style="left: 8%; animation-delay: -1s;">🌸</div>
+    <div class="flower-petal rose" style="left: 18%; animation-delay: -4s;">🌹</div>
+    <div class="flower-petal daisy" style="left: 28%; animation-delay: -7s;">🌼</div>
+    <div class="flower-petal lavender" style="left: 38%; animation-delay: -10s;">💜</div>
+    <div class="flower-petal sakura" style="left: 48%; animation-delay: -13s;">🌸</div>
+    <div class="flower-petal rose" style="left: 58%; animation-delay: -2.5s;">🌺</div>
+    <div class="flower-petal daisy" style="left: 68%; animation-delay: -5.5s;">🌼</div>
+    <div class="flower-petal lavender" style="left: 78%; animation-delay: -8.5s;">🌻</div>
+    <div class="flower-petal sakura" style="left: 88%; animation-delay: -11.5s;">🌸</div>
+    <!-- Nature Elements -->
+    <div class="nature-element branch" style="left: 12%; animation-delay: -3s;">🌳</div>
+    <div class="nature-element grass" style="left: 32%; animation-delay: -8s;">🌾</div>
+    <div class="nature-element seed" style="left: 52%; animation-delay: -13s;">🌰</div>
+    <div class="nature-element branch" style="left: 72%; animation-delay: -5s;">🌲</div>
+    <div class="nature-element grass" style="left: 92%; animation-delay: -10s;">🌾</div>
+    <!-- Floating Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <!-- Ripple Effects -->
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <!-- Floating Nature & Cosmetic Icons -->
+    <div class="floating-icons"><i class="bi bi-droplet-fill"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower1"></i></div>
+    <div class="floating-icons"><i class="bi bi-tree"></i></div>
+    <div class="floating-icons"><i class="bi bi-sun"></i></div>
+    <div class="floating-icons"><i class="bi bi-cloud"></i></div>
+    <div class="floating-icons"><i class="bi bi-droplet"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower2"></i></div>
+    <div class="floating-icons"><i class="bi bi-brightness-high"></i></div>
+    <div class="floating-icons"><i class="bi bi-egg"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower3"></i></div>
+    <div class="floating-icons"><i class="bi bi-water"></i></div>
+    <div class="floating-icons"><i class="bi bi-tree-fill"></i></div>
+    <div class="floating-icons">💄</div>
+    <div class="floating-icons">💅</div>
+    <div class="floating-icons">✨</div>
+    <div class="floating-icons">🌸</div>
+    <div class="floating-icons">🌺</div>
+    <div class="floating-icons">🦋</div>
+    <!-- Geometric Shapes -->
+    <div class="geo-shape circle" style="top: 15%; left: 5%; animation-delay: 0s;"></div>
+    <div class="geo-shape triangle" style="top: 30%; left: 85%; animation-delay: -1s;"></div>
+    <div class="geo-shape square" style="top: 50%; left: 10%; animation-delay: -2s;"></div>
+    <div class="geo-shape diamond" style="top: 70%; left: 75%; animation-delay: -3s;"></div>
+    <div class="geo-shape circle" style="top: 80%; left: 30%; animation-delay: -4s;"></div>
+    <div class="geo-shape triangle" style="top: 25%; left: 60%; animation-delay: -5s;"></div>
+    <div class="geo-shape square" style="top: 65%; left: 90%; animation-delay: -6s;"></div>
+    <div class="geo-shape diamond" style="top: 45%; left: 40%; animation-delay: -7s;"></div>
+    <!-- Sparkles -->
+    <div class="sparkle" style="top: 20%; left: 25%; animation-delay: 0s;"></div>
+    <div class="sparkle" style="top: 40%; left: 70%; animation-delay: -0.5s;"></div>
+    <div class="sparkle" style="top: 60%; left: 15%; animation-delay: -1s;"></div>
+    <div class="sparkle" style="top: 75%; left: 80%; animation-delay: -1.5s;"></div>
+    <div class="sparkle" style="top: 35%; left: 50%; animation-delay: -2s;"></div>
+    <div class="sparkle" style="top: 85%; left: 60%; animation-delay: -2.5s;"></div>
+    <div class="sparkle" style="top: 10%; left: 90%; animation-delay: -3s;"></div>
+    <div class="sparkle" style="top: 55%; left: 35%; animation-delay: -3.5s;"></div>
+    <div class="sparkle" style="top: 90%; left: 20%; animation-delay: -4s;"></div>
+    <div class="sparkle" style="top: 25%; left: 85%; animation-delay: -4.5s;"></div>
+    <!-- Floating Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+    <!-- Wave Animation -->
+    <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+</div>
+
+<!-- Theme Toggle Button -->
+<button class="btn btn-primary btn-theme-toggle" id="themeToggle" title="Chuyển đổi chế độ sáng/tối"
+        style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; border-radius: 50% !important; width: 60px !important; height: 60px !important; padding: 0 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important; margin: 0 !important; transform: none !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+    <i class="bi bi-sun-fill text-white" id="themeIcon" style="font-size: 1.5rem;"></i>
+</button>
+
+<!-- Notification Container -->
+<div id="notificationContainer"></div>
+
+<!-- Main Container -->
+<div class="main-container">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-3">
+            @await Html.PartialAsync("_CustomerSidebar")
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-9">
+            <div class="p-4">
+                <!-- Header với nút quay lại -->
+                <div class="mb-3">
+                    <a href="@Url.Action("Index")" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+
+                <!-- Thông tin chi tiết đơn hàng - Tất cả trong một card -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-receipt me-2"></i>Chi tiết đơn hàng #@Model.IdDonHang
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Phần 1: Thông tin cơ bản -->
+                        <div class="row mb-3 g-3 align-items-start">
+                            <div class="col-6 col-lg-3">
+                                <small class="text-muted">Mã đơn hàng</small>
+                                <div class="fw-bold">#@Model.IdDonHang</div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <small class="text-muted">Ngày đặt</small>
+                                <div>@Model.NgayDat?.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="col-6 col-lg-3 d-flex flex-column align-items-start gap-1">
+                                <small class="text-muted">Trạng thái</small>
+                                <div class="mt-1">
+                                    @{
+                                        var status = Model.TrangThai;
+                                        var statusText = status switch
+                                        {
+                                            "Chờ xác nhận" => "Chờ xác nhận",
+                                            "Đang xử lý" => "Đang giao",
+                                            "Đã xác nhận" => "Đã xác nhận",
+                                            "Đang giao" => "Đang giao",
+                                            "Hoàn thành" => "Hoàn thành",
+                                            "Đã hủy" => "Đã hủy",
+                                            _ => status ?? "Không xác định"
+                                        };
+                                    }
+                                    <span class="fw-semibold" style="font-size:0.95rem;">@statusText</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <small class="text-muted">Phương thức thanh toán</small>
+                                <div>@(string.IsNullOrWhiteSpace(Model.PhuongThucThanhToan) ? "Chưa cập nhật" : Model.PhuongThucThanhToan)</div>
+                            </div>
+                        </div>
+
+                        <!-- Phần 3: Danh sách sản phẩm -->
+                        <hr class="my-3">
+                        <small class="text-muted fw-bold">SẢN PHẨM ĐÃ ĐẶT (@(Model.ChiTietDonHangs?.Count ?? 0))</small>
+                        @if (Model.ChiTietDonHangs?.Any() == true)
+                        {
+                            <div class="table-responsive mb-4">
+                                <table class="table table-borderless">
+                                    <thead>
+                                        <tr class="border-bottom">
+                                            <th>Sản phẩm</th>
+                                            <th class="text-center">Số lượng</th>
+                                            <th class="text-end">Đơn giá</th>
+                                            <th class="text-end">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.ChiTietDonHangs)
+                                        {
+                                            var productImages = ViewBag.ProductImages as Dictionary<int, string>;
+                                            var idSanPham = item.IdBienTheNavigation?.IdSanPham ?? 0;
+                                            var anhChinh = "/images/noimage.jpg";
+                                            var productSlug = item.IdBienTheNavigation?.IdSanPhamNavigation?.Slug;
+                                            var productUrl = !string.IsNullOrEmpty(productSlug)
+                                                ? Url.Action("Details", "SanPham", new { area = "KhachHang", slug = productSlug })
+                                                : "#";
+                                            
+                                            if (productImages != null && productImages.ContainsKey(idSanPham))
+                                            {
+                                                anhChinh = productImages[idSanPham];
+                                            }
+                                            
+                                            var tenSanPham = item.IdBienTheNavigation?.IdSanPhamNavigation?.TenSanPham ?? "Sản phẩm không xác định";
+                                            var bienTheInfo = "";
+                                            if (item.IdBienTheNavigation?.IdGiaTris?.Any() == true)
+                                            {
+                                                var giaTris = item.IdBienTheNavigation.IdGiaTris
+                                                    .Where(gt => gt.IdThuocTinhNavigation != null)
+                                                    .Select(gt => $"{gt.IdThuocTinhNavigation?.TenThuocTinh}: {gt.GiaTri}")
+                                                    .ToList();
+                                                if (giaTris.Any())
+                                                {
+                                                    bienTheInfo = string.Join(", ", giaTris);
+                                                }
+                                            }
+                                            
+                                            <tr>
+                                                <td>
+                                                    <a href="@productUrl" class="d-flex align-items-center text-decoration-none text-dark" style="gap:8px;">
+                                                        <img src="@(string.IsNullOrEmpty(anhChinh) ? "/images/noimage.jpg" : (anhChinh.StartsWith("http://") || anhChinh.StartsWith("https://") ? anhChinh : (anhChinh.StartsWith("/") ? anhChinh : "/" + anhChinh)))" 
+                                                             alt="@tenSanPham" 
+                                                             class="me-1" 
+                                                             style="width: 46px; height: 46px; object-fit: cover; border-radius: 6px;"
+                                                             onerror="this.onerror=null; this.src='/images/noimage.jpg';" />
+                                                        <div>
+                                                            <div class="fw-bold" style="font-size: 0.95rem;">@tenSanPham</div>
+                                                            @if (!string.IsNullOrEmpty(bienTheInfo))
+                                                            {
+                                                                <small class="text-muted">@bienTheInfo</small>
+                                                            }
+                                                        </div>
+                                                    </a>
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <span class="fw-bold">@item.SoLuong</span>
+                                                </td>
+                                                <td class="text-end align-middle" style="font-size: 0.9rem;">
+                                                    @item.GiaLucDat?.ToString("N0") ₫
+                                                </td>
+                                                <td class="text-end align-middle">
+                                                    <span class="fw-bold text-success" style="font-size: 0.9rem;">
+                                                        @((item.SoLuong * item.GiaLucDat)?.ToString("N0")) ₫
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-top">
+                                            <td colspan="3" class="text-end fw-bold py-2">Tổng cộng:</td>
+                                            <td class="text-end py-2">
+                                                <span class="fw-bold text-success">@Model.TongTien?.ToString("N0") ₫</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="bi bi-bag-x display-4 text-muted"></i>
+                                <p class="text-muted mt-2">Không có sản phẩm nào trong đơn hàng này</p>
+                            </div>
+                        }
+
+                        <!-- Phần 4: Timeline trạng thái đơn hàng -->
+                        @if (Model.TimelineDonHangs?.Any() == true)
+                        {
+                            <hr class="my-3">
+                            <small class="text-muted fw-bold">LỊCH SỬ ĐƠN HÀNG</small>
+                            <div class="timeline">
+                                @foreach (var timeline in Model.TimelineDonHangs.OrderByDescending(t => t.NgayCapNhat))
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker">
+                                            @switch (timeline.TrangThaiMoi)
+                                            {
+                                                case "Chờ xác nhận":
+                                                    <i class="bi bi-clock text-warning"></i>
+                                                    break;
+                                                case "Đang giao":
+                                                case "Đang xử lý":
+                                                case "Đã xác nhận":
+                                                    <i class="bi bi-truck text-info"></i>
+                                                    break;
+                                                case "Hoàn thành":
+                                                    <i class="bi bi-check-circle text-success"></i>
+                                                    break;
+                                                case "Đã hủy":
+                                                    <i class="bi bi-x-circle text-danger"></i>
+                                                    break;
+                                                default:
+                                                    <i class="bi bi-circle text-secondary"></i>
+                                                    break;
+                                            }
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="fw-bold" style="font-size: 0.9rem;">@timeline.TrangThaiMoi</div>
+                                            <small class="text-muted">@timeline.NgayCapNhat?.ToString("dd/MM/yyyy HH:mm")</small>
+                                            @if (!string.IsNullOrEmpty(timeline.GhiChu))
+                                            {
+                                                <div class="mt-1 text-muted" style="font-size: 0.85rem;">@timeline.GhiChu</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Hành động -->
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    @if (Model.TrangThai == "Chờ xác nhận")
+                    {
+                        <button type="button" class="btn btn-danger" style="min-width: 160px; height: 48px; white-space: nowrap;" onclick="cancelOrder(@Model.IdDonHang)">
+                            <i class="bi bi-x-circle me-2"></i>Hủy đơn hàng
+                        </button>
+                    }
+                    <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="btn btn-primary" style="min-width: 160px; height: 48px; white-space: nowrap;">
+                        <i class="bi bi-shop me-2"></i>Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline-item:first-child .timeline-marker {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+
+        .timeline-item:first-child .timeline-content {
+            border-left-color: #007bff;
+        }
+
+        .product-image {
+            transition: transform 0.2s;
+        }
+
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Compact styles */
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+        }
+
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+            margin-top: 0.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #dee2e6;
+        }
+
+        .timeline-item:first-child .timeline-marker {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+
+        .timeline-item:first-child .timeline-content {
+            border-left-color: #007bff;
+        }
+
+        /* Table compact */
+        .table td, .table th {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive compact */
+        @@media (max-width: 768px) {
+            .col-3, .col-4, .col-8 {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Compact timeline */
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 3px solid #dee2e6;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Hàm hủy đơn hàng
+        function cancelOrder(orderId) {
+            if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                return;
+            }
+
+            fetch('@Url.Action("CancelOrder")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: orderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Hủy đơn hàng thành công!', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message || 'Có lỗi xảy ra khi hủy đơn hàng', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Có lỗi xảy ra khi hủy đơn hàng', 'error');
+            });
+        }
+
+        // Hàm hiển thị thông báo
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show notification-toast`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+}

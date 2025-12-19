@@ -1,0 +1,111 @@
+@{
+    ViewData["Title"] = "THÊM NHÂN VIÊN MỚI";
+}
+
+<link rel="stylesheet" href="~/css/Admin/them-nhanvien.css" asp-append-version="true" />
+
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="@Url.Action("NhanVien", "Nguoidung")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card form-card">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>THÊM NHÂN VIÊN MỚI
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="ThemNhanVien" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="hoTen" class="form-label required">Họ và tên</label>
+                                <input type="text" class="form-control" id="hoTen" name="hoTen" required 
+                                       placeholder="Nhập họ và tên nhân viên">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label required">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required 
+                                       placeholder="example@domain.com">
+                                <small class="text-muted">Email sẽ dùng để đăng nhập</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="matKhau" class="form-label required">Mật khẩu</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="matKhau" name="matKhau" required 
+                                           placeholder="Nhập mật khẩu" minlength="6">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Tối thiểu 6 ký tự</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="soDienThoai" class="form-label">Số điện thoại</label>
+                                <input type="tel" class="form-control" id="soDienThoai" name="soDienThoai" 
+                                       placeholder="0123456789" pattern="[0-9]{10,11}">
+                                <small class="text-muted">10-11 chữ số</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="gioiTinh" class="form-label">Giới tính</label>
+                                <select class="form-select" id="gioiTinh" name="gioiTinh">
+                                    <option value="">-- Chọn giới tính --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="ngaySinh" class="form-label">Ngày sinh</label>
+                                <input type="date" class="form-control" id="ngaySinh" name="ngaySinh" 
+                                       max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Nhân viên mới sẽ được tạo với vai trò <strong>"Nhân viên"</strong> và trạng thái <strong>"Hoạt động"</strong>.
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("NhanVien", "Nguoidung")" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Hủy
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save me-2"></i>Thêm nhân viên
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Admin/them-nhanvien.js" asp-append-version="true"></script>
+}

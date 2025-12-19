@@ -1,0 +1,135 @@
+@{
+	ViewData["Title"] = "Ưu đãi thành viên";
+	Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<link href="~/css/KhachHang/quanlitaikhoan.css" rel="stylesheet" />
+
+<style>
+	.guide-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 1.5rem;
+	}
+    
+	.guide-header {
+		text-align: center;
+		margin-bottom: 2rem;
+		background: var(--nature-green);
+		color: white;
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+    
+	.guide-header h1 {
+		font-size: 1.8rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+    
+	.guide-header p {
+		font-size: 1rem;
+		margin: 0;
+	}
+    
+	.step-section {
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 1.5rem;
+		padding: 1.5rem;
+		border-left: 4px solid var(--nature-green);
+	}
+    
+	.step-title {
+		color: var(--nature-green);
+		font-size: 1.3rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+	}
+    
+	.step-content p {
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #333;
+		margin-bottom: 0.8rem;
+	}
+    
+	.step-content ul {
+		padding-left: 1.2rem;
+		margin: 1rem 0;
+	}
+    
+	.step-content li {
+		font-size: 1rem;
+		color: #333;
+		margin-bottom: 0.5rem;
+	}
+    
+	.info-note {
+		background: #e8f5e8;
+		border-left: 4px solid var(--nature-green);
+		padding: 1rem;
+		margin: 1rem 0;
+		border-radius: 0 8px 8px 0;
+	}
+    
+	@@media (max-width: 768px) {
+		.guide-container {
+			padding: 1rem;
+		}
+        
+		.guide-header h1 {
+			font-size: 1.5rem;
+		}
+        
+		.step-section {
+			padding: 1rem;
+		}
+	}
+</style>
+
+<div class="guide-container">
+	<div class="guide-header">
+		<h1><i class="bi bi-stars me-2"></i>Ưu Đãi Thành Viên</h1>
+		<p>Chương trình khách hàng thân thiết LittleFish Beauty</p>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">1. Lời ngỏ từ LittleFish Beauty</h3>
+		<div class="step-content">
+			<p>Chào mừng bạn đến với cộng đồng làm đẹp của LittleFish Beauty. Chúng tôi tin rằng hành trình chăm sóc sắc đẹp cần sự kiên trì và thấu hiểu. Chương trình Khách hàng Thân thiết (Membership) là lời tri ân dành cho những người đã tin tưởng đồng hành. Mọi sự ủng hộ, dù nhỏ, đều được ghi nhận và chuyển hóa thành giá trị thiết thực cho những lần mua sắm tiếp theo.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">2. Cách thức tham gia và tích lũy điểm</h3>
+		<div class="step-content">
+			<p>Đăng ký tài khoản hoặc hoàn tất đơn hàng đầu tiên là bạn đã trở thành thành viên miễn phí. Mỗi đơn hàng thành công sẽ tự động tích điểm dựa trên giá trị thanh toán, lưu vào ví thành viên như một "ngân sách làm đẹp" giúp bạn trừ trực tiếp cho các đơn tương lai.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">3. Đặc quyền thăng hạng thành viên</h3>
+		<div class="step-content">
+			<p>Hạng thành viên được nâng từ Newbie → Silver → Gold → Diamond khi chi tiêu đạt mốc. Mỗi lần thăng hạng mở thêm đặc quyền: chiết khấu cố định trên mọi đơn, ưu tiên xử lý giao vận, và được chăm sóc 1-1 bởi tư vấn viên cao cấp.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">4. Quà tặng sinh nhật và sự kiện độc quyền</h3>
+		<div class="step-content">
+			<p>Tháng sinh nhật, bạn nhận quà bất ngờ (full-size, mini-set hoặc mã giảm giá giá trị cao). Thành viên thân thiết được ưu tiên biết sớm bộ sưu tập mới, Big Sale, và vé mời workshop hoặc Private Sale giới hạn.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">5. Quy định về sử dụng điểm và duy trì hạng</h3>
+		<div class="step-content">
+			<p>Điểm và hạng được xét định kỳ (theo năm hoặc 12 tháng). Điểm không phát sinh giao dịch trong thời gian quy định có thể hết hạn; hãy kiểm tra và dùng điểm để không bỏ lỡ quyền lợi. Tài khoản, điểm và ưu đãi cá nhân hóa là của riêng bạn, không chuyển nhượng hay quy đổi tiền mặt.</p>
+			<div class="info-note">
+				<strong>Lưu ý:</strong> Nếu có quy định cụ thể về thời hạn điểm/hạng (ví dụ: hết hạn sau 12 tháng không mua), vui lòng cập nhật con số chính xác để khách dễ theo dõi.
+			</div>
+		</div>
+	</div>
+</div>

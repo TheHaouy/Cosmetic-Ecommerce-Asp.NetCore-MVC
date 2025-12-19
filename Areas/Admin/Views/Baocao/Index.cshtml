@@ -1,0 +1,1023 @@
+﻿@model Final_VS1.Areas.Admin.Models.BaocaoModel
+@{
+    ViewData["Title"] = "Báo cáo thống kê";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["PageTitle"] = "BÁO CÁO THỐNG KÊ";
+}
+
+<link rel="stylesheet" href="~/css/Admin/baocao.css" />
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Statistics Cards Overview -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stats-card-modern stats-card-blue fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stats-card-overlay"></div>
+                <div class="stats-card-body">
+                    <div class="stats-icon-modern">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-number-modern">@Model.TongSoSanPham</div>
+                        <div class="stats-label-modern">Tổng Sản Phẩm</div>
+                        <div class="stats-detail">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span class="small">Đang kinh doanh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stats-card-modern stats-card-orange fade-in-up" style="animation-delay: 0.2s;">
+                <div class="stats-card-overlay"></div>
+                <div class="stats-card-body">
+                    <div class="stats-icon-modern">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-number-modern">@Model.TongSoDanhMuc</div>
+                        <div class="stats-label-modern">Danh Mục</div>
+                        <div class="stats-detail">
+                            <i class="fas fa-list-alt mr-1"></i>
+                            <span class="small">Phân loại sản phẩm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stats-card-modern stats-card-green fade-in-up" style="animation-delay: 0.3s;">
+                <div class="stats-card-overlay"></div>
+                <div class="stats-card-body">
+                    <div class="stats-icon-modern">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-number-modern">@Model.TongSoDonHang</div>
+                        <div class="stats-label-modern">Tổng Đơn Hàng</div>
+                        <div class="stats-detail">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            <span class="small">Tất cả đơn hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stats-card-modern stats-card-red fade-in-up" style="animation-delay: 0.4s;">
+                <div class="stats-card-overlay"></div>
+                <div class="stats-card-body">
+                    <div class="stats-icon-modern">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-number-modern">@String.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}", Model.TongDoanhThu)</div>
+                        <div class="stats-label-modern">Tổng Doanh Thu</div>
+                        <div class="stats-detail">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            <span class="small">VNĐ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products & Categories Section -->
+     <div class="row mb-4">
+        <!-- Top 5 Best Selling Products -->
+        <div class="col-lg-6 mb-4">
+            <div class="modern-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="modern-card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="modern-card-title">
+                                <i class="fas fa-trophy mr-2 text-warning"></i>
+                                Top 5 Sản Phẩm Bán Chạy
+                            </h3>
+                            <p class="modern-card-subtitle mb-0">Sản phẩm có doanh số cao nhất</p>
+                        </div>
+                        <div class="badge badge-warning badge-pill px-3 py-2">
+                            <i class="fas fa-fire mr-1"></i>Hot
+                        </div>
+                    </div>
+                </div>
+                <div class="modern-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%" class="text-center">Hạng</th>
+                                    <th style="width: 45%">Sản phẩm</th>
+                                    <th style="width: 20%" class="text-center">Đã bán</th>
+                                    <th style="width: 25%" class="text-right">Doanh thu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(int i = 0; i < Model.TopSanPhamBanChay.Count; i++)
+                                {
+                                    <tr class="table-row-hover">
+                                        <td class="text-center">
+                                            @if(i == 0) { 
+                                                <div class="rank-badge-modern rank-gold">
+                                                    <i class="fas fa-crown"></i>
+                                                </div>
+                                            }
+                                            else if(i == 1) { 
+                                                <div class="rank-badge-modern rank-silver">
+                                                    <i class="fas fa-medal"></i>
+                                                </div>
+                                            }
+                                            else if(i == 2) { 
+                                                <div class="rank-badge-modern rank-bronze">
+                                                    <i class="fas fa-award"></i>
+                                                </div>
+                                            }
+                                            else { 
+                                                <div class="rank-badge-modern rank-normal">@(i + 1)</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="product-avatar mr-3">
+                                                    @{
+                                                        var img = Model.TopSanPhamBanChay[i].AnhSanPham;
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(img))
+                                                    {
+                                                        <img src="@img" alt="@Model.TopSanPhamBanChay[i].TenSanPham" class="product-thumb" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-box"></i>
+                                                    }
+                                                </div>
+                                                <div class="product-info">
+                                                    <h6 class="product-name mb-0">@Model.TopSanPhamBanChay[i].TenSanPham</h6>
+                                                    <small class="product-category text-muted">
+                                                        <i class="fas fa-tag mr-1"></i>Sản phẩm bán chạy
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-soft-success px-3 py-2">
+                                                <i class="fas fa-chart-line mr-1"></i>
+                                                @Model.TopSanPhamBanChay[i].SoLuongBan
+                                            </span>
+                                        </td>
+                                        <td class="text-right">
+                                            <div class="revenue-info">
+                                                <span class="revenue-amount text-success font-weight-bold">
+                                                    @Model.TopSanPhamBanChay[i].DoanhThu.ToString("N0")
+                                                </span>
+                                                <small class="revenue-currency d-block text-muted">VNĐ</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                @if(Model.TopSanPhamBanChay.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5">
+                                            <div class="empty-state">
+                                                <i class="fas fa-box-open fa-3x mb-3"></i>
+                                                <p class="text-muted mb-0">Chưa có dữ liệu sản phẩm bán chạy</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category Statistics -->
+        <div class="col-lg-6 mb-4">
+            <div class="modern-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="modern-card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="modern-card-title">
+                                <i class="fas fa-layer-group mr-2 text-success"></i>
+                                Thống Kê Theo Danh Mục
+                            </h3>
+                            <p class="modern-card-subtitle mb-0">Hiệu suất bán hàng theo danh mục</p>
+                        </div>
+                        <div class="badge badge-success badge-pill px-3 py-2">
+                            @Model.ThongKeDanhMuc.Count danh mục
+                        </div>
+                    </div>
+                </div>
+                <div class="modern-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table modern-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%">Danh mục</th>
+                                    <th style="width: 25%" class="text-center">Sản phẩm</th>
+                                    <th style="width: 25%" class="text-center">Đã bán</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(int i = 0; i < Math.Min(5, Model.ThongKeDanhMuc.Count); i++)
+                                {
+                                    var item = Model.ThongKeDanhMuc[i];
+                                    <tr class="table-row-hover category-row @(i >= 5 ? "d-none" : "")">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-avatar mr-3">
+                                                    @{
+                                                        var catImg = item.AnhDanhMuc;
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(catImg))
+                                                    {
+                                                        <img src="@catImg" alt="@item.TenDanhMuc" class="category-thumb" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-tags"></i>
+                                                    }
+                                                </div>
+                                                <div class="category-info">
+                                                    <h6 class="category-name mb-0">@item.TenDanhMuc</h6>
+                                                    <small class="text-muted">
+                                                       Danh mục sản phẩm
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-soft-info px-3 py-2">
+                                                <i class="fas fa-box mr-1"></i>@item.SoLuongSanPham
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-soft-success px-3 py-2">
+                                                <i class="fas fa-shopping-bag mr-1"></i>@item.SoLuongBan
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if(Model.ThongKeDanhMuc.Count > 5)
+                                {
+                                    for(int i = 5; i < Model.ThongKeDanhMuc.Count; i++)
+                                    {
+                                        var item = Model.ThongKeDanhMuc[i];
+                                        <tr class="table-row-hover category-row d-none">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="category-avatar mr-3">
+                                                        @if (!string.IsNullOrEmpty(item.AnhDanhMuc))
+                                                        {
+                                                            <img src="@item.AnhDanhMuc" alt="@item.TenDanhMuc" class="category-thumb" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="fas fa-tags"></i>
+                                                        }
+                                                    </div>
+                                                    <div class="category-info">
+                                                        <h6 class="category-name mb-0">@item.TenDanhMuc</h6>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-cube mr-1"></i>Danh mục sản phẩm
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-soft-info px-3 py-2">
+                                                    <i class="fas fa-box mr-1"></i>@item.SoLuongSanPham
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-soft-success px-3 py-2">
+                                                    <i class="fas fa-shopping-bag mr-1"></i>@item.SoLuongBan
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                @if(Model.ThongKeDanhMuc.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center py-5">
+                                            <div class="empty-state">
+                                                <i class="fas fa-tags fa-3x mb-3"></i>
+                                                <p class="text-muted mb-0">Chưa có dữ liệu danh mục</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if(Model.ThongKeDanhMuc.Count > 5)
+                    {
+                        <div class="modern-card-footer">
+                            <div class="text-center">
+                                @{
+                                    int pageSize = 5;
+                                    int totalPages = (int)Math.Ceiling((double)Model.ThongKeDanhMuc.Count / pageSize);
+                                }
+                                <nav aria-label="Pagination">
+                                    <ul class="pagination pagination-modern justify-content-center mb-0">
+                                        @for (int pageNum = 1; pageNum <= totalPages; pageNum++)
+                                        {
+                                            <li class="page-item @(pageNum == 1 ? "active" : "")">
+                                                <a class="page-link page-category-btn" href="#" data-page="@pageNum">@pageNum</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+                 <div class="row mb-4">
+                        <!-- Revenue Chart -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="modern-card chart-card-modern fade-in-up h-100">
+                                <div class="modern-card-header">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="mb-2 mb-md-0">
+                                            <h3 class="modern-card-title">
+                                                <i class="fas fa-chart-line mr-2 text-success"></i>
+                                                Doanh Thu Tháng <span id="currentMonthDisplay" class="text-primary">@DateTime.Now.ToString("MM/yyyy")</span>
+                                            </h3>
+                                            <p class="modern-card-subtitle mb-0">Biểu đồ doanh thu theo ngày</p>
+                                        </div>
+                                        <div class="chart-controls">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-outline-primary" id="prevMonthBtn" title="Tháng trước">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary" id="currentMonthBtn" title="Tháng hiện tại">
+                                                    <i class="fas fa-calendar-day"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary" id="nextMonthBtn" title="Tháng sau">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modern-card-body">
+                                    <div class="chart-wrapper" style="position: relative; height: 350px;">
+                                        <canvas id="revenueChart"></canvas>
+                                        <div id="chartLoading" class="chart-loading-overlay d-none">
+                                            <div class="text-center">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="sr-only">Đang tải...</span>
+                                                </div>
+                                                <p class="mt-3 text-muted">Đang tải dữ liệu...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modern-card-footer">
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" class="btn btn-success btn-sm" id="exportExcelBtn">
+                                            <i class="fas fa-file-excel mr-2"></i>Xuất Excel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Chart -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="modern-card chart-card-modern fade-in-up h-100" style="animation-delay: 0.1s;">
+                                <div class="modern-card-header">
+                                    <div>
+                                        <h3 class="modern-card-title">
+                                            <i class="fas fa-chart-pie mr-2 text-warning"></i>
+                                            Danh Mục Bán Chạy Nhất
+                                        </h3>
+                                        <p class="modern-card-subtitle mb-0">Thống kê sản phẩm đã bán theo danh mục</p>
+                                    </div>
+                                </div>
+                                <div class="modern-card-body">
+                                    <div class="chart-wrapper" style="position: relative; height: 350px;">
+                                        <canvas id="categoryChart"></canvas>
+                                        <div id="categoryChartLoading" class="chart-loading-overlay d-none">
+                                            <div class="text-center">
+                                                <div class="spinner-border text-warning" role="status">
+                                                    <span class="sr-only">Đang tải...</span>
+                                                </div>
+                                                <p class="mt-3 text-muted">Đang tải dữ liệu...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modern-card-footer">
+                                    <div class="row text-center chart-stats">
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <i class="fas fa-layer-group text-primary mb-1"></i>
+                                                <div class="stat-value text-primary font-weight-bold">@Model.ThongKeDanhMuc.Count</div>
+                                                <small class="stat-label text-muted">Tổng danh mục</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <i class="fas fa-shopping-cart text-success mb-1"></i>
+                                                <div class="stat-value text-success font-weight-bold">@Model.ThongKeDanhMuc.Sum(x => x.SoLuongBan)</div>
+                                                <small class="stat-label text-muted">Đã bán</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <i class="fas fa-box text-info mb-1"></i>
+                                                <div class="stat-value text-info font-weight-bold">@Model.ThongKeDanhMuc.Sum(x => x.SoLuongSanPham)</div>
+                                                <small class="stat-label text-muted">Sản phẩm</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+   
+        </div>
+    </div>
+</div>
+
+<!-- Review Details Modal -->
+<div class="modal fade" id="reviewDetailsModal" tabindex="-1" role="dialog" aria-labelledby="reviewDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title" id="reviewDetailsModalLabel">
+                    <i class="fas fa-star mr-2"></i>
+                    Chi Tiết Đánh Giá
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="reviewDetailsContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Đang tải...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Đang tải dữ liệu đánh giá...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Review Button Styles */
+    .btn-view-reviews {
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 0.375rem 1rem;
+    }
+    
+    .btn-view-reviews:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+    }
+    
+    .review-row {
+        cursor: pointer;
+    }
+    
+    /* Modal Styles */
+    .modal-header.bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .review-item {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1.25rem 0;
+        transition: background-color 0.3s ease;
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+    }
+    
+    .review-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin: 0 -1rem;
+    }
+    
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    
+    .reviewer-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 0.75rem;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+    
+    .review-date {
+        font-size: 0.875rem;
+        color: #718096;
+    }
+    
+    .review-stars {
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-stars i {
+        font-size: 1rem;
+        margin-right: 0.25rem;
+    }
+    
+    .review-text {
+        color: #4a5568;
+        line-height: 1.6;
+        margin-top: 0.5rem;
+    }
+    
+    .shop-reply {
+        background-color: #f0f9ff;
+        border-left: 3px solid #0284c7;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 8px;
+    }
+    
+    .shop-reply-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #0369a1;
+    }
+    
+    .shop-reply-text {
+        color: #334155;
+        line-height: 1.6;
+    }
+    
+    .reply-form {
+        background-color: #f8fafc;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .btn-reply, .btn-submit-reply, .btn-cancel-reply {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-reply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+    }
+    
+    .review-summary {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .review-summary-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-summary-rating {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+    
+    .review-summary-score {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .product-thumb, .category-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Review Statistics Styles */
+    .rating-display {
+        padding: 1rem;
+    }
+    
+    .rating-number {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #ffc107;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .rating-stars {
+        font-size: 1.5rem;
+    }
+    
+    .rating-breakdown {
+        margin-top: 1.5rem;
+    }
+    
+    .rating-row {
+        position: relative;
+    }
+    
+    .rating-label {
+        min-width: 50px;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .rating-count {
+        min-width: 100px;
+        text-align: right;
+        font-size: 0.875rem;
+        color: #718096;
+    }
+    
+    .progress {
+        height: 8px;
+        border-radius: 10px;
+        background-color: #e9ecef;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+    
+    .rating-badge {
+        display: inline-block;
+    }
+    
+    .rating-score {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffc107;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    
+    .star-distribution {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    /* Remove old inline styles - they'll be replaced by external CSS */
+</style>
+
+@section Scripts {
+    <!-- Đặt dữ liệu server trước -->
+    <script>
+        // Pass server-side data to JavaScript variables
+        window.doanhThu12ThangLabels = [@Html.Raw(string.Join(",", Model.DoanhThu12Thang.Select(x => "'" + x.Thang + "'")))];
+        window.doanhThu12ThangData = [@Html.Raw(string.Join(",", Model.DoanhThu12Thang.Select(x => x.DoanhThu)))];
+        
+        // Category chart data
+        window.categoryLabels = [@Html.Raw(string.Join(",", Model.ThongKeDanhMuc.Take(5).Select(x => "'" + x.TenDanhMuc + "'")))];
+        window.categoryData = [@Html.Raw(string.Join(",", Model.ThongKeDanhMuc.Take(5).Select(x => x.SoLuongBan)))];
+        window.categoryColors = [
+            '#FF6384',
+            '#36A2EB', 
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF'
+        ];
+        
+        // Current month tracking
+        window.currentMonth = @DateTime.Now.Month;
+        window.currentYear = @DateTime.Now.Year;
+        window.displayMonth = @DateTime.Now.Month;
+        window.displayYear = @DateTime.Now.Year;
+        
+        // Debug: Log data to console
+        console.log('Revenue Chart Labels:', window.doanhThu12ThangLabels);
+        console.log('Revenue Chart Data:', window.doanhThu12ThangData);
+        console.log('Category Chart Labels:', window.categoryLabels);
+        console.log('Category Chart Data:', window.categoryData);
+        console.log('Current Month/Year:', window.currentMonth, window.currentYear);
+        
+        // Product reviews data
+        window.productReviews = @Html.Raw(Json.Serialize(Model.TopSanPhamDanhGia.Select(p => new {
+            TenSanPham = p.TenSanPham,
+            DiemTrungBinh = p.DiemTrungBinh,
+            SoLuongDanhGia = p.SoLuongDanhGia,
+            SoSao5 = p.SoSao5,
+            SoSao4 = p.SoSao4,
+            SoSao3 = p.SoSao3,
+            SoSao2 = p.SoSao2,
+            SoSao1 = p.SoSao1,
+            ChiTietDanhGia = p.ChiTietDanhGia
+        })));
+    </script>
+
+    <!-- Load thư viện -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <!-- Load file JavaScript chính -->
+    <script src="~/js/Admin/baocao-index.js"></script>
+    
+    <!-- Review Details Script -->
+    <script>
+        $(document).ready(function() {
+            // Handle review button click
+            $('.btn-view-reviews').on('click', function(e) {
+                e.stopPropagation();
+                const productIndex = $(this).closest('tr').data('product-index');
+                const productData = window.productReviews[productIndex];
+                
+                if (productData) {
+                    showReviewDetails(productData);
+                }
+            });
+            
+            // Handle row click
+            $('.review-row').on('click', function() {
+                const productIndex = $(this).data('product-index');
+                const productData = window.productReviews[productIndex];
+                
+                if (productData) {
+                    showReviewDetails(productData);
+                }
+            });
+        });
+        
+        function showReviewDetails(product) {
+            // Update modal title
+            $('#reviewDetailsModalLabel').html(`
+                <i class="fas fa-star mr-2"></i>
+                Chi Tiết Đánh Giá - ${product.tenSanPham}
+            `);
+            
+            // Build review summary
+            let summaryHtml = `
+                <div class="review-summary">
+                    <div class="review-summary-title">${product.tenSanPham}</div>
+                    <div class="review-summary-rating">
+                        <div class="review-summary-score">${product.diemTrungBinh.toFixed(1)}</div>
+                        <div>
+                            <div class="review-stars mb-1">
+                                ${generateStars(product.diemTrungBinh)}
+                            </div>
+                            <small class="text-muted">${product.soLuongDanhGia} đánh giá</small>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="row text-center">
+                            <div class="col">
+                                <div class="small text-muted">5 ⭐</div>
+                                <strong>${product.soSao5}</strong>
+                            </div>
+                            <div class="col">
+                                <div class="small text-muted">4 ⭐</div>
+                                <strong>${product.soSao4}</strong>
+                            </div>
+                            <div class="col">
+                                <div class="small text-muted">3 ⭐</div>
+                                <strong>${product.soSao3}</strong>
+                            </div>
+                            <div class="col">
+                                <div class="small text-muted">2 ⭐</div>
+                                <strong>${product.soSao2}</strong>
+                            </div>
+                            <div class="col">
+                                <div class="small text-muted">1 ⭐</div>
+                                <strong>${product.soSao1}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Build reviews list
+            let reviewsHtml = '';
+            if (product.chiTietDanhGia && product.chiTietDanhGia.length > 0) {
+                reviewsHtml = '<div class="reviews-list">';
+                product.chiTietDanhGia.forEach((review, index) => {
+                    const initials = getInitials(review.tenKhachHang);
+                    const reviewDate = new Date(review.ngayDanhGia).toLocaleDateString('vi-VN');
+                    
+                    reviewsHtml += `
+                        <div class="review-item" data-review-id="${review.idDanhGia}">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">${initials}</div>
+                                <div>
+                                    <div class="reviewer-name">${review.tenKhachHang}</div>
+                                    <div class="review-date">
+                                        <i class="far fa-calendar-alt mr-1"></i>${reviewDate}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-stars">
+                                ${generateStars(review.soSao)}
+                            </div>
+                            <div class="review-text">${review.binhLuan || '<em class="text-muted">Không có nhận xét</em>'}</div>
+                            
+                            ${review.traLoiCuaShop ? `
+                                <div class="shop-reply">
+                                    <div class="shop-reply-header">
+                                        <i class="fas fa-store mr-2"></i>
+                                        <strong>Phản hồi từ Shop</strong>
+                                        <small class="text-muted ml-2">${review.ngayTraLoi ? new Date(review.ngayTraLoi).toLocaleDateString('vi-VN') : ''}</small>
+                                    </div>
+                                    <div class="shop-reply-text">${review.traLoiCuaShop}</div>
+                                </div>
+                            ` : `
+                                <div class="reply-section mt-2">
+                                    <button class="btn btn-sm btn-outline-primary btn-reply" data-review-id="${review.idDanhGia}">
+                                        <i class="fas fa-reply mr-1"></i>Trả lời
+                                    </button>
+                                </div>
+                                <div class="reply-form mt-2" id="reply-form-${review.idDanhGia}" style="display: none;">
+                                    <textarea class="form-control form-control-sm mb-2" rows="3" placeholder="Nhập phản hồi của bạn..." id="reply-text-${review.idDanhGia}"></textarea>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary btn-submit-reply" data-review-id="${review.idDanhGia}">
+                                            <i class="fas fa-check mr-1"></i>Gửi
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary btn-cancel-reply" data-review-id="${review.idDanhGia}">
+                                            <i class="fas fa-times mr-1"></i>Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                    `;
+                });
+                reviewsHtml += '</div>';
+            } else {
+                reviewsHtml = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Chưa có đánh giá chi tiết</p>
+                    </div>
+                `;
+            }
+            
+            // Update modal content
+            $('#reviewDetailsContent').html(summaryHtml + reviewsHtml);
+            
+            // Show modal
+            $('#reviewDetailsModal').modal('show');
+        }
+        
+        function generateStars(rating) {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    starsHtml += '<i class="fas fa-star text-warning"></i>';
+                } else if (i - 0.5 <= rating) {
+                    starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star text-muted"></i>';
+                }
+            }
+            return starsHtml;
+        }
+        
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return parts[0][0].toUpperCase() + parts[parts.length - 1][0].toUpperCase();
+            }
+            return name[0].toUpperCase();
+        }
+        
+        // Handle reply button click
+        $(document).on('click', '.btn-reply', function() {
+            const reviewId = $(this).data('review-id');
+            $(`#reply-form-${reviewId}`).slideDown();
+            $(this).closest('.reply-section').hide();
+        });
+        
+        // Handle cancel reply
+        $(document).on('click', '.btn-cancel-reply', function() {
+            const reviewId = $(this).data('review-id');
+            $(`#reply-form-${reviewId}`).slideUp();
+            $(this).closest('.review-item').find('.reply-section').show();
+        });
+        
+        // Handle submit reply
+        $(document).on('click', '.btn-submit-reply', function() {
+            const reviewId = $(this).data('review-id');
+            const replyText = $(`#reply-text-${reviewId}`).val().trim();
+            
+            if (!replyText) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo',
+                    text: 'Vui lòng nhập nội dung phản hồi',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Disable button while processing
+            const $btn = $(this);
+            const originalText = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span>Đang gửi...');
+            
+            $.ajax({
+                url: '@Url.Action("ReplyDanhGia", "Baocao", new { area = "Admin" })',
+                type: 'POST',
+                data: {
+                    idDanhGia: reviewId,
+                    traLoi: replyText,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // Update UI with reply
+                            const replyHtml = `
+                                <div class="shop-reply">
+                                    <div class="shop-reply-header">
+                                        <i class="fas fa-store mr-2"></i>
+                                        <strong>Phản hồi từ Shop</strong>
+                                        <small class="text-muted ml-2">${response.ngayTraLoi || ''}</small>
+                                    </div>
+                                    <div class="shop-reply-text">${replyText}</div>
+                                </div>
+                            `;
+                            
+                            $(`#reply-form-${reviewId}`).replaceWith(replyHtml);
+                            $(`.review-item[data-review-id="${reviewId}"]`).find('.reply-section').remove();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        });
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi gửi phản hồi',
+                        confirmButtonText: 'OK'
+                    });
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
+        });
+    </script>
+}

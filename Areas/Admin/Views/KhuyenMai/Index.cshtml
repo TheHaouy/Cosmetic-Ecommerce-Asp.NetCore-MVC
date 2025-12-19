@@ -1,0 +1,405 @@
+@model List<Final_VS1.Data.KhuyenMai>
+@{
+    ViewData["Title"] = "Quản Lý Khuyến Mãi";
+    ViewData["PageTitle"] = "QUẢN LÝ KHUYẾN MÃI";
+    var trangThaiFilter = ViewBag.TrangThaiFilter as string;
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<!-- Toast Container - Giữa màn hình -->
+<div id="toastContainer" class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 9999;"></div>
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalTitle">Xác nhận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">
+                Bạn có chắc chắn muốn thực hiện hành động này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmModalBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-tags me-2"></i>
+                Danh Sách Khuyến Mãi
+            </h5>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Filter & Search -->
+        <div class="row mb-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Trạng thái</label>
+                <select id="trangThaiFilter" class="form-select" onchange="applyFilter()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="NHAP" selected="@(trangThaiFilter == "NHAP")">Nháp</option>
+                    <option value="DANG_HOAT_DONG" selected="@(trangThaiFilter == "DANG_HOAT_DONG")">Hoạt động</option>
+                    <option value="TAM_DUNG" selected="@(trangThaiFilter == "TAM_DUNG")">Tạm dừng</option>
+                    <option value="KET_THUC" selected="@(trangThaiFilter == "KET_THUC")">Kết thúc</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Từ ngày</label>
+                <input type="date" id="tuNgayFilter" class="form-control" value="@ViewBag.TuNgay" onchange="applyFilter()">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Đến ngày</label>
+                <input type="date" id="denNgayFilter" class="form-control" value="@ViewBag.DenNgay" onchange="applyFilter()">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Tìm kiếm</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên khuyến mãi..." 
+                       value="@searchTerm" onkeypress="if(event.keyCode==13) applyFilter()">
+            </div>
+            <div class="col-md-2 text-end">
+                <a href="@Url.Action("Create", "KhuyenMai")" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Tạo mới
+                </a>
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Chưa có chương trình khuyến mãi nào. <a href="@Url.Action("Create")">Tạo mới ngay!</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="28%">Tên Khuyến Mãi</th>
+                            <th width="12%">Loại</th>
+                            <th width="12%">Giảm Giá</th>
+                            <th width="18%">Thời Gian</th>
+                            <th width="10%">Trạng Thái</th>
+                            <th width="8%">Đã Dùng</th>
+                            <th width="7%" class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var km in Model.Select((item, index) => new { Item = item, Index = index + 1 }))
+                        {
+                            var trangThaiBadge = km.Item.TrangThai switch
+                            {
+                                "DANG_HOAT_DONG" => "success",
+                                "TAM_DUNG" => "warning",
+                                "KET_THUC" => "secondary",
+                                _ => "info"
+                            };
+
+                            var trangThaiText = km.Item.TrangThai switch
+                            {
+                                "DANG_HOAT_DONG" => "Đang hoạt động",
+                                "TAM_DUNG" => "Tạm dừng",
+                                "KET_THUC" => "Kết thúc",
+                                "NHAP" => "Nháp",
+                                _ => km.Item.TrangThai
+                            };
+
+                            var loaiKMText = km.Item.LoaiKhuyenMai switch
+                            {
+                                "GIAM_GIA_SAN_PHAM" => "Giảm giá SP",
+                                "GIAM_GIA_DON_HANG" => "Giảm giá ĐH",
+                                "MA_GIAM_GIA" => "Mã giảm giá",
+                                "FREESHIP" => "Freeship",
+                                "TANG_QUA" => "Tặng quà",
+                                "COMBO" => "Combo",
+                                _ => km.Item.LoaiKhuyenMai
+                            };
+
+                            var giamGiaText = km.Item.HinhThucGiam == "PHAN_TRAM"
+                                ? $"-{km.Item.GiaTriGiam:0.#}%"
+                                : $"-{km.Item.GiaTriGiam:N0}đ";
+
+                            <tr class="promotion-row" style="cursor: pointer;" 
+                                onclick="goToEdit(@km.Item.IdKhuyenMai, event)">
+                                <td>@km.Index</td>
+                                <td>
+                                    <strong>@km.Item.TenKhuyenMai</strong>
+                                    @if (km.Item.HienThiTrangChu)
+                                    {
+                                        <span class="badge bg-info ms-1"><i class="fas fa-home"></i></span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@loaiKMText</span>
+                                </td>
+                                <td>
+                                    <span class="text-danger fw-bold">@giamGiaText</span>
+                                </td>
+                                <td>
+                                    <small>
+                                        <div>@km.Item.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                                        <div>→ @km.Item.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                                        @if (km.Item.GioBatDau.HasValue && km.Item.GioKetThuc.HasValue)
+                                        {
+                                            <div class="text-primary">
+                                                <i class="fas fa-clock"></i> 
+                                                @km.Item.GioBatDau.Value.ToString(@"hh\:mm") - @km.Item.GioKetThuc.Value.ToString(@"hh\:mm")
+                                            </div>
+                                        }
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@trangThaiBadge">@trangThaiText</span>
+                                </td>
+                                <td>
+                                    @if (km.Item.SoLuongGioiHan.HasValue)
+                                    {
+                                        <span>@km.Item.SoLuongDaBan / @km.Item.SoLuongGioiHan</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@km.Item.SoLuongDaBan</span>
+                                    }
+                                </td>
+                                <td class="text-center action-buttons" onclick="event.stopPropagation();">
+                                    <div class="btn-group btn-group-sm">
+                                        @if (km.Item.TrangThai == "DANG_HOAT_DONG")
+                                        {
+                                            <button type="button" class="btn btn-outline-warning" 
+                                                    onclick="changeStatus(@km.Item.IdKhuyenMai, 'TAM_DUNG')" title="Tạm dừng">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                        }
+                                        else if (km.Item.TrangThai == "TAM_DUNG" || km.Item.TrangThai == "NHAP")
+                                        {
+                                            <button type="button" class="btn btn-outline-success" 
+                                                    onclick="changeStatus(@km.Item.IdKhuyenMai, 'DANG_HOAT_DONG')" title="Kích hoạt">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        }
+                                        
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="deleteKhuyenMai(@km.Item.IdKhuyenMai)" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .promotion-row:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+        .promotion-row:hover td {
+            background-color: transparent;
+        }
+        .action-buttons .btn {
+            transition: transform 0.1s ease;
+        }
+        .action-buttons .btn:hover {
+            transform: scale(1.1);
+        }
+        .toast {
+            min-width: 300px;
+        }
+        .toast-success {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+        .toast-error {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+        .toast-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        .toast-info {
+            background-color: #0dcaf0 !important;
+            color: #212529 !important;
+        }
+    </style>
+    
+    <script>
+        // Toast notification function
+        function showToast(message, type = 'info', title = '') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            const titles = {
+                success: 'Thành công',
+                error: 'Lỗi',
+                warning: 'Cảnh báo',
+                info: 'Thông báo'
+            };
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast toast-${type}" role="alert">
+                    <div class="toast-header">
+                        <i class="${icons[type]} me-2"></i>
+                        <strong class="me-auto">${title || titles[type]}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+        
+        // Confirm modal function
+        function showConfirm(title, message, btnClass, callback) {
+            const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            document.getElementById('confirmModalTitle').textContent = title;
+            document.getElementById('confirmModalBody').textContent = message;
+            
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            confirmBtn.className = 'btn ' + btnClass;
+            confirmBtn.onclick = function() {
+                modal.hide();
+                callback();
+            };
+            
+            modal.show();
+        }
+        
+        // Go to edit page
+        function goToEdit(id, event) {
+            if (event.target.closest('.action-buttons')) {
+                return;
+            }
+            window.location.href = '@Url.Action("Edit", "KhuyenMai")/' + id;
+        }
+        
+        function applyFilter() {
+            const trangThai = $('#trangThaiFilter').val();
+            const search = $('#searchInput').val();
+            const tuNgay = $('#tuNgayFilter').val();
+            const denNgay = $('#denNgayFilter').val();
+            
+            let url = '@Url.Action("Index", "KhuyenMai")?';
+            if (trangThai) url += 'trangThai=' + trangThai + '&';
+            if (search) url += 'search=' + encodeURIComponent(search) + '&';
+            if (tuNgay) url += 'tuNgay=' + tuNgay + '&';
+            if (denNgay) url += 'denNgay=' + denNgay + '&';
+            
+            window.location.href = url;
+        }
+
+        function changeStatus(id, status) {
+            const statusText = status === 'DANG_HOAT_DONG' ? 'kích hoạt' : 'tạm dừng';
+            
+            showConfirm(
+                'Xác nhận thay đổi trạng thái',
+                `Bạn có chắc muốn ${statusText} khuyến mãi này?`,
+                status === 'DANG_HOAT_DONG' ? 'btn-success' : 'btn-warning',
+                function() {
+                    $.ajax({
+                        url: '@Url.Action("ChangeStatus", "KhuyenMai")',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            status: status,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                showToast(
+                                    status === 'DANG_HOAT_DONG' 
+                                        ? 'Đã kích hoạt khuyến mãi thành công!' 
+                                        : 'Đã tạm dừng khuyến mãi thành công!', 
+                                    'success'
+                                );
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showToast(response.message || 'Có lỗi xảy ra!', 'error');
+                            }
+                        },
+                        error: function() {
+                            showToast('Có lỗi xảy ra khi kết nối server!', 'error');
+                        }
+                    });
+                }
+            );
+        }
+
+        function deleteKhuyenMai(id) {
+            showConfirm(
+                'Xác nhận xóa',
+                'Bạn có chắc muốn xóa khuyến mãi này? Hành động này không thể hoàn tác!',
+                'btn-danger',
+                function() {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "KhuyenMai")',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                showToast('Đã xóa khuyến mãi thành công!', 'success');
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showToast(response.message || 'Có lỗi xảy ra!', 'error');
+                            }
+                        },
+                        error: function() {
+                            showToast('Có lỗi xảy ra khi kết nối server!', 'error');
+                        }
+                    });
+                }
+            );
+        }
+        
+        // Show success message from TempData if exists
+        $(document).ready(function() {
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                showToast('@TempData["SuccessMessage"]', 'success');
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                showToast('@TempData["ErrorMessage"]', 'error');
+                </text>
+            }
+        });
+    </script>
+}

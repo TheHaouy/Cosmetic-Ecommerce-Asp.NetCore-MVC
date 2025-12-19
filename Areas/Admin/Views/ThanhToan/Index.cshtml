@@ -1,0 +1,219 @@
+@model List<Final_VS1.Data.ThanhToan>
+@using System.Text.Json
+@{
+    ViewData["Title"] = "QUẢN LÝ THANH TOÁN";
+    ViewData["PageTitle"] = "QUẢN LÝ THANH TOÁN";
+}
+
+@functions {
+    private string StatusClass(string status)
+    {
+        if (string.IsNullOrEmpty(status)) return "bg-secondary text-white";
+        var s = status.ToLowerInvariant();
+        if (s.Contains("success") || s.Contains("thanh") || s.Contains("thành") || s.Contains("paid") || s.Contains("complete") || s.Contains("hoàn"))
+            return "bg-success text-white";
+        if (s.Contains("fail") || s.Contains("thất") || s.Contains("that") || s.Contains("cancel") || s.Contains("error"))
+            return "bg-danger text-white";
+        if (s.Contains("pending") || s.Contains("cho") || s.Contains("chờ"))
+            return "bg-warning text-dark";
+        return "bg-secondary text-white";
+    }
+}
+
+<link rel="stylesheet" href="~/css/Admin/donhang-list.css" asp-append-version="true" />
+
+<style>
+    /* Ensure status/sort/method header text is white and clickable */
+    #toggleStatus, #toggleSort, #toggleMethod {
+        color: #fff !important;
+        cursor: pointer;
+    }
+    #toggleStatus span, #toggleSort span, #toggleMethod span {
+        color: #fff !important;
+    }
+    #toggleStatus:hover, #toggleSort:hover, #toggleMethod:hover {
+        color: #fff !important;
+        opacity: 0.95;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-receipt me-2 text-dark"></i>Danh sách giao dịch</h5>
+            <div class="d-flex gap-2 align-items-center">
+                <input id="qSearch" type="search" class="form-control form-control-sm" style="width:220px;" placeholder="Tìm: mã giao dịch, khách, mã đơn, cổng..." value="@ViewBag.SearchQuery" />
+                <input type="hidden" id="statusFilter" value="@(ViewBag.FilterStatus ?? "")" />
+                <input type="hidden" id="methodFilter" value="@(ViewBag.FilterMethod ?? "")" />
+                <input type="hidden" id="sortOrder" value="@(ViewBag.SortOrder ?? "desc")" />
+                <button id="searchBtn" class="btn btn-sm btn-outline-primary">Tìm</button>
+                <a id="refreshBtn" class="btn btn-sm btn-outline-secondary">Làm mới</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="paymentTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Đơn hàng</th>
+                            <th>Số tiền</th>
+                            <th style="min-width:140px;">
+                                <div class="d-flex flex-column align-items-start">
+                                    <div>
+                                        <a href="javascript:void(0)" id="toggleMethod" class="text-decoration-none">
+                                            Phương thức <span id="methodLabel">@((string.IsNullOrEmpty(ViewBag.FilterMethod) ? "" : "(" + ViewBag.FilterMethod + ")"))</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>Transaction ID</th>
+                            <th style="min-width:160px;">
+                                <div class="d-flex flex-column align-items-start">
+                                    <div>
+                                        <a href="javascript:void(0)" id="toggleStatus" class="text-decoration-none">
+                                            Trạng thái <span id="statusLabel">@((string.IsNullOrEmpty(ViewBag.FilterStatus) ? "" : ViewBag.FilterStatus))</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                            <th style="min-width:160px;">
+                                <div class="d-flex flex-column align-items-start">
+                                    <div>
+                                        <a href="javascript:void(0)" id="toggleSort" class="text-decoration-none">
+                                            Thời gian <span id="sortArrow">@(ViewBag.SortOrder == "asc" ? "↑" : "↓")</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var p in Model)
+                        {
+                            <tr>
+                                <td>@p.IdThanhToan</td>
+                                <td>
+                                    <a href="@Url.Action("Detail", "Donhang", new { area = "Admin", id = p.IdDonHang })">HD-@p.IdDonHang</a>
+                                    <br /><small class="text-muted">@(p.IdDonHangNavigation?.IdTaiKhoanNavigation?.HoTen ?? "-" )</small>
+                                </td>
+                                <td class="text-success fw-bold">@p.SoTien.ToString("N0")₫</td>
+                                <td>@p.PhuongThuc</td>
+                                <td>@(p.MaGiaoDichNganHang ?? p.MaPhanHoi ?? "-")</td>
+                                <td>
+                                    <span class="badge @StatusClass(p.TrangThai)">@p.TrangThai</span>
+                                </td>
+                                <td>@(p.ThoiGianThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? p.NgayTao.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td>
+                                    <a href="@Url.Action("Detail", "ThanhToan", new { area = "Admin", id = p.IdThanhToan })" class="btn btn-sm btn-outline-primary">Xem</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            function buildUrl() {
+                var status = $('#statusFilter').val();
+                var method = $('#methodFilter').val();
+                var q = $('#qSearch').val();
+                var sort = $('#sortOrder').val();
+                var url = '@Url.Action("Index", "ThanhToan", new { area = "Admin" })';
+                var parts = [];
+                if(status) parts.push('status=' + encodeURIComponent(status));
+                if(method) parts.push('method=' + encodeURIComponent(method));
+                if(q) parts.push('q=' + encodeURIComponent(q));
+                if(sort) parts.push('sort=' + encodeURIComponent(sort));
+                if(parts.length) url += '?' + parts.join('&');
+                return url;
+            }
+
+            $('#methodFilter').on('change', function(){
+                window.location.href = buildUrl();
+            });
+
+            $('#toggleSort').on('click', function(){
+                var current = '@(ViewBag.SortOrder ?? "desc")';
+                var next = (current === 'asc') ? 'desc' : 'asc';
+                var status = $('#statusFilter').val();
+                var method = $('#methodFilter').val();
+                var q = $('#qSearch').val();
+                var url = '@Url.Action("Index", "ThanhToan", new { area = "Admin" })';
+                var parts = [];
+                if(status) parts.push('status=' + encodeURIComponent(status));
+                if(method) parts.push('method=' + encodeURIComponent(method));
+                if(q) parts.push('q=' + encodeURIComponent(q));
+                if(next) parts.push('sort=' + encodeURIComponent(next));
+                if(parts.length) url += '?' + parts.join('&');
+                window.location.href = url;
+            });
+
+            // Build payment method arrays from server-provided list
+            var methodVals = [''];
+            var methodLabels = ['Tất cả'];
+            (function(){
+                var db = @Html.Raw(JsonSerializer.Serialize(ViewBag.AvailableMethods ?? new List<string>()));
+                for(var i=0;i<db.length;i++){
+                    var v = db[i] || '';
+                    if(!v) continue;
+                    methodVals.push(v);
+                    methodLabels.push(v);
+                }
+            })();
+
+            $('#toggleMethod').on('click', function(){
+                var cur = $('#methodFilter').val();
+                var idx = methodVals.indexOf(cur);
+                if(idx < 0) idx = 0;
+                var next = (idx + 1) % methodVals.length;
+                $('#methodFilter').val(methodVals[next]);
+                $('#methodLabel').text(methodLabels[next] === 'Tất cả' ? '' : '(' + methodLabels[next] + ')');
+                window.location.href = buildUrl();
+            });
+
+            // Build status arrays from server-provided list (DB-driven)
+            var statusVals = [''];
+            var statusLabels = [''];
+            (function(){
+                var db = @Html.Raw(JsonSerializer.Serialize(ViewBag.AvailableStatuses ?? new List<string>()));
+                for(var i=0;i<db.length;i++){
+                    var v = db[i] || '';
+                    // skip empty
+                    if(!v) continue;
+                    statusVals.push(v);
+                    var lower = (v || '').toString().toLowerCase();
+                    var lab = v;
+                    if(lower.indexOf('success')>=0 || lower.indexOf('thanh')>=0 || lower.indexOf('thành')>=0 || lower.indexOf('paid')>=0) lab = 'Thành công';
+                    else if(lower.indexOf('fail')>=0 || lower.indexOf('thất')>=0 || lower.indexOf('that')>=0 || lower.indexOf('cancel')>=0 || lower.indexOf('error')>=0) lab = 'Thất bại';
+                    else if(lower.indexOf('pending')>=0 || lower.indexOf('cho')>=0 || lower.indexOf('chờ')>=0) lab = 'Chờ';
+                    statusLabels.push(lab);
+                }
+            })();
+
+            $('#toggleStatus').on('click', function(){
+                var cur = $('#statusFilter').val();
+                var idx = statusVals.indexOf(cur);
+                if(idx < 0) idx = 0;
+                var next = (idx + 1) % statusVals.length;
+                $('#statusFilter').val(statusVals[next]);
+                $('#statusLabel').text(statusLabels[next]);
+                // reload with new status, preserving q and sort
+                window.location.href = buildUrl();
+            });
+
+            $('#searchBtn').on('click', function(){ window.location.href = buildUrl(); });
+
+            $('#qSearch').on('keypress', function(e){ if(e.which == 13){ e.preventDefault(); window.location.href = buildUrl(); } });
+
+            $('#refreshBtn').on('click', function(){ location.reload(); });
+        });
+    </script>
+}

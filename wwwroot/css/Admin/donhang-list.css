@@ -1,0 +1,221 @@
+.filter-controls .form-select,
+.filter-controls .form-control {
+    border-radius: 8px !important;
+    border: 1px solid #dee2e6;
+}
+
+.filter-controls .form-select:focus,
+.filter-controls .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Cố định kích thước cột */
+#orderTable {
+    table-layout: fixed;
+}
+
+#orderTable th:nth-child(1),
+#orderTable td:nth-child(1) {
+    width: 10%; /* Mã đơn hàng */
+}
+
+#orderTable th:nth-child(2),
+#orderTable td:nth-child(2) {
+    width: 17%; /* Khách hàng */
+}
+
+#orderTable th:nth-child(3),
+#orderTable td:nth-child(3) {
+    width: 13%; /* Ngày đặt */
+}
+
+#orderTable th:nth-child(4),
+#orderTable td:nth-child(4) {
+    width: 12%; /* Tổng tiền */
+}
+
+#orderTable th:nth-child(5),
+#orderTable td:nth-child(5) {
+    width: 13%; /* Trạng thái */
+}
+
+#orderTable th:nth-child(6),
+#orderTable td:nth-child(6) {
+    width: 15%; /* Cập nhật gần nhất - Timeline */
+    vertical-align: top;
+}
+
+/* Đảm bảo text không bị tràn */
+#orderTable td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Timeline cell có thể wrap */
+#orderTable td.timeline-cell {
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Timeline wrapper */
+.timeline-wrapper {
+    position: relative;
+}
+
+/* Timeline summary - phần thu gọn */
+.timeline-summary {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.timeline-summary:hover {
+    background-color: #f8f9fa;
+}
+
+/* Icon toggle */
+.timeline-toggle-icon {
+    transition: transform 0.3s ease;
+    color: #6c757d;
+}
+
+.timeline-wrapper.expanded .timeline-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Timeline list styles */
+.timeline-list {
+    font-size: 0.875rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.timeline-entry {
+    border-bottom: 1px solid #e9ecef !important;
+}
+
+.timeline-entry:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.timeline-note {
+    font-size: 0.8rem;
+    margin-top: 3px;
+    line-height: 1.3;
+}
+
+/* Căn giữa header */
+#orderTable th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Căn giữa cột khách hàng */
+#orderTable td:nth-child(2) {
+    white-space: normal;
+    text-align: center;
+}
+
+/* Timeline styles */
+.timeline-container {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 45px;
+    padding-bottom: 30px;
+    border-left: 2px solid #dee2e6;
+    margin-left: 15px;
+}
+
+.timeline-item:last-child {
+    border-left: 2px solid transparent;
+    padding-bottom: 0;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-icon.status-new {
+    border-color: #0d6efd;
+    background-color: #cfe2ff;
+}
+
+.timeline-icon.status-processing {
+    border-color: #ffc107;
+    background-color: #fff3cd;
+}
+
+.timeline-icon.status-shipping {
+    border-color: #0dcaf0;
+    background-color: #cff4fc;
+}
+
+.timeline-icon.status-completed {
+    border-color: #198754;
+    background-color: #d1e7dd;
+}
+
+.timeline-icon.status-cancelled {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.timeline-date {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 5px;
+}
+
+.timeline-status {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.timeline-note {
+    color: #495057;
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+.view-timeline-btn {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+}

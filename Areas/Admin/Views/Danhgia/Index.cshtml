@@ -1,0 +1,283 @@
+@model IEnumerable<Final_VS1.Data.DanhGium>
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["PageTitle"] = "QUẢN LÝ ĐÁNH GIÁ";
+}
+
+<link rel="stylesheet" href="~/css/Admin/danhgia.css" asp-append-version="true" />
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card bg-primary">
+                <div class="stats-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.TotalReviews</div>
+                    <div class="stats-label">Tổng đánh giá</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-warning">
+                <div class="stats-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.AverageRating.ToString("0.0")</div>
+                    <div class="stats-label">Điểm trung bình</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-success">
+                <div class="stats-icon">
+                    <i class="fas fa-reply"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.ReviewsWithReply</div>
+                    <div class="stats-label">Đã trả lời</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-danger">
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.ReviewsWithoutReply</div>
+                    <div class="stats-label">Chưa trả lời</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews List -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Danh sách đánh giá
+                </h5>
+                <!-- select-all checkbox removed -->
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @{ var reviewOrders = ViewBag.ReviewOrders as Dictionary<int, (int Id, string Status, string Date)>; }
+            <style>
+                /* Improved table visual: spaced rows, rounded white cards, green header */
+                .reviews-table { border-collapse: separate; border-spacing: 0 12px; }
+                .reviews-table thead th { background: linear-gradient(90deg,#2f8f4a,#3fb36b); color: #fff; border: none; vertical-align: middle; }
+                .reviews-table thead th:first-child { border-top-left-radius: 10px; }
+                .reviews-table thead th:last-child { border-top-right-radius: 10px; }
+                .reviews-table tbody tr { background: transparent; }
+                .reviews-table tbody td { background: #fff; border: none; padding: 18px; vertical-align: middle; }
+                .reviews-table .badge { font-weight: 600; }
+                .review-actions .btn { margin-left: 6px; }
+
+                .rating-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 6px 10px;
+                    border-radius: 12px;
+                    background: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                }
+
+                .rating-score {
+                    font-weight: 700;
+                    color: #e0a800;
+                    font-size: 13px;
+                    line-height: 1;
+                }
+
+                .rating-stars {
+                    font-size: 13px;
+                    color: #f2b01e;
+                }
+
+                .rating-stars.muted {
+                    color: #cbd5e0;
+                }
+            </style>
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                        <table class="table reviews-table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="50">ID</th>
+                                <th>Khách hàng</th>
+                                <th>Sản phẩm</th>
+                                <th width="160">Đơn hàng</th>
+                                <th width="120">Đánh giá</th>
+                                <th>Nội dung</th>
+                                <th width="140">Ngày đánh giá</th>
+                                <th width="100">Trạng thái</th>
+                                <th width="180">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="review-row" data-review-id="@item.IdDanhGia">
+                                    <td>
+                                        <span class="badge bg-secondary">#@item.IdDanhGia</span>
+                                    </td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <strong>@(item.IdTaiKhoanNavigation?.HoTen ?? "Khách ẩn danh")</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="product-info">
+                                            @(item.IdSanPhamNavigation?.TenSanPham ?? "Không xác định")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (reviewOrders != null && reviewOrders.TryGetValue(item.IdDanhGia, out var orderInfo))
+                                        {
+                                            <div class="d-flex flex-column">
+                                                <a class="btn btn-outline-primary btn-sm" target="_blank" 
+                                                   href="@Url.Action("Detail", "Donhang", new { area = "Admin", id = orderInfo.Id })">
+                                                    <i class="fas fa-receipt me-1"></i>Đơn #@orderInfo.Id
+                                                </a>
+                                                <small class="text-muted mt-1">
+                                                    <i class="far fa-clock me-1"></i>@orderInfo.Date
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>@orderInfo.Status
+                                                </small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <em class="text-muted">Không tìm thấy đơn</em>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{ var rating = item.SoSao ?? 0; }
+                                        <div class="rating-chip" title="@rating sao">
+                                            <span class="rating-score">@rating</span>
+                                                    <i class="rating-stars fas fa-star"></i>
+                                             
+                            
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="review-content">
+                                            @if (!string.IsNullOrEmpty(item.BinhLuan))
+                                            {
+                                                @(item.BinhLuan.Length > 80 ? item.BinhLuan.Substring(0, 80) + "..." : item.BinhLuan)
+                                            }
+                                            else
+                                            {
+                                                <em class="text-muted">Không có nhận xét</em>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            @item.NgayDanhGia?.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.TraLoiCuaShop))
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Đã trả lời
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Chưa trả lời
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm review-actions">
+                                            <button class="btn btn-info btn-toggle-detail" data-id="@item.IdDanhGia" data-has-reply="@(!string.IsNullOrEmpty(item.TraLoiCuaShop))" title="Xem chi tiết">
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="review-detail-row" id="detail-@item.IdDanhGia" style="display: none;">
+                                    <td colspan="9">
+                                        <div class="review-detail-container">
+                                            <div class="loading-indicator">
+                                                <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                                                <span class="ms-2">Đang tải chi tiết...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Không có đánh giá nào</p>
+                </div>
+            }
+        </div>
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="card-footer bg-white">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                <a class="page-link" href="?page=@i">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal xem ảnh đánh giá -->
+<div class="modal fade" id="reviewImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body p-0 position-relative">
+                <button type="button" class="btn-close position-absolute end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                <img id="reviewImageModalImg" src="" alt="Review image" class="w-100" style="max-height:80vh; object-fit:contain;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/Admin/danhgia.js" asp-append-version="true"></script>
+    @Html.AntiForgeryToken()
+}

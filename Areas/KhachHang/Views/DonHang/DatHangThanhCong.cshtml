@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+    
+    // Lấy mã đơn hàng từ URL (query string)
+    var orderCode = Context.Request.Query["orderCode"];
+}
+
+@section Styles {
+    <link href="~/css/KhachHang/DatHangThanhCong.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<div class="container">
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Đặt Hàng Thành Công!</h1>
+        
+        <p>Cảm ơn bạn đã tin tưởng và mua sắm. Đơn hàng của bạn đã được tiếp nhận và sẽ sớm được xử lý.</p>
+        
+        @if (!string.IsNullOrEmpty(orderCode))
+        {
+            <div class="order-code-box">
+                Mã đơn hàng của bạn là: <span>@orderCode</span>
+            </div>
+        }
+        
+        <div class="action-buttons">
+            <a href="@Url.Action("Index", "DonHang", new { area = "KhachHang" })" class="btn-custom-secondary">
+                <i class="fas fa-receipt"></i> Xem đơn hàng
+            </a>
+            <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="btn-custom-primary">
+                <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+            </a>
+        </div>
+    </div>
+</div>

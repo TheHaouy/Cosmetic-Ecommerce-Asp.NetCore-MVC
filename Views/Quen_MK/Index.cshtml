@@ -1,0 +1,49 @@
+@model Final_VS1.Models.QuenMKViewModel
+@{
+    ViewData["Title"] = "Quên Mật Khẩu";
+    Layout = "~/Views/Shared/_Layout_Dang_Ki.cshtml";
+}
+
+<div id="forgotPasswordSection" class="form-section active">
+    <div class="login-container">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                    <div class="card shadow">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <h2 class="card-title">Quên Mật Khẩu</h2>
+                                <p class="text-muted">Nhập email đã đăng ký để nhận hướng dẫn đổi mật khẩu</p>
+                            </div>
+                            @if (TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger text-center">@TempData["Error"]</div>
+                            }
+                            @if (TempData["Success"] != null)
+                            {
+                                <div class="alert alert-success text-center">@TempData["Success"]</div>
+                            }
+                            <form asp-action="Index" asp-controller="Quen_MK" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="mb-4">
+                                    <label for="Email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input asp-for="Email" class="form-control" id="Email" type="email" required placeholder="Nhập email của bạn" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Gửi mã xác nhận</button>
+                                </div>
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="@Url.Action("Index", "DangNhap")" class="text-decoration-none">Quay lại đăng nhập</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,484 @@
+@model Final_VS1.Data.DonHang
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.IdDonHang;
+    ViewData["PageTitle"] = "Chi Tiết Đơn Hàng #" + Model.IdDonHang;
+}
+
+<div class="container-fluid py-4 fade-in">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "Donhang")" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Order Info & Customer Info -->
+        <div class="col-md-4">
+            <!-- Order Info Card -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-receipt" style="color: var(--primary-color);"></i> Thông Tin Đơn Hàng
+                    </h5>
+
+                    <div class="info-row">
+                        <div class="info-label">Mã đơn hàng</div>
+                        <div class="info-value">
+                            <strong style="color: var(--primary-color);">#@Model.IdDonHang</strong>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Ngày đặt</div>
+                        <div class="info-value">
+                            @(Model.NgayDat.HasValue ? Model.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Trạng thái</div>
+                        <div class="info-value">
+                            @{
+                                var badgeClass = Model.TrangThai switch
+                                {
+                                    "Chờ xác nhận" => "bg-warning text-dark",
+                                    "Đã xác nhận" => "bg-info",
+                                    "Đang giao" => "bg-primary",
+                                    "Hoàn thành" => "bg-success",
+                                    "Đã hủy" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @badgeClass">@Model.TrangThai</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Phương thức thanh toán</div>
+                        <div class="info-value">@(Model.PhuongThucThanhToan ?? "Chưa xác định")</div>
+                    </div>
+
+                    @if (Model.IdVcNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Vận chuyển</div>
+                            <div class="info-value">@Model.IdVcNavigation.TenVc</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Customer Info Card -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-user" style="color: var(--primary-color);"></i> Thông Tin Khách Hàng
+                    </h5>
+
+                    @if (Model.IdTaiKhoanNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Họ tên</div>
+                            <div class="info-value"><strong>@Model.IdTaiKhoanNavigation.HoTen</strong></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">@Model.IdTaiKhoanNavigation.Email</div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.IdTaiKhoanNavigation.SoDienThoai))
+                        {
+                            <div class="info-row">
+                                <div class="info-label">SĐT</div>
+                                <div class="info-value">@Model.IdTaiKhoanNavigation.SoDienThoai</div>
+                            </div>
+                        }
+                    }
+
+                    @if (Model.IdDiaChiNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Người nhận</div>
+                            <div class="info-value">@Model.IdDiaChiNavigation.HoTenNguoiNhan</div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">SĐT người nhận</div>
+                            <div class="info-value">@Model.IdDiaChiNavigation.SoDienThoai</div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Địa chỉ</div>
+                            <div class="info-value">@Model.IdDiaChiNavigation.DiaChiChiTiet</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Update Status Form -->
+            @if (Model.TrangThai != "Hoàn thành" && Model.TrangThai != "Đã hủy")
+            {
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-sync-alt text-primary"></i> Cập Nhật Trạng Thái
+                        </h5>
+                        <form id="updateStatusForm">
+                            @{
+                                var statusOptions = new Dictionary<string, string>
+                                {
+                                    { "Chờ xác nhận", "Chờ xác nhận" },
+                                    { "Đã xác nhận", "Đã xác nhận" },
+                                    { "Đang giao", "Đang giao" },
+                                    { "Hoàn thành", "Hoàn thành" },
+                                    { "Đã hủy", "Đã hủy" }
+                                };
+
+                                // Chuẩn hóa trạng thái bằng cách convert về lowercase
+                                var currentStatusLower = Model.TrangThai?.Trim().ToLower() ?? "";
+                                
+                                // Xác định các trạng thái có thể chuyển đến
+                                var availableStatuses = currentStatusLower switch
+                                {
+                                    "chờ xác nhận" => new[] { "Đã xác nhận", "Đã hủy" },
+                                    "đã xác nhận" => new[] { "Đang giao" },
+                                    "đang giao" => new[] { "Hoàn thành" },
+                                    _ => Array.Empty<string>()
+                                };
+                            }
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Trạng thái hiện tại</label>
+                                <input type="text" class="form-control" value="@Model.TrangThai" disabled>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="newStatus" class="form-label fw-semibold">Chuyển sang trạng thái</label>
+                                <select class="form-select" id="newStatus" name="newStatus" required>
+                                    <option value="">-- Chọn trạng thái --</option>
+                                    @foreach (var status in statusOptions)
+                                    {
+                                        var isAvailable = availableStatuses.Contains(status.Key);
+                                        <option value="@status.Key" 
+                                                disabled="@(!isAvailable ? "disabled" : null)">
+                                            @status.Value
+                                        </option>
+                                    }
+                                </select>
+                                <div class="form-text">
+                                    @if (availableStatuses.Length > 0)
+                                    {
+                                        <span class="text-success">
+                                            <i class="fas fa-info-circle"></i> Có thể chuyển: @string.Join(", ", availableStatuses)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            <i class="fas fa-info-circle"></i> Đơn hàng đã ở trạng thái cuối
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="statusNote" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="statusNote" name="statusNote" rows="3" placeholder="Nhập ghi chú (tùy chọn)"></textarea>
+                            </div>
+
+                            @if (availableStatuses.Length > 0)
+                            {
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-check me-2"></i>Cập Nhật Trạng Thái
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary w-100" disabled>
+                                    <i class="fas fa-lock me-2"></i>Không thể cập nhật
+                                </button>
+                            }
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Right Column - Products & Timeline -->
+        <div class="col-md-8">
+            <!-- Products Card -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-box" style="color: var(--primary-color);"></i> Sản Phẩm
+                    </h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ChiTietDonHangs)
+                                {
+                                    var product = item.IdBienTheNavigation?.IdSanPhamNavigation;
+                                    var mainImage = product?.AnhSanPhams.FirstOrDefault()?.DuongDan ?? "/images/noimage.jpg";
+
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@mainImage" alt="@product?.TenSanPham" 
+                                                     class="product-image me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                                <div>
+                                                    <div class="fw-bold">@product?.TenSanPham</div>
+                                                    @if (item.IdBienTheNavigation?.IdGiaTris.Any() == true)
+                                                    {
+                                                        <small class="text-muted">
+                                                            @string.Join(", ", item.IdBienTheNavigation.IdGiaTris.Select(g => g.GiaTri))
+                                                        </small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@((item.GiaLucDat ?? 0).ToString("N0"))₫</td>
+                                        <td>@item.SoLuong</td>
+                                        <td class="fw-bold" style="color: var(--primary-color);">@(((item.GiaLucDat ?? 0) * (item.SoLuong ?? 0)).ToString("N0"))₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                                    <td class="fw-bold fs-5" style="color: var(--primary-color);">@((Model.TongTien ?? 0).ToString("N0"))₫</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            @if (Model.TimelineDonHangs.Any())
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-history" style="color: var(--primary-color);"></i> Lịch Sử Đơn Hàng
+                        </h5>
+
+                        <div class="timeline">
+                            @foreach (var timeline in Model.TimelineDonHangs.OrderByDescending(t => t.NgayCapNhat))
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-primary"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>@timeline.TrangThaiMoi</strong>
+                                            <small class="text-muted">@timeline.NgayCapNhat?.ToString("dd/MM/yyyy HH:mm")</small>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(timeline.GhiChu))
+                                        {
+                                            <p class="mb-0 text-muted small">@timeline.GhiChu</p>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .info-value {
+            text-align: right;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -26px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Normalize status for case-insensitive comparison
+            const normalizeStatus = (status) => {
+                if (!status) return '';
+                const normalized = status.trim().toLowerCase();
+                const statusMap = {
+                    'chờ xác nhận': 'Chờ xác nhận',
+                    'đã xác nhận': 'Đã xác nhận',
+                    'đang giao': 'Đang giao',
+                    'hoàn thành': 'Hoàn thành',
+                    'đã hủy': 'Đã hủy'
+                };
+                return statusMap[normalized] || status;
+            };
+
+            const statusTransitions = {
+                'Chờ xác nhận': ['Đã xác nhận', 'Đã hủy'],
+                'Đã xác nhận': ['Đang giao'],
+                'Đang giao': ['Hoàn thành']
+            };
+
+            const rawStatus = @Html.Raw(JsonSerializer.Serialize(Model.TrangThai ?? string.Empty));
+            const currentStatus = normalizeStatus(rawStatus);
+            const allowedStatuses = statusTransitions[currentStatus] || [];
+
+            // Form validation và submission
+            $('#updateStatusForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const newStatus = $('#newStatus').val();
+                const note = $('#statusNote').val();
+
+                // Validate status selection
+                if (!newStatus) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Vui lòng chọn trạng thái mới!'
+                    });
+                    return;
+                }
+
+                // Validate allowed transition
+                if (!allowedStatuses.includes(newStatus)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Không hợp lệ',
+                        text: `Không thể chuyển từ "${currentStatus}" sang "${newStatus}"!`
+                    });
+                    return;
+                }
+
+                // Confirm update
+                Swal.fire({
+                    title: 'Xác nhận cập nhật',
+                    html: `
+                        <div class="text-start">
+                            <p><strong>Trạng thái hiện tại:</strong> ${currentStatus}</p>
+                            <p><strong>Trạng thái mới:</strong> ${newStatus}</p>
+                            ${note ? `<p><strong>Ghi chú:</strong> ${note}</p>` : ''}
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-check me-2"></i>Xác nhận',
+                    cancelButtonText: '<i class="fas fa-times me-2"></i>Hủy',
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        return $.ajax({
+                            url: '@Url.Action("UpdateStatus", "Donhang", new { area = "NhanVien" })',
+                            type: 'POST',
+                            data: {
+                                id: @Model.IdDonHang,
+                                status: newStatus,
+                                note: note,
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                            }
+                        }).then(response => {
+                            if (!response.success) {
+                                throw new Error(response.message || 'Có lỗi xảy ra');
+                            }
+                            return response;
+                        }).catch(error => {
+                            Swal.showValidationMessage(
+                                `Yêu cầu thất bại: ${error.message || error.responseJSON?.message || 'Lỗi kết nối'}`
+                            );
+                        });
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: result.value.message || 'Cập nhật trạng thái thành công',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }
+                });
+            });
+
+            // Visual feedback for status select
+            $('#newStatus').on('change', function() {
+                const selectedValue = $(this).val();
+                if (selectedValue && allowedStatuses.includes(selectedValue)) {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                } else if (selectedValue) {
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-valid is-invalid');
+                }
+            });
+        });
+    </script>
+    @Html.AntiForgeryToken()
+}

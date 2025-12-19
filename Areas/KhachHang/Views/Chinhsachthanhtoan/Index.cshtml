@@ -1,0 +1,139 @@
+@{
+	ViewData["Title"] = "Chính sách thanh toán";
+	Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<link href="~/css/KhachHang/quanlitaikhoan.css" rel="stylesheet" />
+
+<style>
+	.guide-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 1.5rem;
+	}
+    
+	.guide-header {
+		text-align: center;
+		margin-bottom: 2rem;
+		background: var(--nature-green);
+		color: white;
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+    
+	.guide-header h1 {
+		font-size: 1.8rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+    
+	.guide-header p {
+		font-size: 1rem;
+		margin: 0;
+	}
+    
+	.step-section {
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 1.5rem;
+		padding: 1.5rem;
+		border-left: 4px solid var(--nature-green);
+	}
+    
+	.step-title {
+		color: var(--nature-green);
+		font-size: 1.3rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+	}
+    
+	.step-content p {
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #333;
+		margin-bottom: 0.8rem;
+	}
+    
+	.step-content ul {
+		padding-left: 1.2rem;
+		margin: 1rem 0;
+	}
+    
+	.step-content li {
+		font-size: 1rem;
+		color: #333;
+		margin-bottom: 0.5rem;
+	}
+    
+	.info-note {
+		background: #e8f5e8;
+		border-left: 4px solid var(--nature-green);
+		padding: 1rem;
+		margin: 1rem 0;
+		border-radius: 0 8px 8px 0;
+	}
+    
+	@@media (max-width: 768px) {
+		.guide-container {
+			padding: 1rem;
+		}
+        
+		.guide-header h1 {
+			font-size: 1.5rem;
+		}
+        
+		.step-section {
+			padding: 1rem;
+		}
+	}
+</style>
+
+<div class="guide-container">
+	<div class="guide-header">
+		<h1><i class="bi bi-credit-card me-2"></i>Chính Sách Thanh Toán</h1>
+		<p>Các phương thức thanh toán và cam kết an toàn tại LittleFish Beauty</p>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">1. Các phương thức thanh toán áp dụng</h3>
+		<div class="step-content">
+			<p>LittleFish Beauty cung cấp hai hình thức thanh toán để bạn lựa chọn linh hoạt. Thứ nhất là Thanh toán khi nhận hàng (COD), phù hợp với khách mới cần sự an tâm: bạn đặt hàng, nhận và kiểm tra gói theo quy định rồi mới trả tiền mặt cho shipper.</p>
+			<p>Thứ hai là Chuyển khoản ngân hàng hoặc Ví điện tử, giúp bạn giảm dùng tiền mặt hoặc mua quà tặng tiện lợi. Khi thanh toán trước, đơn sẽ được ưu tiên xử lý và đóng gói ngay sau khi giao dịch được xác nhận thành công.</p>
+			<div class="info-note">
+				<strong>Tùy chỉnh:</strong> Nếu không có ưu đãi cho thanh toán trước, hãy bỏ câu về ưu đãi. Nếu có cổng thẻ (VNPAY/OnePay/AlePay), có thể bổ sung "Thanh toán thẻ tín dụng/thẻ ATM qua cổng thanh toán" vào đây.
+			</div>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">2. Hướng dẫn thanh toán chuyển khoản</h3>
+		<div class="step-content">
+			<p>Nếu chọn chuyển khoản, vui lòng chuyển đến tài khoản chính thức của LittleFish Beauty và ghi rõ "Số điện thoại đặt hàng" hoặc "Mã đơn hàng" để hệ thống nhận diện nhanh.</p>
+			<ul>
+				<li>Ngân hàng: [Điền tên ngân hàng, ví dụ: Techcombank]</li>
+				<li>Chủ tài khoản: [Điền tên chủ tài khoản/Công ty]</li>
+				<li>Số tài khoản: [Điền số tài khoản]</li>
+				<li>Chi nhánh: [Điền chi nhánh nếu cần]</li>
+			</ul>
+			<div class="info-note">
+				<strong>Thêm tùy chọn:</strong> Nếu chấp nhận ví Momo/ZaloPay, thêm: "Chúng tôi cũng chấp nhận thanh toán qua ví Momo/ZaloPay qua số: [Số ĐT của shop]."
+			</div>
+			<p>Sau khi nhận được biến động số dư, kế toán sẽ cập nhật đơn thành "Đã thanh toán" và chuyển sang đóng gói. Nếu sau 2 giờ làm việc trạng thái chưa đổi, hãy liên hệ Hotline để được kiểm tra.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">3. Cam kết bảo mật trong thanh toán</h3>
+		<div class="step-content">
+			<p>Chúng tôi áp dụng tiêu chuẩn bảo mật dữ liệu nghiêm ngặt và không lưu trữ thông tin thẻ (số thẻ, CVV) trên máy chủ. Mọi giao dịch thẻ, nếu có, được thực hiện trực tiếp trên giao diện bảo mật của cổng thanh toán/nhà băng được cấp phép.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">4. Quy định về hoàn tiền</h3>
+		<div class="step-content">
+			<p>Trong trường hợp hết hàng, hủy đơn hợp lệ hoặc đổi trả theo quy định, chúng tôi sẽ hoàn lại khoản tiền đã thanh toán. Thời gian hoàn tiền phụ thuộc ngân hàng, thường 3 - 5 ngày làm việc (không tính Thứ 7, Chủ Nhật, ngày Lễ). LittleFish Beauty sẽ thông báo minh bạch qua email hoặc tin nhắn khi lệnh hoàn tiền được thực hiện.</p>
+		</div>
+	</div>
+</div>

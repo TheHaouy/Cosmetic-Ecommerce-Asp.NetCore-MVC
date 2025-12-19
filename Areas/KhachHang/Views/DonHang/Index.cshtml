@@ -1,0 +1,800 @@
+﻿@model Final_VS1.Areas.KhachHang.ViewModels.DonHangViewModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<!-- Animated Background Effects -->
+<div class="animated-background">
+    <!-- Aurora Effect -->
+    <div class="aurora"></div>
+    <!-- Organic Nature Patterns -->
+    <div class="organic-pattern"></div>
+    <div class="organic-pattern"></div>
+    <div class="organic-pattern"></div>
+    <!-- Floating Leaves -->
+    <div class="leaf maple" style="left: 5%; animation-delay: 0s;">🍁</div>
+    <div class="leaf oak" style="left: 15%; animation-delay: -3s;">🍃</div>
+    <div class="leaf birch" style="left: 25%; animation-delay: -6s;">🌿</div>
+    <div class="leaf maple" style="left: 35%; animation-delay: -9s;">🍂</div>
+    <div class="leaf small" style="left: 45%; animation-delay: -12s;">🌱</div>
+    <div class="leaf oak" style="left: 55%; animation-delay: -2s;">🍃</div>
+    <div class="leaf birch" style="left: 65%; animation-delay: -5s;">🌿</div>
+    <div class="leaf maple" style="left: 75%; animation-delay: -8s;">🍁</div>
+    <div class="leaf small" style="left: 85%; animation-delay: -11s;">🌱</div>
+    <div class="leaf oak" style="left: 95%; animation-delay: -14s;">🍃</div>
+    <!-- Floating Flower Petals -->
+    <div class="flower-petal sakura" style="left: 8%; animation-delay: -1s;">🌸</div>
+    <div class="flower-petal rose" style="left: 18%; animation-delay: -4s;">🌹</div>
+    <div class="flower-petal daisy" style="left: 28%; animation-delay: -7s;">🌼</div>
+    <div class="flower-petal lavender" style="left: 38%; animation-delay: -10s;">💜</div>
+    <div class="flower-petal sakura" style="left: 48%; animation-delay: -13s;">🌸</div>
+    <div class="flower-petal rose" style="left: 58%; animation-delay: -2.5s;">🌺</div>
+    <div class="flower-petal daisy" style="left: 68%; animation-delay: -5.5s;">🌼</div>
+    <div class="flower-petal lavender" style="left: 78%; animation-delay: -8.5s;">🌻</div>
+    <div class="flower-petal sakura" style="left: 88%; animation-delay: -11.5s;">🌸</div>
+    <!-- Nature Elements -->
+    <div class="nature-element branch" style="left: 12%; animation-delay: -3s;">🌳</div>
+    <div class="nature-element grass" style="left: 32%; animation-delay: -8s;">🌾</div>
+    <div class="nature-element seed" style="left: 52%; animation-delay: -13s;">🌰</div>
+    <div class="nature-element branch" style="left: 72%; animation-delay: -5s;">🌲</div>
+    <div class="nature-element grass" style="left: 92%; animation-delay: -10s;">🌾</div>
+    <!-- Floating Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <!-- Ripple Effects -->
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <!-- Floating Nature & Cosmetic Icons -->
+    <div class="floating-icons"><i class="bi bi-droplet-fill"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower1"></i></div>
+    <div class="floating-icons"><i class="bi bi-tree"></i></div>
+    <div class="floating-icons"><i class="bi bi-sun"></i></div>
+    <div class="floating-icons"><i class="bi bi-cloud"></i></div>
+    <div class="floating-icons"><i class="bi bi-droplet"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower2"></i></div>
+    <div class="floating-icons"><i class="bi bi-brightness-high"></i></div>
+    <div class="floating-icons"><i class="bi bi-egg"></i></div>
+    <div class="floating-icons"><i class="bi bi-flower3"></i></div>
+    <div class="floating-icons"><i class="bi bi-water"></i></div>
+    <div class="floating-icons"><i class="bi bi-tree-fill"></i></div>
+    <div class="floating-icons">💄</div>
+    <div class="floating-icons">💅</div>
+    <div class="floating-icons">✨</div>
+    <div class="floating-icons">🌸</div>
+    <div class="floating-icons">🌺</div>
+    <div class="floating-icons">🦋</div>
+    <!-- Geometric Shapes -->
+    <div class="geo-shape circle" style="top: 15%; left: 5%; animation-delay: 0s;"></div>
+    <div class="geo-shape triangle" style="top: 30%; left: 85%; animation-delay: -1s;"></div>
+    <div class="geo-shape square" style="top: 50%; left: 10%; animation-delay: -2s;"></div>
+    <div class="geo-shape diamond" style="top: 70%; left: 75%; animation-delay: -3s;"></div>
+    <div class="geo-shape circle" style="top: 80%; left: 30%; animation-delay: -4s;"></div>
+    <div class="geo-shape triangle" style="top: 25%; left: 60%; animation-delay: -5s;"></div>
+    <div class="geo-shape square" style="top: 65%; left: 90%; animation-delay: -6s;"></div>
+    <div class="geo-shape diamond" style="top: 45%; left: 40%; animation-delay: -7s;"></div>
+    <!-- Sparkles -->
+    <div class="sparkle" style="top: 20%; left: 25%; animation-delay: 0s;"></div>
+    <div class="sparkle" style="top: 40%; left: 70%; animation-delay: -0.5s;"></div>
+    <div class="sparkle" style="top: 60%; left: 15%; animation-delay: -1s;"></div>
+    <div class="sparkle" style="top: 75%; left: 80%; animation-delay: -1.5s;"></div>
+    <div class="sparkle" style="top: 35%; left: 50%; animation-delay: -2s;"></div>
+    <div class="sparkle" style="top: 85%; left: 60%; animation-delay: -2.5s;"></div>
+    <div class="sparkle" style="top: 10%; left: 90%; animation-delay: -3s;"></div>
+    <div class="sparkle" style="top: 55%; left: 35%; animation-delay: -3.5s;"></div>
+    <div class="sparkle" style="top: 90%; left: 20%; animation-delay: -4s;"></div>
+    <div class="sparkle" style="top: 25%; left: 85%; animation-delay: -4.5s;"></div>
+    <!-- Floating Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+    <!-- Wave Animation -->
+    <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+</div>
+
+<!-- Theme Toggle Button -->
+<button class="btn btn-primary btn-theme-toggle" id="themeToggle" title="Chuyển đổi chế độ sáng/tối"
+        style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; border-radius: 50% !important; width: 60px !important; height: 60px !important; padding: 0 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important; margin: 0 !important; transform: none !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+    <i class="bi bi-sun-fill text-white" id="themeIcon" style="font-size: 1.5rem;"></i>
+</button>
+
+<!-- Notification Container -->
+<div id="notificationContainer"></div>
+
+<!-- Main Container -->
+<div class="main-container">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-3">
+            @await Html.PartialAsync("_CustomerSidebar")
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-9">
+            <div class="p-4">
+                <div class="card position-relative" style="min-height: auto;">
+                    <div class="card-header text-center">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-bag-check me-2"></i>Đơn hàng của tôi
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-pills order-status-tabs mb-4" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link @(string.IsNullOrEmpty(Model.CurrentFilter) ? "active" : "")" 
+                                   href="@Url.Action("Index")">
+                                    Tất cả 
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Model.CurrentFilter == "Chờ xác nhận" ? "active" : "")" 
+                                   href="@Url.Action("Index", new { status = "Chờ xác nhận" })">
+                                    Chờ xác nhận 
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Model.CurrentFilter == "Đã xác nhận" ? "active" : "")" 
+                                   href="@Url.Action("Index", new { status = "Đã xác nhận" })">
+                                    Đã xác nhận
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Model.CurrentFilter == "Đang giao" ? "active" : "")" 
+                                   href="@Url.Action("Index", new { status = "Đang giao" })">
+                                    Đang giao 
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Model.CurrentFilter == "Hoàn thành" ? "active" : "")" 
+                                   href="@Url.Action("Index", new { status = "Hoàn thành" })">
+                                    Hoàn thành
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Model.CurrentFilter == "Đã hủy" ? "active" : "")" 
+                                   href="@Url.Action("Index", new { status = "Đã hủy" })">
+                                    Đã hủy
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- Orders List -->
+                        <div id="ordersContainer">
+                            @if (Model.DonHangs.Any())
+                            {
+                                @foreach (var order in Model.DonHangs)
+                                {
+                                    <div class="order-card card mb-3" style="cursor: pointer;" onclick="viewOrderDetails(@order.IdDonHang)">
+                                        <div class="card-header d-flex align-items-center">
+                                            <div class="d-flex align-items-center w-100">
+                                                @{
+                                                    var status = order.TrangThai;
+                                                    var badgeClass = "bg-secondary text-white";
+                                                    var statusText = status;
+
+                                                    switch (status)
+                                                    {
+                                                        case "Chờ xác nhận":
+                                                            badgeClass = "bg-warning text-dark";
+                                                            statusText = "Chờ xác nhận";
+                                                            break;
+                                                        case "Đang xử lý":
+                                                            badgeClass = "bg-info text-white";
+                                                            statusText = "Đang giao";
+                                                            break;
+                                                        case "Đã xác nhận":
+                                                            badgeClass = "bg-info text-white";
+                                                            statusText = "Đã xác nhận";
+                                                            break;
+                                                        case "Đang giao":
+                                                            badgeClass = "bg-info text-white";
+                                                            statusText = "Đang giao";
+                                                            break;
+                                                        case "Hoàn thành":
+                                                            badgeClass = "bg-success text-white";
+                                                            statusText = "Hoàn thành";
+                                                            break;
+                                                        case "Đã hủy":
+                                                            badgeClass = "bg-danger text-white";
+                                                            statusText = "Đã hủy";
+                                                            break;
+                                                        default:
+                                                            badgeClass = "bg-secondary text-white";
+                                                            statusText = status ?? "Không xác định";
+                                                            break;
+                                                    }
+                                                }
+
+                                                <span class="badge @badgeClass px-4 py-2"
+                                                      style="font-size:1rem; min-width:120px; border-radius:20px; flex-shrink:0; text-align:center;">
+                                                    @statusText
+                                                </span>
+
+                                                <div class="ms-auto text-end">
+                                                    <small class="text-muted">
+                                                        @order.NgayDat?.ToString("dd/MM/yyyy HH:mm")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="h4 mb-0 text-success">
+                    @order.TongTien?.ToString("N0") ₫
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-muted">@(order.ChiTietDonHangs?.Count ?? 0) sản phẩm</span>
+                    @if (order.TrangThai == "Chờ xác nhận")
+                    {
+                        <button type="button" class="btn btn-outline-danger btn-sm px-3 py-1" onclick="cancelOrder(@order.IdDonHang, event)"
+                                style="font-size: 0.875rem; border-radius: 6px; min-width: 90px;">
+                            <i class="bi bi-x-circle me-1" style="font-size: 0.8rem;"></i>Hủy đơn
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                            <div class="mb-3">
+            
+                                                        @if (order.ChiTietDonHangs?.Any() == true)
+                                                        {
+                                                            <div class="product-list">
+                                                                @foreach (var item in order.ChiTietDonHangs)
+                                                                {
+                                                                    var productImages = ViewBag.ProductImages as Dictionary<int, string>;
+                                                                    var idSanPham = item.IdBienTheNavigation?.IdSanPham ?? 0;
+                                                                    var anhChinh = "/images/noimage.jpg";
+                                                                    
+                                                                    if (productImages != null && productImages.ContainsKey(idSanPham))
+                                                                    {
+                                                                        anhChinh = productImages[idSanPham];
+                                                                    }
+                                                                    
+                                                                    var tenSanPham = item.IdBienTheNavigation?.IdSanPhamNavigation?.TenSanPham ?? "Sản phẩm không xác định";
+                                                                    var bienTheInfo = "";
+                                                                    if (item.IdBienTheNavigation?.IdGiaTris?.Any() == true)
+                                                                    {
+                                                                        var giaTris = item.IdBienTheNavigation.IdGiaTris
+                                                                            .Where(gt => gt.IdThuocTinhNavigation != null)
+                                                                            .Select(gt => $"{gt.IdThuocTinhNavigation?.TenThuocTinh}: {gt.GiaTri}")
+                                                                            .ToList();
+                                                                        if (giaTris.Any())
+                                                                        {
+                                                                            bienTheInfo = string.Join(", ", giaTris);
+                                                                        }
+                                                                    }
+                                                                    
+                                                                    <div class="product-item d-flex align-items-center mb-2">
+                                                                        <div class="product-image-container">
+                                                                            <img src="@(string.IsNullOrEmpty(anhChinh) ? "/images/noimage.jpg" : (anhChinh.StartsWith("http://") || anhChinh.StartsWith("https://") ? anhChinh : (anhChinh.StartsWith("/") ? anhChinh : "/" + anhChinh)))"
+                                                                                alt="@tenSanPham"
+                                                                                class="product-image"
+                                                                                onerror="this.onerror=null; this.src='/images/noimage.jpg';" />
+                                                                        </div>
+                                                                        
+                                                                        <div class="product-info flex-grow-1 ms-3">
+                                                                            <div class="product-name" title="@tenSanPham @(bienTheInfo != "" ? $"({bienTheInfo})" : "")">
+                                                                                @tenSanPham
+                                                                            </div>
+                                                                            <div class="product-variant-row">
+                                                                                @if (!string.IsNullOrEmpty(bienTheInfo))
+                                                                                {
+                                                                                    <div class="product-variant">@bienTheInfo</div>
+                                                                                }
+                                                                                <div class="product-qty-price">
+                                                                                    SL: @item.SoLuong × @item.GiaLucDat?.ToString("N0") ₫
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="product-total">
+                                                                            @((item.SoLuong * item.GiaLucDat)?.ToString("N0")) ₫
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            <i class="bi bi-geo-alt me-1"></i>
+                                                            @(order.IdDiaChiNavigation?.DiaChiChiTiet ?? "Không có thông tin địa chỉ")
+                                                        </small>
+                                                    </div>
+                                                
+                                                </div>
+                                            </div>
+                                      
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <i class="bi bi-bag-x display-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">
+                                        @if (!string.IsNullOrEmpty(Model.CurrentFilter))
+                                        {
+                                            <text>Không có đơn hàng "@Model.CurrentFilter"</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Chưa có đơn hàng nào</text>
+                                        }
+                                    </h5>
+                                    <p class="text-muted">
+                                        @if (!string.IsNullOrEmpty(Model.CurrentFilter))
+                                        {
+                                            <text>Thử chọn trạng thái khác hoặc <a href="@Url.Action("Index")" class="text-primary">xem tất cả đơn hàng</a></text>
+                                        }
+                                        else
+                                        {
+                                            <text>Hãy bắt đầu mua sắm để tạo đơn hàng đầu tiên của bạn!</text>
+                                        }
+                                    </p>
+                                    @if (string.IsNullOrEmpty(Model.CurrentFilter))
+                                    {
+                                        <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="btn btn-primary">
+                                            <i class="bi bi-shop me-1"></i>Tiếp tục mua sắm
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Styles {
+    <style>
+        /* CSS override cao nhất để khắc phục lỗi chiều cao */
+        .main-container,
+        .main-container .row,
+        .main-container .col-md-9,
+        .main-container .col-lg-9,
+        .main-container .p-4,
+        .main-container .card,
+        .main-container .card-body,
+        #ordersContainer {
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+        }
+
+        /* Đặc biệt cho container đơn hàng */
+        .card.position-relative {
+            height: fit-content !important;
+            min-height: fit-content !important;
+        }
+        /* Order Status Tabs Container */
+        .order-status-tabs {
+            display: flex;
+            justify-content: space-between; /* Phân bố đều các item */
+            flex-wrap: nowrap; /* Không wrap để nằm 1 hàng */
+            gap: 0; /* Bỏ gap để sử dụng space-between */
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto; /* Cho phép scroll ngang nếu cần */
+        }
+        
+        [data-bs-theme="dark"] .order-status-tabs {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        /* Nav item wrapper để đảm bảo phân bố đều */
+        .order-status-tabs .nav-item {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Individual Tab Styling */
+        .order-status-tabs .nav-link {
+            border-radius: 8px !important;
+            padding: 10px 16px !important; /* Tăng padding để tab to hơn */
+            margin: 0 !important;
+            font-weight: 600;
+            font-size: 0.85rem; /* Tăng font-size cho dễ đọc */
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            flex: 1; /* Cho phép các tab có kích thước đều nhau */
+            max-width: 160px; /* Giới hạn chiều rộng tối đa */
+            min-width: 120px; /* Chiều rộng tối thiểu */
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        /* Tất cả */
+        .order-status-tabs .nav-item:nth-child(1) .nav-link {
+            background: linear-gradient(45deg, #3f4c5a, #1f2a36);
+            color: white;
+            border-color: #1f2a36;
+        }
+        
+        /* Chờ xác nhận */
+        .order-status-tabs .nav-item:nth-child(2) .nav-link {
+            background: linear-gradient(45deg, #f4b400, #f08a00);
+            color: #2e1c00;
+            border-color: #f08a00;
+        }
+
+        /* Đã xác nhận */
+        .order-status-tabs .nav-item:nth-child(3) .nav-link {
+            background: linear-gradient(45deg, #0f9f6e, #0a6f4f);
+            color: #e8fff7;
+            border-color: #0a6f4f;
+        }
+        
+        /* Đang giao */
+        .order-status-tabs .nav-item:nth-child(4) .nav-link {
+            background: linear-gradient(45deg, #0ea5e9, #0369a1);
+            color: #e6f7ff;
+            border-color: #0369a1;
+        }
+        
+        /* Hoàn thành */
+        .order-status-tabs .nav-item:nth-child(5) .nav-link {
+            background: linear-gradient(45deg, #22c55e, #15803d);
+            color: #eafff3;
+            border-color: #15803d;
+        }
+        
+        /* Đã hủy */
+        .order-status-tabs .nav-item:nth-child(6) .nav-link {
+            background: linear-gradient(45deg, #e63946, #b91c1c);
+            color: #fff7f7;
+            border-color: #b91c1c;
+        }
+        
+        /* Inactive state */
+        .order-status-tabs .nav-link:not(.active) {
+            opacity: 0.8;
+            transform: scale(0.98); /* Giảm scale */
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Active state */
+        .order-status-tabs .nav-link.active {
+            opacity: 1;
+            transform: scale(1.02); /* Giảm scale */
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        
+        /* Hover effect */
+        .order-status-tabs .nav-link:hover {
+            opacity: 1;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Badge styling */
+        .order-status-tabs .nav-link .badge {
+            background: rgba(255,255,255,0.2) !important;
+            color: inherit !important;
+            border-radius: 8px; /* Hình chữ nhật bo góc */
+            font-size: 0.7rem; /* Giảm font-size */
+            padding: 2px 6px; /* Giảm padding */
+            margin-left: 6px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Special badge for light backgrounds */
+        .order-status-tabs .nav-item:nth-child(2) .nav-link .badge,
+        .order-status-tabs .nav-item:nth-child(3) .nav-link .badge,
+        .order-status-tabs .nav-item:nth-child(4) .nav-link .badge,
+        .order-status-tabs .nav-item:nth-child(5) .nav-link .badge {
+            background: rgba(0,0,0,0.15) !important;
+            color: inherit !important;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .order-status-tabs {
+                padding: 8px;
+                justify-content: space-between; /* Giữ phân bố đều trên mobile */
+                overflow-x: auto;
+            }
+            
+            .order-status-tabs .nav-link {
+                font-size: 0.75rem;
+                padding: 8px 12px !important;
+                min-width: 90px;
+                max-width: 110px;
+                flex: 1; /* Đảm bảo các tab vẫn có kích thước đều trên mobile */
+            }
+            
+            .order-status-tabs .nav-link .badge {
+                font-size: 0.65rem;
+                padding: 1px 4px;
+                margin-left: 3px;
+            }
+        }
+
+        /* Tablet responsive */
+        @@media (min-width: 769px) and (max-width: 1024px) {
+            .order-status-tabs .nav-link {
+                font-size: 0.8rem;
+                padding: 9px 14px !important;
+                min-width: 110px;
+                max-width: 140px;
+            }
+        }
+
+        /* Product Items */
+        .product-list .product-item {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: box-shadow 0.2s, background 0.2s;
+            min-height: 70px;
+        }
+        
+        .product-list .product-item:hover {
+            background: #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        [data-bs-theme="dark"] .product-list .product-item {
+            background: #3a3a3a !important;
+        }
+        
+        [data-bs-theme="dark"] .product-list .product-item:hover {
+            background: #4a4a4a !important;
+        }
+
+        /* Product Images */
+        .product-image-container {
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+        
+        .product-list .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        /* Product Info */
+        .product-list .product-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+        
+        .product-list .product-variant-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .product-list .product-variant {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .product-list .product-qty-price {
+            font-size: 0.85rem;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .product-list .product-total {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #198754;
+            white-space: nowrap;
+        }
+
+        /* Đảm bảo card container có chiều cao phù hợp */
+        .main-container .card {
+            height: auto !important;
+            min-height: unset !important;
+            max-height: none !important;
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        /* Đảm bảo orders container không có chiều cao cố định */
+        #ordersContainer {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        /* Đảm bảo order card có chiều cao phù hợp */
+        .order-card {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        /* Loại bỏ các class có thể ảnh hưởng đến chiều cao */
+        .h-100 {
+            height: auto !important;
+        }
+
+        /* Đảm bảo main container và row có chiều cao phù hợp */
+        .main-container {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        .main-container .row {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        .main-container .col-md-9,
+        .main-container .col-lg-9 {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        /* Đảm bảo padding container có chiều cao phù hợp */
+        .main-container .p-4 {
+            height: auto !important;
+            min-height: unset !important;
+        }
+
+        /* CSS override mạnh để đảm bảo không có chiều cao cố định nào ảnh hưởng */
+        body .main-container,
+        body .main-container .row,
+        body .main-container .col-md-9,
+        body .main-container .col-lg-9,
+        body .main-container .p-4,
+        body .main-container .card,
+        body .main-container .card-body,
+        body .main-container #ordersContainer {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+        }
+    </style>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        // Hàm xem chi tiết đơn hàng
+        function viewOrderDetails(orderId) {
+            window.location.href = '@Url.Action("Details", "DonHang", new { area = "KhachHang" })/' + orderId;
+        }
+
+        // Function hủy đơn hàng
+        function cancelOrder(orderId, event) {
+            // Ngăn event bubbling để không trigger viewOrderDetails
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                fetch('@Url.Action("CancelOrder", "DonHang", new { area = "KhachHang" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ Id: orderId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', 'Hủy đơn hàng thành công');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification('error', data.message || 'Có lỗi xảy ra khi hủy đơn hàng');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Có lỗi xảy ra khi hủy đơn hàng');
+                });
+            }
+        }
+
+        // Function hiển thị thông báo
+        function showNotification(type, message) {
+            const container = document.getElementById('notificationContainer');
+            if (!container) return;
+
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        // Đảm bảo chiều cao được điều chỉnh đúng sau khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loại bỏ các CSS height có thể ảnh hưởng
+            const elements = document.querySelectorAll('.main-container, .main-container .row, .main-container .col-md-9, .main-container .col-lg-9, .main-container .p-4, .main-container .card, .main-container .card-body, #ordersContainer');
+            
+            elements.forEach(function(element) {
+                element.style.height = 'auto';
+                element.style.minHeight = 'auto';
+                element.style.maxHeight = 'none';
+            });
+        });
+    </script>
+}

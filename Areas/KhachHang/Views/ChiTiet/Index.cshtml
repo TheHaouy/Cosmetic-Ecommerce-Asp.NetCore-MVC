@@ -1,0 +1,1084 @@
+@using Final_VS1.Data
+@using Final_VS1.Areas.KhachHang.Models
+@model Final_VS1.Areas.KhachHang.Models.ChiTietSanPhamViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+    var productId = ViewBag.ProductId ?? 1;
+    var tongSoLuongTonKho = ViewBag.TongSoLuongTonKho ?? 0;
+    var diemTrungBinh = ViewBag.DiemTrungBinh ?? 0;
+    var tongSoDanhGia = ViewBag.TongSoDanhGia ?? 0;
+}
+@section Styles {
+    <link href="~/css/KhachHang/chitiet-sanpham.css" rel="stylesheet" asp-append-version="true">
+}
+
+<!-- Breadcrumb -->
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-area="KhachHang" asp-controller="TrangChu" asp-action="Index">Trang chủ</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index">Sản phẩm</a>
+            </li>
+            @if (ViewBag.DanhMucCha != null)
+            {
+                var danhMucCha = ViewBag.DanhMucCha as Final_VS1.Data.DanhMuc;
+                <li class="breadcrumb-item">
+                    <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-category="@danhMucCha?.IdDanhMuc">@danhMucCha?.TenDanhMuc</a>
+                </li>
+            }
+            <li class="breadcrumb-item">
+                <a asp-area="KhachHang" asp-controller="SanPham" asp-action="Index" asp-route-category="@Model?.IdDanhMuc">@Model?.TenDanhMuc</a>
+            </li>
+            <li class="breadcrumb-item active">@Model?.TenSanPham</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Product Detail -->
+<div class="container">
+    <div class="product-detail-section">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="product-images">
+                    @{
+                        var defaultImage = "/Images/noimage.jpg";
+                        var anhChinh = defaultImage;
+                        var anhPhu = new List<string>();
+                        
+                        if (Model?.AnhSanPhams != null && Model?.AnhSanPhams.Count > 0)
+                        {
+                            var anhSanPhams = Model?.AnhSanPhams;
+                            var anhSanPhamsList = anhSanPhams as List<AnhSanPhamViewModel>;
+                            
+                            // Bước 1: Tìm ảnh chính
+                            var anhChinhObj = anhSanPhamsList?.FirstOrDefault(a => 
+                                !string.IsNullOrEmpty(a.LoaiAnh) && !string.IsNullOrEmpty(a.DuongDan) &&
+                                (a.LoaiAnh.Trim().ToLower() == "chinh" || a.LoaiAnh.Trim().ToLower() == "chính"));
+                                
+                            if (anhChinhObj != null)
+                            {
+                                anhChinh = anhChinhObj.DuongDan;
+                            }
+                            else
+                            {
+                                // Bước 2: Nếu không có ảnh chính, tìm ảnh phụ
+                                var anhPhuObj = anhSanPhamsList?.FirstOrDefault(a => 
+                                    !string.IsNullOrEmpty(a.LoaiAnh) && !string.IsNullOrEmpty(a.DuongDan) &&
+                                    (a.LoaiAnh.Trim().ToLower() == "phu" || a.LoaiAnh.Trim().ToLower() == "phụ"));
+                                    
+                                if (anhPhuObj != null)
+                                {
+                                    anhChinh = anhPhuObj.DuongDan;
+                                }
+                            }
+                            
+                            // Lấy tất cả ảnh phụ để hiển thị thumbnails
+                            anhPhu = anhSanPhamsList?.Where(a => 
+                                !string.IsNullOrEmpty(a.LoaiAnh) && !string.IsNullOrEmpty(a.DuongDan) &&
+                                (a.LoaiAnh.Trim().ToLower() == "phu" || a.LoaiAnh.Trim().ToLower() == "phụ"))
+                                .Select(a => a.DuongDan!).ToList() ?? new List<string>();
+                        }
+                        else
+                        {
+                            // Nếu không có ảnh từ database, sử dụng default image
+                            anhPhu = new List<string>();
+                        }
+                    }
+                    
+                    <img id="mainImage" src="@anhChinh" alt="@Model?.TenSanPham" class="main-image" onerror="this.src='/Images/noimage.jpg'">
+                    <div class="thumbnail-images">
+                        <!-- Luôn hiển thị ảnh chính đầu tiên -->
+                        <img src="@anhChinh" alt="Ảnh chính" class="thumbnail active" onclick="changeMainImage(this.src)">
+                        <!-- Hiển thị ảnh phụ (không trùng với ảnh chính) -->
+                        @foreach (var anh in anhPhu.Where(a => a != anhChinh).Take(3))
+                        {
+                            <img src="@anh" alt="Ảnh phụ" class="thumbnail" onclick="changeMainImage(this.src)">
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h1 class="product-title">@Model?.TenSanPham</h1>
+                
+                <!-- Khuyến mãi badge -->
+                @{
+                    var khuyenMai = ViewBag.KhuyenMai as Final_VS1.Data.KhuyenMai;
+                    var giaKhuyenMai = ViewBag.GiaKhuyenMai as decimal?;
+                    var phanTramGiam = ViewBag.PhanTramGiam as decimal?;
+                }
+                
+                @if (khuyenMai != null)
+                {
+                    var badgeClass = Final_VS1.Helpers.PromotionHelper.GetPromotionBadgeClass(khuyenMai);
+                    var isFlashSale = Final_VS1.Helpers.PromotionHelper.IsFlashSale(khuyenMai);
+                    
+                    <div class="promotion-badges mb-3">
+                        @if (isFlashSale)
+                        {
+                            <span class="badge @badgeClass me-2">
+                                <i class="fas fa-bolt"></i> FLASH SALE -@phanTramGiam%
+                            </span>
+                            var remainingPercent = Final_VS1.Helpers.PromotionHelper.GetFlashSaleRemainingPercent(khuyenMai);
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-fire"></i> Chỉ còn @remainingPercent% sản phẩm
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge @badgeClass">
+                                <i class="fas fa-tags"></i> @Final_VS1.Helpers.PromotionHelper.GetDiscountText(khuyenMai)
+                            </span>
+                        }
+                    </div>
+                }
+                
+                <!-- Rating stars removed from product header -->
+                <div class="product-price">
+                    @{
+                        var minPrice = Model?.GiaBan;
+                        var maxPrice = Model?.MaxPrice;
+                        string priceDisplay = "Liên hệ";
+                        
+                        // Kiểm tra xem sản phẩm có biến thể với thuộc tính không
+                        var hasBienTheVoiThuocTinh = Model?.BienTheSanPhams != null && Model.BienTheSanPhams.Any() && 
+                            Model.BienTheSanPhams.SelectMany(bt => bt.ThuocTinhGiaTris).Any();
+                        
+                        // Tính giá khuyến mãi từ server
+                        decimal? giaHienThi = minPrice;
+                        decimal? giaMaxHienThi = maxPrice;
+                        decimal? giaGocHienThi = null;
+                        decimal? giaGocMaxHienThi = null;
+                        decimal phanTramGiamHienThi = 0;
+                        bool hienThiGiaGiamNgay = false;
+                        
+                        // Hàm tính giá sau khuyến mãi
+                        Func<decimal, decimal> tinhGiaKhuyenMai = (giaGoc) => {
+                            if (khuyenMai == null) return giaGoc;
+                            
+                            decimal giaKM = giaGoc;
+                            if (khuyenMai.HinhThucGiam == "PHAN_TRAM")
+                            {
+                                var discount = giaGoc * khuyenMai.GiaTriGiam / 100;
+                                if (khuyenMai.GiaTriGiamToiDa.HasValue && khuyenMai.GiaTriGiamToiDa.Value > 0 && discount > khuyenMai.GiaTriGiamToiDa.Value)
+                                {
+                                    discount = khuyenMai.GiaTriGiamToiDa.Value;
+                                }
+                                giaKM = giaGoc - discount;
+                            }
+                            else if (khuyenMai.HinhThucGiam == "SO_TIEN")
+                            {
+                                giaKM = giaGoc - khuyenMai.GiaTriGiam;
+                            }
+                            else if (khuyenMai.HinhThucGiam == "GIA_CO_DINH")
+                            {
+                                giaKM = khuyenMai.GiaTriGiam;
+                            }
+                            return Math.Max(0, giaKM);
+                        };
+                        
+                        // Nếu có khuyến mãi → tính giá khuyến mãi cho cả min và max
+                        if (khuyenMai != null && minPrice.HasValue)
+                        {
+                            hienThiGiaGiamNgay = true;
+                            giaGocHienThi = minPrice;
+                            giaGocMaxHienThi = maxPrice;
+                            
+                            // Tính giá khuyến mãi min
+                            giaHienThi = tinhGiaKhuyenMai(minPrice.Value);
+                            
+                            // Tính giá khuyến mãi max (nếu có)
+                            if (maxPrice.HasValue)
+                            {
+                                giaMaxHienThi = tinhGiaKhuyenMai(maxPrice.Value);
+                            }
+                            
+                            // Tính % giảm dựa trên giá min
+                            if (minPrice.Value > 0)
+                            {
+                                phanTramGiamHienThi = Math.Round(((minPrice.Value - giaHienThi.Value) / minPrice.Value) * 100);
+                            }
+                        }
+                        
+                        if (minPrice.HasValue && maxPrice.HasValue)
+                        {
+                            if (minPrice == maxPrice)
+                            {
+                                priceDisplay = string.Format("{0:N0}₫", hienThiGiaGiamNgay ? giaHienThi : minPrice);
+                            }
+                            else
+                            {
+                                if (hienThiGiaGiamNgay && giaHienThi.HasValue && giaMaxHienThi.HasValue)
+                                {
+                                    // Hiển thị khoảng giá khuyến mãi
+                                    priceDisplay = $"{giaHienThi.Value.ToString("N0")} - {giaMaxHienThi.Value.ToString("N0")}₫";
+                                }
+                                else
+                                {
+                                    priceDisplay = $"{minPrice.Value.ToString("N0")} - {maxPrice.Value.ToString("N0")}₫";
+                                }
+                            }
+                        }
+                    }
+                    
+                    @if (khuyenMai != null)
+                    {
+                        @if (hienThiGiaGiamNgay && giaGocHienThi.HasValue && giaHienThi < giaGocHienThi)
+                        {
+                            @if (minPrice == maxPrice || !hasBienTheVoiThuocTinh)
+                            {
+                                <!-- Có khuyến mãi - Hiển thị giá giảm ngay (sản phẩm giá đơn hoặc không có thuộc tính biến thể) -->
+                                <div class="price-group d-flex align-items-center gap-2 flex-wrap" id="priceContainer">
+                                    <span class="promotion-price fs-3 fw-bold text-danger" id="displayPrice" data-original-price="@(minPrice ?? 0)">@(giaHienThi?.ToString("N0"))₫</span>
+                                    <span class="original-price-small text-decoration-line-through text-muted" id="originalPrice">@(giaGocHienThi?.ToString("N0"))₫</span>
+                                    <span class="badge bg-danger" id="discountBadge">-@phanTramGiamHienThi%</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Có khuyến mãi - Hiển thị khoảng giá khuyến mãi (sản phẩm có nhiều biến thể) -->
+                                <div class="price-group d-flex align-items-center gap-2 flex-wrap" id="priceContainer">
+                                    <span class="promotion-price fs-3 fw-bold text-danger" id="displayPrice" data-original-price="@(minPrice ?? 0)">@priceDisplay</span>
+                                    <span class="original-price-small text-decoration-line-through text-muted" id="originalPrice">@(giaGocHienThi?.ToString("N0")) - @(giaGocMaxHienThi?.ToString("N0"))₫</span>
+                                    <span class="badge bg-danger" id="discountBadge">-@phanTramGiamHienThi%</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Có khuyến mãi nhưng chưa tính được - hiển thị placeholder -->
+                            <div class="price-group d-flex align-items-center gap-2 flex-wrap" id="priceContainer">
+                                <span class="current-price fs-3 fw-bold" id="displayPrice" data-original-price="@(minPrice ?? 0)">@priceDisplay</span>
+                                <span class="original-price-small text-decoration-line-through text-muted d-none" id="originalPrice"></span>
+                                <span class="badge bg-danger d-none" id="discountBadge"></span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Không có khuyến mãi - giá gốc -->
+                        <span class="current-price fs-3 fw-bold" id="displayPrice" data-original-price="@(minPrice ?? 0)">@priceDisplay</span>
+                    }
+                </div>
+
+                <!-- Product Options -->
+                <div class="product-options" id="productOptions">
+                    <!-- Hiển thị biến thể sản phẩm -->
+                    @if (Model?.BienTheSanPhams != null && Model.BienTheSanPhams.Any())
+                    {
+                        var thuocTinhGroups = Model.BienTheSanPhams
+                            .SelectMany(bt => bt.ThuocTinhGiaTris)
+                            .GroupBy(tt => new { tt.IdThuocTinh, tt.TenThuocTinh })
+                            .ToList();
+
+                        @if (thuocTinhGroups.Any())
+                        {
+                            // Trường hợp: Có biến thể VÀ có thuộc tính → Hiển thị chọn thuộc tính
+                            @foreach (var thuocTinhGroup in thuocTinhGroups)
+                            {
+                                var giaTris = thuocTinhGroup.Select(tt => new { tt.IdGiaTri, tt.GiaTri }).Distinct().ToList();
+                                
+                                <div class="option-group">
+                                    <label class="option-label">@thuocTinhGroup.Key.TenThuocTinh</label>
+                                    <div class="option-items" data-thuoc-tinh-id="@thuocTinhGroup.Key.IdThuocTinh">
+                                        @foreach (var giaTri in giaTris)
+                                        {
+                                            <button type="button" class="option-item" 
+                                                    data-gia-tri-id="@giaTri.IdGiaTri" 
+                                                    data-thuoc-tinh-id="@thuocTinhGroup.Key.IdThuocTinh"
+                                                    onclick="selectOption(this, '@thuocTinhGroup.Key.TenThuocTinh', @thuocTinhGroup.Key.IdThuocTinh, @giaTri.IdGiaTri)">
+                                                @giaTri.GiaTri
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            // Trường hợp: Có biến thể NHƯNG KHÔNG có thuộc tính → Tự động chọn biến thể duy nhất
+                            var bienTheDuyNhat = Model.BienTheSanPhams.First();
+                            <script>
+                                // Tự động set biến thể khi trang load và cập nhật giá hiển thị
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    window.selectedVariantId = @bienTheDuyNhat.IdBienThe;
+                                    window.selectedVariantPrice = @(bienTheDuyNhat.GiaBan?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0");
+                                    console.log('Auto-selected variant ID:', window.selectedVariantId);
+                                    console.log('Auto-selected variant Price:', window.selectedVariantPrice);
+                                    
+                                    // Gọi hàm cập nhật giá hiển thị nếu có khuyến mãi
+                                    if (typeof window.calculatePromotionPrice === 'function' && window.promotionInfo && window.promotionInfo.hasPromotion) {
+                                        var finalPrice = window.calculatePromotionPrice(window.selectedVariantPrice);
+                                        var hasPromotion = finalPrice < window.selectedVariantPrice;
+                                        
+                                        var displayPrice = document.getElementById('displayPrice');
+                                        var originalPriceSpan = document.getElementById('originalPrice');
+                                        var discountBadge = document.getElementById('discountBadge');
+                                        
+                                        if (displayPrice && hasPromotion) {
+                                            var discountPercent = Math.round(((window.selectedVariantPrice - finalPrice) / window.selectedVariantPrice) * 100);
+                                            
+                                            displayPrice.textContent = finalPrice.toLocaleString() + '₫';
+                                            displayPrice.className = 'promotion-price fs-3 fw-bold text-danger';
+                                            
+                                            if (originalPriceSpan) {
+                                                originalPriceSpan.textContent = window.selectedVariantPrice.toLocaleString() + '₫';
+                                                originalPriceSpan.classList.remove('d-none');
+                                            }
+                                            
+                                            if (discountBadge) {
+                                                discountBadge.textContent = '-' + discountPercent + '%';
+                                                discountBadge.classList.remove('d-none');
+                                            }
+                                            
+                                            console.log('Auto-updated promotion price:', finalPrice, 'Discount:', discountPercent + '%');
+                                        }
+                                    }
+                                });
+                            </script>
+                            
+                            @* Không hiển thị thông tin biến thể nữa - sản phẩm không có biến thể thực sự *@
+                        }
+                    }
+                </div>
+
+                <form id="addToCartForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="selectedVariantId" name="variantId" value="">
+                    <div class="quantity-section">
+                        <div class="quantity-label">Số Lượng</div>
+                        <div class="quantity-controls">
+                            <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                            <input type="number" id="productQuantity" name="quantity" class="quantity-input" value="1" min="1" max="@tongSoLuongTonKho" style="-webkit-appearance: none; -moz-appearance: textfield; appearance: textfield;">
+                            <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                        <div class="stock-info">
+                            @if (tongSoLuongTonKho > 0)
+                            {
+                                <span class="stock-available">Còn @tongSoLuongTonKho sản phẩm</span>
+                            }
+                            else
+                            {
+                                <span class="stock-out">Hết hàng</span>
+                            }
+                        </div>
+
+                        <div class="action-buttons">
+                            @if (tongSoLuongTonKho > 0)
+                            {
+                                @if (Model?.BienTheSanPhams != null && Model.BienTheSanPhams.Any())
+                                {
+                                    var thuocTinhGroups = Model.BienTheSanPhams
+                                        .SelectMany(bt => bt.ThuocTinhGiaTris)
+                                        .GroupBy(tt => new { tt.IdThuocTinh, tt.TenThuocTinh })
+                                        .ToList();
+                                    
+                                    if (thuocTinhGroups.Any())
+                                    {
+                                        <!-- Có biến thể VÀ có thuộc tính → Yêu cầu chọn thuộc tính -->
+                                        <button type="button" class="btn-add-to-cart" onclick="addToCart(@productId)" disabled>
+                                            <i class="fas fa-shopping-cart"></i> Thêm giỏ hàng
+                                        </button>
+                                        <button type="button" class="btn-buy-now" onclick="buyNowWithVariant()" disabled>
+                                            Mua ngay
+                                        </button>
+                                        <button type="button" class="btn-consult" onclick="copyProductInfoAndOpenChat()">
+                                            <i class="fas fa-copy"></i> Sao chép thông tin
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <!-- Có biến thể NHƯNG KHÔNG có thuộc tính → Cho phép mua với biến thể tự động -->
+                                        var bienTheDuyNhat = Model.BienTheSanPhams.First();
+                                        <button type="button" class="btn-add-to-cart" onclick="addToCartWithAutoVariant(@productId, @bienTheDuyNhat.IdBienThe)">
+                                            <i class="fas fa-shopping-cart"></i> Thêm
+                                        </button>
+                                        <button type="button" class="btn-buy-now" onclick="buyNowWithAutoVariant(@productId, @bienTheDuyNhat.IdBienThe)">
+                                            Mua ngay
+                                        </button>
+                                        <button type="button" class="btn-consult" onclick="copyProductInfoAndOpenChat()">
+                                            <i class="fas fa-copy"></i> Sao chép thông tin
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <!-- Sản phẩm KHÔNG có biến thể - cho phép mua trực tiếp -->
+                                    <button type="button" class="btn-add-to-cart" onclick="addToCartWithoutVariant(@productId)">
+                                        <i class="fas fa-shopping-cart"></i> Thêm
+                                    </button>
+                                    <button type="button" class="btn-buy-now" onclick="buyNowWithoutVariant(@productId)">
+                                        Mua ngay
+                                    </button>
+                                    <button type="button" class="btn-consult" onclick="copyProductInfoAndOpenChat()">
+                                        <i class="fas fa-comments"></i> sao chép thông tin Sản phẩm
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <button type="button" class="btn-out-of-stock" disabled>
+                                    Mặt hàng này đã hết
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Social Share Buttons -->
+                @await Html.PartialAsync("_SocialShare")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Section -->
+<div class="container">
+    <!-- Mô tả sản phẩm -->
+    <div class="product-details-section">
+        <div class="product-description3">
+            <h6 class="description-title">MÔ TẢ SẢN PHẨM</h6>
+            @if (!string.IsNullOrWhiteSpace(Model?.MoTa))
+            {
+                <div class="description-text"> @Html.Raw(Model?.MoTa.Replace("\n", "<br />"))</div>
+
+                <h3 style="margin-top: 30px;">Lợi ích khi sử dụng @Model?.TenSanPham</h3>
+                <ul style="line-height: 2;">
+                    <li><strong>Sản phẩm chính hãng 100%:</strong> Được kiểm định chất lượng bởi các cơ quan uy tín, có đầy đủ giấy tờ xuất xứ, tem chống hàng giả. Mọi sản phẩm đều được nhập khẩu và phân phối bởi đại lý chính thức tại Việt Nam.</li>
+                    <li><strong>Giao hàng nhanh chóng:</strong> Miễn phí giao hàng toàn quốc cho đơn hàng từ 500.000đ. Nội thành Hà Nội và TP.HCM giao hàng trong 24h, các tỉnh thành khác từ 2-5 ngày làm việc. Hỗ trợ giao hàng nhanh COD (thanh toán khi nhận hàng).</li>
+                    <li><strong>Chính sách đổi trả linh hoạt:</strong> Hỗ trợ đổi trả trong vòng 7 ngày nếu có lỗi từ nhà sản xuất hoặc giao sai hàng. Sản phẩm đổi trả phải còn nguyên vẹn, chưa qua sử dụng, còn đầy đủ bao bì và tem niêm phong.</li>
+                    <li><strong>Tư vấn miễn phí:</strong> Đội ngũ chuyên viên tư vấn sẵn sàng hỗ trợ bạn 24/7 về cách sử dụng sản phẩm, chế độ chăm sóc da phù hợp, và giải đáp mọi thắc mắc của bạn qua hotline, email, hoặc chat trực tuyến.</li>
+                    <li><strong>Chương trình ưu đãi hấp dẫn:</strong> Tích điểm đổi quà cho mỗi đơn hàng, giảm giá đặc biệt cho khách hàng thân thiết, và nhiều voucher giảm giá trong các dịp lễ, sự kiện đặc biệt trong năm.</li>
+                    <li><strong>Bảo mật thông tin tuyệt đối:</strong> Cam kết bảo vệ thông tin cá nhân và thanh toán của khách hàng theo tiêu chuẩn quốc tế, không chia sẻ với bên thứ ba.</li>
+                </ul>
+
+            
+
+                <h3 style="margin-top: 30px;">Lưu ý quan trọng khi sử dụng @Model?.TenSanPham</h3>
+                <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+                    <p style="line-height: 1.8; margin-bottom: 10px;">
+                        <strong><i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i> Cảnh báo:</strong> Sản phẩm chỉ dùng ngoài da, tránh tiếp xúc với mắt. Nếu sản phẩm dính vào mắt, rửa ngay bằng nước sạch. Nếu có bất kỳ triệu chứng kích ứng nào như đỏ, ngứa, sưng tấy, hãy ngưng sử dụng ngay lập tức và tham khảo ý kiến bác sĩ da liễu.
+                    </p>
+                    <p style="line-height: 1.8; margin-bottom: 10px;">
+                        <strong>Bảo quản:</strong> Để nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp và nhiệt độ cao. Đậy nắp kín sau mỗi lần sử dụng để giữ chất lượng sản phẩm. Tránh xa tầm tay trẻ em.
+                    </p>
+                    <p style="line-height: 1.8; margin-bottom: 10px;">
+                        <strong>Thời hạn sử dụng:</strong> Kiểm tra hạn sử dụng trên bao bì trước khi sử dụng. Sau khi mở nắp, nên sử dụng hết trong vòng 6-12 tháng tùy theo loại sản phẩm để đảm bảo hiệu quả tốt nhất.
+                    </p>
+                    <p style="line-height: 1.8; margin-bottom: 0;">
+                        <strong>Lưu ý đặc biệt:</strong> Phụ nữ mang thai hoặc đang cho con bú nên tham khảo ý kiến bác sĩ trước khi sử dụng. Người có tiền sử dị ứng với mỹ phẩm nên đọc kỹ thành phần trước khi sử dụng.
+                    </p>
+                </div>
+
+                <h3 style="margin-top: 30px;">Câu hỏi thường gặp về sản phẩm</h3>
+                <div style="line-height: 1.8;">
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <p style="margin-bottom: 8px;"><strong>❓ Sản phẩm này có phù hợp với mọi loại da không?</strong></p>
+                        <p style="margin-bottom: 0; color: #555;">Sản phẩm được nghiên cứu và kiểm nghiệm an toàn cho hầu hết các loại da. Tuy nhiên, nếu bạn có da nhạy cảm hoặc đang bị các vấn đề về da như mụn, viêm, kích ứng, nên tham khảo ý kiến bác sĩ da liễu trước khi sử dụng.</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <p style="margin-bottom: 8px;"><strong>❓ Bao lâu thì thấy hiệu quả khi sử dụng sản phẩm?</strong></p>
+                        <p style="margin-bottom: 0; color: #555;">Thời gian thấy hiệu quả tùy thuộc vào tình trạng da và cơ địa mỗi người. Thông thường, sau 2-4 tuần sử dụng đều đặn, bạn sẽ nhận thấy những cải thiện đầu tiên. Để đạt kết quả tốt nhất, nên kiên trì sử dụng ít nhất 8-12 tuần.</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <p style="margin-bottom: 8px;"><strong>❓ Có thể sử dụng sản phẩm này cùng lúc với các sản phẩm khác không?</strong></p>
+                        <p style="margin-bottom: 0; color: #555;">Có thể kết hợp với các sản phẩm khác trong quy trình chăm sóc da của bạn. Tuy nhiên, nên sử dụng theo đúng thứ tự: làm sạch → toner → serum → kem dưỡng → chống nắng (vào ban ngày). Nếu kết hợp nhiều sản phẩm, hãy cho da thời gian hấp thụ giữa mỗi bước.</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <p style="margin-bottom: 8px;"><strong>❓ Tại sao cần sử dụng đều đặn?</strong></p>
+                        <p style="margin-bottom: 0; color: #555;">Làn da có chu kỳ tái tạo tự nhiên khoảng 28 ngày. Việc sử dụng sản phẩm đều đặn giúp duy trì và tối ưu hóa quá trình này, mang lại hiệu quả lâu dài và bền vững cho làn da của bạn.</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Cam kết của LittleFish Beauty</h3>
+                <p style="line-height: 1.8; margin-bottom: 15px;">
+                    Tại <strong>LittleFish Beauty</strong>, chúng tôi cam kết mang đến cho khách hàng những sản phẩm mỹ phẩm chính hãng, chất lượng cao với giá cả cạnh tranh nhất thị trường. Mọi sản phẩm đều được chúng tôi tuyển chọn kỹ lưỡng từ các thương hiệu uy tín, có xuất xứ rõ ràng và được kiểm định chất lượng nghiêm ngặt trước khi đến tay quý khách hàng.
+                </p>
+                <p style="line-height: 1.8; margin-bottom: 15px;">
+                    Chúng tôi hiểu rằng làn da của mỗi người đều có những đặc điểm riêng biệt, vì vậy đội ngũ tư vấn viên chuyên nghiệp của chúng tôi luôn sẵn sàng lắng nghe, tư vấn và đồng hành cùng bạn trong hành trình chăm sóc và làm đẹp cho làn da. Sự hài lòng của khách hàng chính là động lực lớn nhất giúp chúng tôi không ngừng phát triển và hoàn thiện.
+                </p>
+                <p style="line-height: 1.8; margin-bottom: 15px;">
+                    <strong>LittleFish Beauty</strong> tự hào là đối tác tin cậy của hàng nghìn khách hàng trên toàn quốc. Với phương châm "Chất lượng là danh dự", chúng tôi cam kết:
+                </p>
+                <ul style="line-height: 2; margin-bottom: 15px;">
+                    <li>100% sản phẩm chính hãng, có đầy đủ hóa đơn chứng từ</li>
+                    <li>Giá cả minh bạch, cạnh tranh, nhiều ưu đãi hấp dẫn</li>
+                    <li>Đội ngũ chăm sóc khách hàng chuyên nghiệp, nhiệt tình</li>
+                    <li>Chính sách đổi trả linh hoạt, bảo vệ quyền lợi khách hàng</li>
+                    <li>Giao hàng nhanh chóng, đóng gói cẩn thận, bảo mật thông tin</li>
+                    <li>Tư vấn miễn phí về quy trình chăm sóc da phù hợp</li>
+                </ul>
+                <p style="line-height: 1.8; margin-bottom: 15px;">
+                    Hãy để <strong>LittleFish Beauty</strong> đồng hành cùng bạn trên con đường tìm kiếm và duy trì vẻ đẹp tự nhiên, rạng rỡ mỗi ngày. Mọi thắc mắc và góp ý, xin vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn sàng phục vụ bạn!
+                </p>
+                <p style="line-height: 1.8; text-align: center; font-style: italic; color: #667eea; font-weight: 600; margin-top: 25px;">
+                    "Vẻ đẹp tự nhiên - Sự tự tin thật sự"
+                </p>
+            }
+            else
+            {
+                <p class="description-text">Chưa có mô tả cho sản phẩm này.</p>
+            }
+        </div>
+        
+    </div>
+
+    <!-- Product Reviews Section -->
+    <div class="product-reviews-section">
+        <h2 class="reviews-title">ĐÁNH GIÁ SẢN PHẨM</h2>
+        
+        <!-- Review Summary -->
+        <div class="review-summary">
+            <div class="review-summary-left">
+                <div class="average-rating">
+                    <span class="rating-number">@diemTrungBinh</span>
+                    <span class="rating-total">/ 5</span>
+                </div>
+                <div class="average-stars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Floor(diemTrungBinh))
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        else if (i - diemTrungBinh < 1 && i - diemTrungBinh > 0)
+                        {
+                            <i class="fas fa-star-half-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star"></i>
+                        }
+                    }
+                </div>
+                <div class="total-reviews">(@tongSoDanhGia đánh giá)</div>
+            </div>
+            <div class="review-summary-right">
+                <div class="rating-breakdown">
+                    @{
+                        var thongKeSao = ViewBag.ThongKeSao as Dictionary<int, int>;
+                    }
+                    @for (int star = 5; star >= 1; star--)
+                    {
+                        var count = thongKeSao != null && thongKeSao.ContainsKey(star) ? thongKeSao[star] : 0;
+                        var percentage = tongSoDanhGia > 0 ? (count * 100.0 / tongSoDanhGia) : 0;
+                        <div class="rating-row">
+                            <span class="rating-label">@star <i class="fas fa-star"></i></span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: @percentage%"></div>
+                            </div>
+                            <span class="rating-count">(@count)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Filters -->
+        <div class="review-filters">
+            <button class="filter-btn active" onclick="filterReviews('all')">
+                <span>Tất cả (@tongSoDanhGia)</span>
+            </button>
+            @for (int star = 5; star >= 1; star--)
+            {
+                var count = thongKeSao != null && thongKeSao.ContainsKey(star) ? thongKeSao[star] : 0;
+                <button class="filter-btn" onclick="filterReviews(@star)">
+                    <span>@star <i class="fas fa-star"></i> (@count)</span>
+                </button>
+            }
+            <button class="filter-btn" onclick="filterReviews('images')">
+                <span>Có hình ảnh</span>
+            </button>
+        </div>
+
+        <!-- Reviews List -->
+        <div class="reviews-list" id="reviewsList">
+            @if (Model?.DanhGias != null && Model.DanhGias.Any())
+            {
+                @* Reviews đã được sắp xếp theo thứ tự mới nhất ở controller *@
+                foreach (var review in Model.DanhGias)
+                {
+                    <div class="review-item" data-rating="@review.SoSao" data-has-image="@((!string.IsNullOrEmpty(review.AnhDanhGia)).ToString().ToLower())">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="reviewer-info">
+                                <div class="reviewer-name">@review.HoTen</div>
+                                <div class="review-date">@(review.NgayDanhGia?.ToString("dd/MM/yyyy HH:mm") ?? "")</div>
+                            </div>
+                            @if (User?.Identity?.IsAuthenticated == true && User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == review.IdTaiKhoan.ToString())
+                            {
+                                <div class="review-actions">
+                                    <button type="button" 
+                                            class="btn-edit-review" 
+                                            data-review-id="@review.IdDanhGia" 
+                                            data-rating="@review.SoSao" 
+                                            data-comment="@review.BinhLuan" 
+                                            data-images="@review.AnhDanhGia"
+                                            title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <div class="review-rating">
+                            <div class="review-stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= review.SoSao)
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p class="review-text">@review.BinhLuan</p>
+                            @if (!string.IsNullOrEmpty(review.AnhDanhGia))
+                            {
+                                var images = review.AnhDanhGia.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                                if (images.Length > 0)
+                                {
+                                    <div class="review-images">
+                                        @foreach (var img in images.Take(5))
+                                        {
+                                            <img src="@img.Trim()" alt="Ảnh đánh giá" class="review-image" onclick="openImageModal('@img.Trim()')">
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        
+                        @* Hiển thị phản hồi của admin *@
+                        @if (!string.IsNullOrEmpty(review.TraLoiCuaShop))
+                        {
+                            <div class="admin-reply">
+                                <div class="admin-reply-header">
+                                    <div class="admin-avatar">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    <div class="admin-info">
+                                        <span class="admin-name">Little Fish Beauty Shop</span>
+                                        <span class="reply-date">@(review.NgayTraLoi?.ToString("dd/MM/yyyy HH:mm") ?? "")</span>
+                                    </div>
+                                </div>
+                                <div class="admin-reply-content">
+                                    <p>@review.TraLoiCuaShop</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-reviews">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>Chưa có đánh giá nào cho sản phẩm này</p>
+                </div>
+            }
+        </div>
+
+        <!-- Write Review Form -->
+        @if (User?.Identity?.IsAuthenticated == true)
+        {
+            var daMua = ViewBag.DaMuaSanPham ?? false;
+            var daDanhGia = ViewBag.DaDanhGiaLanMuaCuoi ?? false;
+
+            @if (daMua)
+            {
+                <div class="write-review-section">
+                    <h5 class="write-review-title">Chia sẻ nhận xét của bạn về sản phẩm này</h5>
+                    
+                    <!-- Nút mở form đánh giá - chỉ hiển thị nếu chưa đánh giá -->
+                    @if (!daDanhGia)
+                    {
+                        <div id="reviewTrigger" class="review-trigger">
+                            <button type="button" class="btn-write-review" onclick="toggleReviewForm(true)">
+                                Viết đánh giá
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="already-reviewed">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Bạn đã đánh giá sản phẩm này rồi. Bạn có thể chỉnh sửa đánh giá của mình.</p>
+                        </div>
+                    }
+
+                    <!-- Form đánh giá (ẩn ban đầu) - luôn có để có thể edit -->
+                    <div id="reviewFormContainer" class="review-form-container" style="display: none;">
+                        <form id="reviewForm" asp-area="KhachHang" asp-action="GuiDanhGia" asp-controller="ChiTiet" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model?.Id" />
+                            
+                            <div class="rating-input">
+                                <div class="star-rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5" required />
+                                    <label for="star5" title="5 sao"><i class="fas fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star4" name="rating" value="4" />
+                                    <label for="star4" title="4 sao"><i class="fas fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star3" name="rating" value="3" />
+                                    <label for="star3" title="3 sao"><i class="fas fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star2" name="rating" value="2" />
+                                    <label for="star2" title="2 sao"><i class="fas fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star1" name="rating" value="1" />
+                                    <label for="star1" title="1 sao"><i class="fas fa-star"></i></label>
+                                    
+                                    <span class="rating-text">Chưa chọn</span>
+                                </div>
+                            </div>
+
+                            <div class="comment-input">
+                                <label for="reviewComment">Mô tả nhận xét <span class="required">*</span></label>
+                                <textarea id="reviewComment" name="comment" rows="5" maxlength="2500" placeholder="Nhập mô tả tại đây" required></textarea>
+                                <div class="char-count"><span id="charCount">0</span>/2500</div>
+                            </div>
+
+                            <div class="image-upload">
+                                <label>Thêm hình ảnh nếu có (Tối đa 5 hình)</label>
+                                <div class="image-upload-wrapper">
+                                    <input type="file" id="reviewImages" name="images" accept="image/*" multiple style="display: none;" onchange="previewImages(event)" />
+                                    <label for="reviewImages" class="upload-btn">
+                                        <i class="fas fa-camera"></i> Thêm ảnh
+                                    </label>
+                                    <div id="imagePreview" class="image-preview"></div>
+                                </div>
+                            </div>
+
+                            <div class="review-actions">
+                                <button type="button" class="btn btn-secondary" onclick="toggleReviewForm(false)">
+                                    <i class="fas fa-times"></i> Bỏ qua
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Gửi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="purchase-required">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>Bạn cần mua sản phẩm này để có thể đánh giá</p>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="login-required">
+                <i class="fas fa-sign-in-alt"></i>
+                <p>Vui lòng <a href="/DangNhap?returnUrl=@(Context.Request.Path)">đăng nhập</a> để viết đánh giá</p>
+            </div>
+        }
+    </div>
+
+<!-- Suggested Products Section -->
+    <div class="suggested-products-section">
+        <h2 class="suggested-title">Sản Phẩm Gợi Ý</h2>
+
+        <div class="suggested-products-carousel">
+            <div class="suggested-products-slides">
+                @{
+                    var sanPhamGoiY = ViewBag.SanPhamGoiY as List<ChiTietSanPhamViewModel> ?? new List<ChiTietSanPhamViewModel>();
+                    int total = sanPhamGoiY.Count;
+                    int slideCount = (int)Math.Ceiling(total / 4.0);
+                    if (total == 0)
+                    {
+                        <div class="no-suggested-products"><p>Không có sản phẩm gợi ý nào.</p></div>;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < slideCount; i++)
+                        {
+                            <div class="suggested-slide" style="display:@(i == 0 ? "flex" : "none")">
+                                @for (int j = i * 4; j < Math.Min((i + 1) * 4, total); j++)
+                                {
+                                    var sp = sanPhamGoiY[j];
+                                    var defaultImageSuggested = "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80";
+
+                                    var anhChinhSuggested = defaultImageSuggested;
+                                    if (sp.AnhSanPhams != null && sp.AnhSanPhams.Any())
+                                    {
+                                        // Bước 1: Tìm ảnh chính
+                                        var anhChinhObj = sp.AnhSanPhams.FirstOrDefault(a => 
+                                            !string.IsNullOrEmpty(a.LoaiAnh) && !string.IsNullOrEmpty(a.DuongDan) &&
+                                            (a.LoaiAnh.Trim().ToLower() == "chinh" || a.LoaiAnh.Trim().ToLower() == "chính"));
+                                            
+                                        if (anhChinhObj != null)
+                                        {
+                                            anhChinhSuggested = anhChinhObj.DuongDan;
+                                        }
+                                        else
+                                        {
+                                            // Bước 2: Nếu không có ảnh chính, tìm ảnh phụ
+                                            var anhPhuObj = sp.AnhSanPhams.FirstOrDefault(a => 
+                                                !string.IsNullOrEmpty(a.LoaiAnh) && !string.IsNullOrEmpty(a.DuongDan) &&
+                                                (a.LoaiAnh.Trim().ToLower() == "phu" || a.LoaiAnh.Trim().ToLower() == "phụ"));
+                                                
+                                            if (anhPhuObj != null)
+                                            {
+                                                anhChinhSuggested = anhPhuObj.DuongDan;
+                                            }
+                                        }
+                                    }
+                                    <div class="suggested-product-card">
+                                        <a href="@Url.Action("Index", "ChiTiet", new { area = "KhachHang", id = sp.Id })" class="suggested-product-link">
+                                            <img class="suggested-product-image" src="@anhChinhSuggested" alt="@sp.TenSanPham" />
+                                            <div class="suggested-product-info">
+                                                <div class="suggested-product-title">@sp.TenSanPham</div>
+                                                <div class="suggested-product-price">
+                                                    @{
+                                                        var minPriceSuggested = sp.GiaBan;
+                                                        var maxPriceSuggested = sp.MaxPrice;
+                                                        string priceDisplaySuggested = "0₫";
+                                                        
+                                                        if (minPriceSuggested.HasValue && maxPriceSuggested.HasValue)
+                                                        {
+                                                            if (minPriceSuggested == maxPriceSuggested)
+                                                            {
+                                                                priceDisplaySuggested = minPriceSuggested.Value.ToString("N0") + "₫";
+                                                            }
+                                                            else
+                                                            {
+                                                                priceDisplaySuggested = $"{minPriceSuggested.Value.ToString("N0")} - {maxPriceSuggested.Value.ToString("N0")}₫";
+                                                            }
+                                                        }
+                                                    }
+                                                    @priceDisplaySuggested
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                }
+
+                                @* Nếu số sản phẩm < 4 thì thêm các khung trống để giữ layout *@
+                            </div>
+                        }
+                    }
+
+                }
+            </div>
+            @if (total > 4)
+            {
+                                <button class="carousel-btn prev" onclick="moveSlide(-1)">
+                                    <span class="carousel-arrow">
+                                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="11" cy="11" r="10" fill="none" />
+                                            <polyline points="13 7 9 11 13 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <button class="carousel-btn next" onclick="moveSlide(1)">
+                                    <span class="carousel-arrow">
+                                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="11" cy="11" r="10" fill="none" />
+                                            <polyline points="9 7 13 11 9 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                                        </svg>
+                                    </span>
+                                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal for Review Photos -->
+<div id="imageModal" class="image-modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Out of Stock Modal -->
+<div id="outOfStockModal" class="custom-modal" style="display: none;">
+    <div class="modal-overlay" onclick="closeOutOfStockModal()"></div>
+    <div class="modal-content-box">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+                Thông báo
+            </h5>
+            <button type="button" class="close-btn" onclick="closeOutOfStockModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="mb-3">Mặt hàng này đã hết, vui lòng chọn mặt hàng khác</p>
+            <div class="text-center">
+                <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="btn btn-primary me-2">
+                    <i class="fas fa-shopping-bag"></i> Xem sản phẩm khác
+                </a>
+                <button type="button" class="btn btn-secondary" onclick="closeOutOfStockModal()">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        @{
+            var __maxQuantity = 0;
+            if (Model?.BienTheSanPhams != null)
+            {
+                foreach (var __bt in Model.BienTheSanPhams)
+                {
+                    __maxQuantity += (__bt?.SoLuongTonKho ?? 0);
+                }
+            }
+            var __productId = Model?.Id ?? 0;
+        }
+        
+        // Thiết lập các biến toàn cục từ server - GÁN VÀO WINDOW ĐỂ TRỞ THÀNH GLOBAL
+        try {
+            console.log('[INIT] Setting up global variables...');
+            
+            window.maxQuantity = @__maxQuantity;
+            window.productId = @__productId;
+            
+            console.log('[INIT] Product ID:', window.productId);
+            console.log('[INIT] Max Quantity:', window.maxQuantity);
+            
+            // Parse product variants carefully with safe serialization
+            @{
+                var jsonOptions = new System.Text.Json.JsonSerializerOptions 
+                { 
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    WriteIndented = false
+                };
+                var variantsJson = System.Text.Json.JsonSerializer.Serialize(Model?.BienTheSanPhams ?? new List<BienTheSanPhamViewModel>(), jsonOptions);
+            }
+            var variantsData = @Html.Raw(variantsJson);
+            console.log('[INIT] Raw variants data from server:', variantsData);
+            console.log('[INIT] Variants is array?', Array.isArray(variantsData));
+            console.log('[INIT] Variants count:', variantsData ? variantsData.length : 0);
+            
+            window.productVariants = variantsData || [];
+            window.selectedAttributes = {};
+            window.selectedVariantId = null;
+            window.selectedVariantPrice = null;
+            
+            console.log('[INIT] Product Variants count after assignment:', window.productVariants.length);
+            console.log('[INIT] Product Variants:', JSON.stringify(window.productVariants, null, 2));
+        } catch (error) {
+            console.error('[INIT ERROR]', error);
+            window.productVariants = [];
+            window.selectedAttributes = {};
+        }
+        
+        // Thông tin khuyến mãi - GÁN VÀO WINDOW
+        @{
+            var hasPromo = khuyenMai != null;
+            var discountTypeValue = khuyenMai?.HinhThucGiam ?? "";
+            var discountValueNum = (double)(khuyenMai?.GiaTriGiam ?? 0);
+            var maxDiscountNum = (double)(khuyenMai?.GiaTriGiamToiDa ?? 0);
+        }
+        window.promotionInfo = {
+            hasPromotion: @hasPromo.ToString().ToLower(),
+            discountType: '@discountTypeValue',
+            discountValue: @discountValueNum.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            maxDiscount: @maxDiscountNum.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)
+        };
+        var promotionInfo = window.promotionInfo; // Alias để sử dụng dễ dàng
+        
+        console.log('[INIT] Promotion Info:', promotionInfo);
+        
+        // Hàm tính giá sau khuyến mãi - Tính RIÊNG cho từng biến thể
+        // GÁN VÀO WINDOW để có thể truy cập từ file JS khác
+        window.calculatePromotionPrice = function calculatePromotionPrice(originalPrice) {
+            console.log('calculatePromotionPrice called with variant price:', originalPrice);
+            console.log('promotionInfo:', window.promotionInfo);
+            
+            if (!window.promotionInfo.hasPromotion) {
+                console.log('No promotion active');
+                return originalPrice;
+            }
+            
+            var discountedPrice = originalPrice;
+            if (window.promotionInfo.discountType === 'PHAN_TRAM') {
+                var discount = originalPrice * window.promotionInfo.discountValue / 100;
+                if (window.promotionInfo.maxDiscount > 0 && discount > window.promotionInfo.maxDiscount) {
+                    discount = window.promotionInfo.maxDiscount;
+                }
+                discountedPrice = originalPrice - discount;
+                console.log('Percentage discount:', discount, 'Final price:', discountedPrice);
+            } else if (window.promotionInfo.discountType === 'SO_TIEN') {
+                discountedPrice = originalPrice - window.promotionInfo.discountValue;
+                console.log('Fixed discount:', window.promotionInfo.discountValue, 'Final price:', discountedPrice);
+            } else if (window.promotionInfo.discountType === 'GIA_CO_DINH') {
+                discountedPrice = window.promotionInfo.discountValue;
+                console.log('Fixed price:', discountedPrice);
+            }
+            
+            return Math.max(0, discountedPrice);
+        };
+        
+        console.log('[DEBUG] calculatePromotionPrice function registered:', typeof window.calculatePromotionPrice);
+        
+        // Thông tin sản phẩm để copy
+        var productInfo = {
+            name: '@Html.Raw(Model?.TenSanPham?.Replace("'", "\\'"))',
+            price: '@Html.Raw(priceDisplay)',
+            category: '@Html.Raw(Model?.TenDanhMuc?.Replace("'", "\\'"))',
+            description: '@Html.Raw((Model?.MoTa ?? "Chưa có mô tả").Replace("\n", " ").Replace("\r", " ").Replace("'", "\\'").Replace("\"", "\\\""))',
+            url: window.location.href
+        };
+        
+        // Hàm cập nhật số lượng sản phẩm trong giỏ hàng từ API  
+        function updateCartCountFromAPI() {
+            fetch('@Url.Action("GetCartCount", "Cart", new { area = "KhachHang" })', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var cartCount = document.getElementById('cart-count');
+                if (cartCount) {
+                    if (data.cartCount > 0) {
+                        cartCount.textContent = data.cartCount;
+                        cartCount.style.display = 'inline-block';
+                    } else {
+                        cartCount.style.display = 'none';
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.error('Error updating cart count:', error);
+            });
+        }
+        
+        // Cập nhật số lượng giỏ hàng khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCountFromAPI();
+        });
+    </script>
+    
+    <!-- Load file JavaScript CUỐI CÙNG sau khi đã định nghĩa các biến global -->
+    <script src="~/js/KhachHang/chitiet-sanpham.js" asp-append-version="true"></script>
+}
+

@@ -1,0 +1,63 @@
+.fail-container {
+    max-width: 600px;
+    margin: 4rem auto;
+    padding: 3rem;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e0e0e0;
+}
+
+.fail-icon {
+    font-size: 4rem;
+    color: #dc3545; /* Màu đỏ */
+    line-height: 1;
+    margin-bottom: 1.5rem;
+}
+
+.fail-container h1 {
+    color: #dc3545;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.fail-container p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 2.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-custom-primary {
+    background-color: #2d7b2c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-primary:hover {
+    background-color: #246624;
+}
+
+.btn-custom-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-secondary:hover {
+    background-color: #e0e0e0;
+}

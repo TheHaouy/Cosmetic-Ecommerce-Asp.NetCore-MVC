@@ -1,0 +1,10 @@
+/* Make input-group button height match inputs nicely */
+.input-group-sm .btn { 
+    line-height: 1.2; 
+}
+
+/* Subtle divider before the list */
+#thanhPhanContainer { 
+    border-top: 1px dashed #e9ecef; 
+    padding-top: .5rem; 
+}

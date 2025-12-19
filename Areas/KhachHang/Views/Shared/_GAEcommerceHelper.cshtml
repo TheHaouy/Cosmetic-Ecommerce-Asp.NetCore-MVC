@@ -1,0 +1,67 @@
+@* 
+    Google Analytics E-commerce Event Tracking
+    Sử dụng cho các sự kiện: view_item, add_to_cart, purchase, etc.
+*@
+
+@functions {
+    public static string ViewItem(int productId, string productName, decimal price, string category = "")
+    {
+        return $@"
+gtag('event', 'view_item', {{
+    currency: 'VND',
+    value: {price},
+    items: [{{
+        item_id: '{productId}',
+        item_name: '{EscapeJs(productName)}',
+        item_category: '{EscapeJs(category)}',
+        price: {price},
+        quantity: 1
+    }}]
+}});";
+    }
+
+    public static string AddToCart(int productId, string productName, decimal price, int quantity = 1, string category = "")
+    {
+        return $@"
+gtag('event', 'add_to_cart', {{
+    currency: 'VND',
+    value: {price * quantity},
+    items: [{{
+        item_id: '{productId}',
+        item_name: '{EscapeJs(productName)}',
+        item_category: '{EscapeJs(category)}',
+        price: {price},
+        quantity: {quantity}
+    }}]
+}});";
+    }
+
+    public static string Purchase(string transactionId, decimal total, string items)
+    {
+        return $@"
+gtag('event', 'purchase', {{
+    transaction_id: '{transactionId}',
+    value: {total},
+    currency: 'VND',
+    tax: 0,
+    shipping: 0,
+    items: {items}
+}});";
+    }
+
+    public static string BeginCheckout(decimal total, string items)
+    {
+        return $@"
+gtag('event', 'begin_checkout', {{
+    currency: 'VND',
+    value: {total},
+    items: {items}
+}});";
+    }
+
+    private static string EscapeJs(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return "";
+        return text.Replace("'", "\\'").Replace("\"", "\\\"").Replace("\n", " ").Replace("\r", " ");
+    }
+}

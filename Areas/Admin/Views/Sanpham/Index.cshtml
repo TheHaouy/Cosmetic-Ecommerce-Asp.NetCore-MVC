@@ -1,0 +1,314 @@
+@model IEnumerable<Final_VS1.Data.SanPham>
+@{
+    ViewData["Title"] = "QUẢN LÝ SẢN PHẨM";
+    ViewData["PageTitle"] = "QUẢN LÝ SẢN PHẨM";
+    ViewData["SearchPlaceholder"] = "Tìm kiếm sản phẩm...";
+}
+
+@Html.AntiForgeryToken()
+
+
+<div class="card">
+    <div class="card-header">
+        <div class="header-title">
+            <h5 class="mb-0">
+                <i class="fas fa-box-open me-2"></i>
+                <span>DANH SÁCH QUẢN LÝ SẢN PHẨM</span>
+            </h5>
+        </div>
+        <div class="header-actions">
+            <!-- View Toggle Buttons -->
+            <div class="btn-group me-2" role="group" aria-label="View toggle">
+                <button type="button" class="btn btn-outline-light btn-sm view-toggle active" data-view="list" title="Xem dạng danh sách">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button type="button" class="btn btn-outline-light btn-sm view-toggle" data-view="grid" title="Xem dạng lưới">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+            <a href="@Url.Action("QuanLyThuocTinh", "Sanpham", new { area = "Admin" })" class="btn btn-info btn-sm" title="Quản lý thuộc tính sản phẩm">
+                <i class="fas fa-tags me-1"></i>
+                <span class="btn-text">Quản lý thuộc tính</span>
+            </a>
+            <a href="@Url.Action("ThemSua", "Sanpham", new { area = "Admin" })" class="btn btn-dark btn-sm">
+                <i class="fas fa-plus me-1"></i>
+                <span class="btn-text">Thêm sản phẩm</span>
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- LIST VIEW -->
+        <div id="listView" class="view-container">
+            <div class="table-responsive">
+                <table id="productTable" class="table table-hover table-striped">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th class="align-middle" style="width: 60px;">ID</th>
+                            <th class="align-middle" style="width: 80px;">Hình ảnh</th>
+                            <th class="align-middle" style="width: auto;">Tên sản phẩm</th>
+                            <th class="align-middle" style="width: 200px;">Danh mục</th>
+                            <th class="align-middle" style="width: 150px;">Giá</th>
+                            <th class="align-middle" style="width: 100px;">Số lượng</th>
+                            <th class="align-middle" style="width: 120px;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                @foreach (var sanPham in Model.OrderBy(x => x.IdSanPham))
+                {
+                    var soLuongTon = sanPham.BienTheSanPhams.Sum(b => b.SoLuongTonKho ?? 0);
+                    
+                    // Improved main image detection - check multiple variations
+                    string[] mainImageTypes = new[] { "Chính", "Chinh", "Primary", "Main" };
+                    
+                    var anhChinh = sanPham.AnhSanPhams
+                        .Where(a => !string.IsNullOrEmpty(a.DuongDan))
+                        .FirstOrDefault(a => !string.IsNullOrEmpty(a.LoaiAnh) && 
+                                           mainImageTypes.Contains(a.LoaiAnh, StringComparer.OrdinalIgnoreCase))?.DuongDan;
+                    
+                    // Fallback to first available image
+                    if (string.IsNullOrEmpty(anhChinh) && sanPham.AnhSanPhams.Any())
+                    {
+                        anhChinh = sanPham.AnhSanPhams.FirstOrDefault(a => !string.IsNullOrEmpty(a.DuongDan))?.DuongDan;
+                    }
+                    
+                    // Default image if no images found
+                    if (string.IsNullOrEmpty(anhChinh))
+                    {
+                        anhChinh = "/images/noimage.jpg";
+                    }
+                    
+                    var badgeClass = soLuongTon > 10 ? "bg-success" : soLuongTon > 0 ? "bg-warning text-dark" : "bg-danger";
+                    var statusBadge = sanPham.TrangThai == true ? "bg-success" : "bg-warning text-dark";
+                    var statusText = sanPham.TrangThai == true ? "Đang bán" : "Ngừng bán";
+                    
+                    // Tạo URL: Nếu có Slug dùng Route mới, nếu không dùng Link cũ để fallback
+                    var detailUrl = !string.IsNullOrEmpty(sanPham.Slug)
+                        ? Url.RouteUrl("admin_product_details", new { slug = sanPham.Slug })
+                        : Url.Action("ChiTiet", "Sanpham", new { id = sanPham.IdSanPham, area = "Admin" });
+                    
+                    <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@detailUrl'" title="Click để xem chi tiết"
+>
+                        <td class="text-center align-middle">
+                            <strong class="text-primary">@sanPham.IdSanPham</strong>
+                        </td>
+                        <td class="text-center align-middle">
+                            <div class="product-image-container">
+                                <img src="@anhChinh" 
+                                     alt="@sanPham.TenSanPham" 
+                                     class="product-thumbnail" 
+                                     onerror="this.src='/images/noimage.jpg'"
+                                     loading="lazy">
+                                @if (sanPham.AnhSanPhams.Count() > 1)
+                                {
+                                    <span class="image-count-badge" 
+                                          title="@sanPham.AnhSanPhams.Count() ảnh">
+                                        +@(sanPham.AnhSanPhams.Count() - 1)
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-start align-middle">
+                            <div class="product-info">
+                                <strong class="product-name">@sanPham.TenSanPham</strong>
+                                
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">
+                            <span class="badge bg-primary">
+                                <i class="fas fa-tag me-1"></i>
+                                @(sanPham.IdDanhMucNavigation?.TenDanhMuc ?? "Chưa phân loại")
+                            </span>
+                        </td>
+                        <td class="text-cènter align-middle">
+                            @{
+                                var variants = sanPham.BienTheSanPhams.ToList();
+                                string priceText = "0";
+                                if (variants.Any())
+                                {
+                                    var minPrice = variants.Min(bt => bt.GiaBan);
+                                    var maxPrice = variants.Max(bt => bt.GiaBan);
+                                    if (minPrice == maxPrice)
+                                    {
+                                        priceText = minPrice?.ToString("N0") ?? "0";
+                                    }
+                                    else
+                                    {
+                                        priceText = $"{minPrice?.ToString("N0")} - {maxPrice?.ToString("N0")}";
+                                    }
+                                }
+                            }
+                            <strong class="text-success price-text">
+                                @priceText ₫
+                            </strong>
+                        </td>
+                        <td class="text-center align-middle">
+                            <span class="badge @badgeClass" title="@soLuongTon sản phẩm trong kho">
+                                @soLuongTon
+                            </span>
+                        </td>
+                        <td class="text-center align-middle">
+                            <span class="badge @statusBadge">
+                                @statusText
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- GRID VIEW -->
+        <div id="gridView" class="view-container" style="display: none;">
+            <div class="row g-4">
+                @foreach (var sanPham in Model.OrderBy(x => x.IdSanPham))
+                {
+                    var soLuongTon = sanPham.BienTheSanPhams.Sum(b => b.SoLuongTonKho ?? 0);
+                    
+                    string[] mainImageTypes = new[] { "Chính", "Chinh", "Primary", "Main" };
+                    var anhChinh = sanPham.AnhSanPhams
+                        .Where(a => !string.IsNullOrEmpty(a.DuongDan))
+                        .FirstOrDefault(a => !string.IsNullOrEmpty(a.LoaiAnh) && 
+                                           mainImageTypes.Contains(a.LoaiAnh, StringComparer.OrdinalIgnoreCase))?.DuongDan;
+                    
+                    if (string.IsNullOrEmpty(anhChinh) && sanPham.AnhSanPhams.Any())
+                    {
+                        anhChinh = sanPham.AnhSanPhams.FirstOrDefault(a => !string.IsNullOrEmpty(a.DuongDan))?.DuongDan;
+                    }
+                    
+                    if (string.IsNullOrEmpty(anhChinh))
+                    {
+                        anhChinh = "/images/noimage.jpg";
+                    }
+                    
+                    var badgeClass = soLuongTon > 10 ? "bg-success" : soLuongTon > 0 ? "bg-warning text-dark" : "bg-danger";
+                    var statusBadge = sanPham.TrangThai == true ? "bg-success" : "bg-warning text-dark";
+                    var statusText = sanPham.TrangThai == true ? "Đang bán" : "Ngừng bán";
+                    
+                    var variants = sanPham.BienTheSanPhams.ToList();
+                    string priceText = "0";
+                    if (variants.Any())
+                    {
+                        var minPrice = variants.Min(bt => bt.GiaBan);
+                        var maxPrice = variants.Max(bt => bt.GiaBan);
+                        if (minPrice == maxPrice)
+                        {
+                            priceText = minPrice?.ToString("N0") ?? "0";
+                        }
+                        else
+                        {
+                            priceText = $"{minPrice?.ToString("N0")} - {maxPrice?.ToString("N0")}";
+                        }
+                    }
+                    
+                    var detailUrl = !string.IsNullOrEmpty(sanPham.Slug)
+                        ? Url.RouteUrl("admin_product_details", new { slug = sanPham.Slug })
+                        : Url.Action("ChiTiet", "Sanpham", new { id = sanPham.IdSanPham, area = "Admin" });
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card h-100 product-grid-card" onclick="window.location.href='@detailUrl'" style="cursor: pointer;">
+                            <div class="position-relative">
+                                <img src="@anhChinh" class="card-img-top" alt="@sanPham.TenSanPham" 
+                                     style="height: 200px; object-fit: cover;"
+                                     onerror="this.src='/images/noimage.jpg'">
+                                <span class="position-absolute top-0 start-0 m-2 badge bg-primary">#@sanPham.IdSanPham</span>
+                                <span class="position-absolute top-0 end-0 m-2 badge @statusBadge">@statusText</span>
+                                @if (sanPham.AnhSanPhams.Count() > 1)
+                                {
+                                    <span class="position-absolute bottom-0 end-0 m-2 badge bg-dark">
+                                        <i class="fas fa-images me-1"></i>@sanPham.AnhSanPhams.Count()
+                                    </span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate fw-bold" title="@sanPham.TenSanPham">
+                                    @sanPham.TenSanPham
+                                </h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-tag me-1"></i>@(sanPham.IdDanhMucNavigation?.TenDanhMuc ?? "Chưa phân loại")
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-success">@priceText ₫</span>
+                                    <span class="badge @badgeClass" title="Tồn kho">
+                                        <i class="fas fa-box me-1"></i>@soLuongTon
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Admin/sanpham-index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Admin/variants.css" asp-append-version="true" />
+    <style>
+        .view-toggle {
+            border-color: rgba(255,255,255,0.5) !important;
+            color: rgba(255,255,255,0.8) !important;
+        }
+        
+        .view-toggle:hover {
+            background-color: rgba(255,255,255,0.2) !important;
+            border-color: white !important;
+            color: white !important;
+        }
+        
+        .view-toggle.active {
+            background-color: white !important;
+            border-color: white !important;
+            color: var(--primary-color, #4b8b5a) !important;
+        }
+        
+        .product-grid-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .product-grid-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .product-grid-card .card-img-top {
+            border-radius: 12px 12px 0 0;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // View toggle functionality
+            $('.view-toggle').on('click', function() {
+                var view = $(this).data('view');
+                
+                // Update button states
+                $('.view-toggle').removeClass('active');
+                $(this).addClass('active');
+                
+                // Toggle views
+                if (view === 'list') {
+                    $('#listView').show();
+                    $('#gridView').hide();
+                } else {
+                    $('#listView').hide();
+                    $('#gridView').show();
+                }
+                
+                // Save preference
+                localStorage.setItem('adminProductView', view);
+            });
+            
+            // Restore saved preference
+            var savedView = localStorage.getItem('adminProductView');
+            if (savedView === 'grid') {
+                $('.view-toggle[data-view="grid"]').click();
+            }
+        });
+    </script>
+}

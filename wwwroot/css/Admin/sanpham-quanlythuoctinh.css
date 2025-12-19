@@ -1,0 +1,34 @@
+.attribute-values {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.add-value-form input {
+    min-width: 200px;
+    font-size: 0.875rem;
+}
+
+.table th {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge .btn-close {
+    font-size: 0.6rem;
+    width: 0.8em;
+    height: 0.8em;
+}
+
+.no-autocap {
+    text-transform: none !important;
+}

@@ -1,0 +1,729 @@
+@model IEnumerable<Final_VS1.Data.BienTheSanPham>
+@{
+    var sanPham = ViewBag.SanPham as Final_VS1.Data.SanPham;
+    var thuocTinhs = ViewBag.ThuocTinhs as List<Final_VS1.Data.ThuocTinh>;
+    ViewData["Title"] = "Quản lý biến thể";
+    ViewData["PageTitle"] = "QUẢN LÝ BIẾN THỂ";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid px-4 py-4">
+    <div class="mb-3">
+        @{
+            var backToDetailUrl = !string.IsNullOrEmpty(sanPham?.Slug)
+                ? Url.RouteUrl("admin_product_details", new { slug = sanPham.Slug })
+                : Url.Action("ChiTiet", "Sanpham", new { id = sanPham?.IdSanPham, area = "Admin" });
+        }
+        <a href="@backToDetailUrl" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại chi tiết sản phẩm
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <h4 class="fw-bold text-dark mb-1">Quản lý biến thể: @sanPham?.TenSanPham</h4>
+                    <p class="text-muted mb-0">Tạo và quản lý các phiên bản khác nhau của sản phẩm</p>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a href="@Url.Action("ThemSuaBienThe", "Sanpham", new { idSanPham = sanPham?.IdSanPham, area = "Admin" })" class="btn btn-success shadow-sm">
+                        <i class="fas fa-plus me-1"></i> Thêm biến thể
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 variant-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;" class="text-center">STT</th>
+                            <th style="width: 150px;">SKU</th>
+                            <th>THUỘC TÍNH</th>
+                            <th style="width: 140px;" class="text-end">GIÁ BÁN</th>
+                            <th style="width: 120px;" class="text-center">TỒN KHO</th>
+                            <th style="width: 120px;" class="text-center">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int index = 1;}
+                        @foreach (var variant in Model.OrderBy(v => v.IdBienThe))
+                        {
+                            <tr data-variant-id="@variant.IdBienThe" class="variant-row">
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">@index</span>
+                                </td>
+                                <td>
+                                    <span class="sku-badge">
+                                        @(variant.Sku ?? "N/A")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (variant.IdGiaTris.Any())
+                                    {
+                                        var groupedAttributes = variant.IdGiaTris
+                                            .GroupBy(g => g.IdThuocTinhNavigation?.TenThuocTinh)
+                                            .Where(group => !string.IsNullOrEmpty(group.Key));
+                                        
+                                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                                            @foreach (var group in groupedAttributes)
+                                            {
+                                                <div class="attribute-group">
+                                                    <span class="attribute-label">@group.Key:</span>
+                                                    @foreach (var giaTri in group)
+                                                    {
+                                                        var isMauSac = group.Key?.ToLower().Contains("màu") == true || 
+                                                                       group.Key?.ToLower().Contains("color") == true;
+                                                        var attrBadgeClass = isMauSac ? "badge-color" : "badge-attribute";
+                                                        <span class="badge @attrBadgeClass">@giaTri.GiaTri</span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic small">Không có thuộc tính</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <strong class="price-text">@((variant.GiaBan ?? 0).ToString("N0")) ₫</strong>
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var soLuong = variant.SoLuongTonKho ?? 0;
+                                        var badgeClass = soLuong > 10 ? "stock-high" : soLuong > 0 ? "stock-medium" : "stock-low";
+                                    }
+                                    <span class="badge @badgeClass stock-badge">@soLuong</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="@Url.Action("ThemSuaBienThe", "Sanpham", new { idSanPham = sanPham?.IdSanPham, idBienThe = variant.IdBienThe, area = "Admin" })" class="btn btn-outline-primary" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger delete-variant-btn" 
+                                                data-id="@variant.IdBienThe" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 empty-state">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có biến thể nào</h5>
+                <p class="text-muted mb-3">Nhấn "Thêm biến thể" để tạo biến thể đầu tiên</p>
+                <a href="@Url.Action("ThemSuaBienThe", "Sanpham", new { idSanPham = sanPham?.IdSanPham, area = "Admin" })" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Thêm biến thể ngay
+                </a>
+            </div>
+        }
+    </div>
+</div>
+</div>
+
+<!-- Modal thêm/sửa biến thể -->
+<div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-gradient-green text-white">
+                <h5 class="modal-title" id="variantModalLabel">
+                    <i class="fas fa-cube me-2"></i>Thêm biến thể
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="variantForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="variantId" name="idBienThe" value="0" />
+                <input type="hidden" name="idSanPham" value="@sanPham?.IdSanPham" />
+                
+                <div class="modal-body p-4">
+                    <!-- Thông tin cơ bản -->
+                    <div class="section-title mb-3">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>
+                        <strong>Thông tin cơ bản</strong>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="variantSku" class="form-label">
+                                SKU <small class="text-muted">(không bắt buộc)</small>
+                            </label>
+                            <input type="text" class="form-control" id="variantSku" name="sku" 
+                                   placeholder="Ví dụ: SP001-RED-XL">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="variantPrice" class="form-label">
+                                Giá bán <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="variantPrice" name="giaBan" 
+                                       min="0" step="1000" required placeholder="0">
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="variantStock" class="form-label">
+                                Số lượng tồn kho <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="variantStock" name="soLuongTonKho" 
+                                   min="0" required placeholder="0">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Thuộc tính biến thể -->
+                    <div class="section-title mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-tags me-2 text-success"></i>
+                            <strong>Thuộc tính biến thể</strong>
+                            <small class="text-muted ms-2">(Chọn tối đa 1 giá trị cho mỗi thuộc tính)</small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="manageAttributesBtn">
+                            <i class="fas fa-cog me-1"></i>Quản lý thuộc tính
+                        </button>
+                    </div>
+
+                    <!-- Form thêm nhanh thuộc tính -->
+                    <div class="card border-info mb-3">
+                        <div class="card-header bg-light">
+                            <strong><i class="fas fa-plus-circle me-2"></i>Thêm nhanh thuộc tính</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label small">Tên thuộc tính mới</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="newAttributeName" class="form-control" placeholder="VD: Màu sắc, Kích thước..." autocomplete="off" />
+                                    <button type="button" id="addAttributeBtn" class="btn btn-success">
+                                        <i class="fas fa-plus me-1"></i> Thêm thuộc tính
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label small">Thêm giá trị cho thuộc tính</label>
+                                <div class="row g-2">
+                                    <div class="col-5">
+                                        <select id="selectAttributeForValue" class="form-select form-select-sm">
+                                            <option value="">-- Chọn thuộc tính --</option>
+                                            @if (thuocTinhs != null && thuocTinhs.Any())
+                                            {
+                                                foreach (var tt in thuocTinhs)
+                                                {
+                                                    <option value="@tt.IdThuocTinh">@tt.TenThuocTinh</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" id="newAttributeValues" class="form-control form-control-sm" placeholder="Giá trị (cách nhau bằng dấu phẩy)" autocomplete="off" />
+                                    </div>
+                                    <div class="col-2 d-grid">
+                                        <button type="button" id="addAttributeValuesBtn" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-plus"></i> Thêm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách biến thể hiện có -->
+                    @if (Model.Any())
+                    {
+                        <div class="card border-primary mb-3">
+                            <div class="card-header bg-primary text-white py-2">
+                                <strong><i class="fas fa-list me-2"></i>Biến thể hiện có (@Model.Count())</strong>
+                            </div>
+                            <div class="card-body p-2" style="max-height: 200px; overflow-y: auto;">
+                                @foreach (var variant in Model.OrderBy(v => v.IdBienThe))
+                                {
+                                    <div class="variant-item p-2 mb-2 border rounded bg-light">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                @if (!string.IsNullOrEmpty(variant.Sku))
+                                                {
+                                                    <div class="text-muted small mb-1">
+                                                        <strong>@variant.Sku</strong>
+                                                    </div>
+                                                }
+                                                <div class="mb-1">
+                                                    @if (variant.IdGiaTris != null && variant.IdGiaTris.Any())
+                                                    {
+                                                        @foreach (var giaTri in variant.IdGiaTris)
+                                                        {
+                                                            <span class="badge bg-secondary me-1" style="font-size: 0.7rem;">
+                                                                @giaTri.GiaTri
+                                                            </span>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted small">Không có thuộc tính</span>
+                                                    }
+                                                </div>
+                                                <div class="d-flex gap-2 align-items-center small">
+                                                    <span class="text-success fw-bold">@variant.GiaBan?.ToString("N0")₫</span>
+                                                    <span class="text-muted">|</span>
+                                                    <span class="text-primary">Kho: @variant.SoLuongTonKho</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <button type="button" class="btn btn-sm btn-outline-primary edit-variant-btn-modal" 
+                                                        data-id="@variant.IdBienThe"
+                                                        data-sku="@variant.Sku"
+                                                        data-price="@variant.GiaBan"
+                                                        data-stock="@variant.SoLuongTonKho"
+                                                        data-values="@(variant.IdGiaTris != null ? string.Join(",", variant.IdGiaTris.Select(g => g.IdGiaTri)) : "")"
+                                                        title="Chỉnh sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    
+                    <div id="attributesContainer">
+                        @if (thuocTinhs != null && thuocTinhs.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var thuocTinh in thuocTinhs.Where(t => t.GiaTriThuocTinhs.Any()))
+                                {
+                                    <div class="col-md-6">
+                                        <div class="card attribute-card border">
+                                            <div class="card-body p-3">
+                                                <h6 class="card-title text-muted mb-3">
+                                                    <i class="fas fa-tag me-1"></i>@thuocTinh.TenThuocTinh
+                                                </h6>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach (var giaTri in thuocTinh.GiaTriThuocTinhs)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input attribute-checkbox" 
+                                                                   type="checkbox" 
+                                                                   name="giaTriIds" 
+                                                                   value="@giaTri.IdGiaTri" 
+                                                                   id="attr_@giaTri.IdGiaTri"
+                                                                   data-attribute="@thuocTinh.IdThuocTinh">
+                                                            <label class="form-check-label" for="attr_@giaTri.IdGiaTri">
+                                                                @giaTri.GiaTri
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Chưa có thuộc tính nào. Hãy thêm thuộc tính mới ở trên hoặc 
+                                <a href="@Url.Action("QuanLyThuocTinh", "Sanpham", new { area = "Admin" })" 
+                                   target="_blank" class="alert-link">quản lý thuộc tính</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Hủy
+                    </button>
+                    <button type="submit" class="btn btn-success" id="saveVariantBtn">
+                        <i class="fas fa-save me-1"></i>Lưu biến thể
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<link rel="stylesheet" href="~/css/Admin/variants.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Admin/sanpham-quanlybienthe.css" asp-append-version="true" />
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    let currentEditingVariantId = 0;
+
+    // URLs
+    const urls = {
+        addVariant: '@Url.Action("AddVariant", "Sanpham", new { area = "Admin" })',
+        updateVariant: '@Url.Action("UpdateVariant", "Sanpham", new { area = "Admin" })',
+        deleteVariant: '@Url.Action("DeleteVariant", "Sanpham", new { area = "Admin" })',
+        getVariantDetails: '@Url.Action("GetVariantDetails", "Sanpham", new { area = "Admin" })',
+        addAttribute: '@Url.Action("AddAttribute", "Thuoctinh", new { area = "Admin" })',
+        addAttributeValue: '@Url.Action("AddAttributeValue", "Thuoctinh", new { area = "Admin" })'
+    };
+
+    // Nút quản lý thuộc tính
+    $('#manageAttributesBtn').click(function() {
+        window.open('@Url.Action("QuanLyThuocTinh", "Sanpham", new { area = "Admin" })', '_blank');
+    });
+
+    // Thêm nhanh thuộc tính
+    $('#addAttributeBtn').click(function() {
+        const name = $('#newAttributeName').val().trim();
+        if (!name) {
+            showNotification('Vui lòng nhập tên thuộc tính', 'warning');
+            return;
+        }
+
+        const $btn = $(this);
+        const originalText = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Đang thêm...');
+
+        $.post(urls.addAttribute, {
+            tenThuocTinh: name,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        })
+        .done(function(response) {
+            if (response.success) {
+                showNotification(response.message, 'success');
+                $('#newAttributeName').val('');
+                
+                // Thêm vào dropdown
+                const newOption = `<option value="${response.data.idThuocTinh}">${response.data.tenThuocTinh}</option>`;
+                $('#selectAttributeForValue').append(newOption);
+                
+                // Thêm card thuộc tính mới vào container (không có giá trị)
+                const newAttributeCard = `
+                    <div class="col-md-6">
+                        <div class="card attribute-card border">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-muted mb-3">
+                                    <i class="fas fa-tag me-1"></i>${response.data.tenThuocTinh}
+                                </h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <small class="text-muted fst-italic">Chưa có giá trị. Thêm giá trị bên trên.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Kiểm tra xem có thuộc tính nào chưa
+                if ($('#attributesContainer .row').length === 0) {
+                    // Xóa thông báo "chưa có thuộc tính" và tạo row mới
+                    $('#attributesContainer').html('<div class="row g-3">' + newAttributeCard + '</div>');
+                } else {
+                    // Thêm vào row hiện có
+                    $('#attributesContainer .row').append(newAttributeCard);
+                }
+            } else {
+                showNotification(response.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .fail(function() {
+            showNotification('Lỗi kết nối', 'error');
+        })
+        .always(function() {
+            $btn.prop('disabled', false).html(originalText);
+        });
+    });
+
+    // Thêm nhanh giá trị thuộc tính
+    $('#addAttributeValuesBtn').click(function() {
+        const attributeId = $('#selectAttributeForValue').val();
+        const values = $('#newAttributeValues').val().trim();
+
+        if (!attributeId) {
+            showNotification('Vui lòng chọn thuộc tính', 'warning');
+            return;
+        }
+
+        if (!values) {
+            showNotification('Vui lòng nhập giá trị thuộc tính', 'warning');
+            return;
+        }
+
+        const $btn = $(this);
+        const originalText = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+        $.post(urls.addAttributeValue, {
+            idThuocTinh: attributeId,
+            giaTri: values,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        })
+        .done(function(response) {
+            if (response.success) {
+                showNotification(response.message, 'success');
+                $('#newAttributeValues').val('');
+                
+                // Cập nhật card thuộc tính với giá trị mới
+                const attributeName = $('#selectAttributeForValue option:selected').text();
+                const $attributeCard = $('#attributesContainer .card').filter(function() {
+                    return $(this).find('.card-title').text().trim() === attributeName;
+                });
+                
+                if ($attributeCard.length > 0) {
+                    const $valuesContainer = $attributeCard.find('.d-flex.flex-wrap');
+                    
+                    // Xóa thông báo "chưa có giá trị" nếu có
+                    $valuesContainer.find('small.text-muted.fst-italic').remove();
+                    
+                    // Thêm các giá trị mới
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(item) {
+                            const newCheckbox = `
+                                <div class="form-check">
+                                    <input class="form-check-input attribute-checkbox" 
+                                           type="checkbox" 
+                                           name="giaTriIds" 
+                                           value="${item.idGiaTri}" 
+                                           id="attr_${item.idGiaTri}"
+                                           data-attribute="${attributeId}">
+                                    <label class="form-check-label" for="attr_${item.idGiaTri}">
+                                        ${item.giaTri}
+                                    </label>
+                                </div>
+                            `;
+                            $valuesContainer.append(newCheckbox);
+                        });
+                    }
+                }
+            } else {
+                showNotification(response.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .fail(function() {
+            showNotification('Lỗi kết nối', 'error');
+        })
+        .always(function() {
+            $btn.prop('disabled', false).html(originalText);
+        });
+    });
+
+    // Enter key để submit form thêm nhanh
+    $('#newAttributeName').keypress(function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#addAttributeBtn').click();
+        }
+    });
+
+    $('#newAttributeValues').keypress(function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#addAttributeValuesBtn').click();
+        }
+    });
+
+    // Thêm biến thể mới
+    $('#addVariantBtn, #addVariantBtnEmpty').click(function() {
+        resetVariantForm();
+        $('#variantModalLabel').html('<i class="fas fa-cube me-2"></i>Thêm biến thể');
+        $('#variantModal').modal('show');
+    });
+
+    // Chỉnh sửa biến thể
+    $(document).on('click', '.edit-variant-btn', function() {
+        const variantId = $(this).data('id');
+        loadVariantDetails(variantId);
+    });
+
+    // Xóa biến thể
+    $(document).on('click', '.delete-variant-btn', function() {
+        const variantId = $(this).data('id');
+        
+        Swal.fire({
+            title: 'Xác nhận xóa',
+            text: 'Bạn có chắc chắn muốn xóa biến thể này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteVariant(variantId);
+            }
+        });
+    });
+
+    // Submit form biến thể
+    $('#variantForm').submit(function(e) {
+        e.preventDefault();
+        
+        if (!validateAttributeSelection()) {
+            return;
+        }
+        
+        saveVariant();
+    });
+
+    // Validation khi chọn checkbox thuộc tính
+    $(document).on('change', '.attribute-checkbox', function() {
+        validateAttributeSelection();
+    });
+
+    function validateAttributeSelection() {
+        const selectedAttributes = {};
+        let hasError = false;
+        let errorMessage = '';
+
+        $('.attribute-checkbox:checked').each(function() {
+            const attributeId = $(this).data('attribute');
+            const attributeName = $(this).closest('.card').find('.card-title').text();
+            const valueName = $(this).next('label').text();
+
+            if (selectedAttributes[attributeId]) {
+                hasError = true;
+                errorMessage = `Không thể chọn nhiều giá trị cho thuộc tính "${attributeName}".`;
+                $(this).prop('checked', false);
+                $(this).closest('.card').addClass('border-danger');
+                setTimeout(() => {
+                    $(this).closest('.card').removeClass('border-danger');
+                }, 3000);
+                return false;
+            } else {
+                selectedAttributes[attributeId] = valueName;
+                $(this).closest('.card').removeClass('border-danger');
+            }
+        });
+
+        if (hasError) {
+            showNotification(errorMessage, 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    function showNotification(message, type = 'success') {
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+        
+        const notification = $(`
+            <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                <i class="${icon} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `);
+
+        $('body').append(notification);
+        setTimeout(() => {
+            notification.alert('close');
+        }, 5000);
+    }
+
+    function resetVariantForm() {
+        currentEditingVariantId = 0;
+        $('#variantForm')[0].reset();
+        $('#variantId').val(0);
+        $('.attribute-checkbox').prop('checked', false);
+    }
+
+    function loadVariantDetails(variantId) {
+        $.get(urls.getVariantDetails, { idBienThe: variantId })
+            .done(function(response) {
+                if (response.success) {
+                    const data = response.data;
+                    currentEditingVariantId = variantId;
+                    $('#variantId').val(data.idBienThe);
+                    $('#variantSku').val(data.sku);
+                    $('#variantPrice').val(data.giaBan);
+                    $('#variantStock').val(data.soLuongTonKho);
+                    
+                    $('.attribute-checkbox').prop('checked', false);
+                    data.giaTriIds.forEach(function(id) {
+                        $(`#attr_${id}`).prop('checked', true);
+                    });
+                    
+                    $('#variantModalLabel').html('<i class="fas fa-edit me-2"></i>Chỉnh sửa biến thể');
+                    $('#variantModal').modal('show');
+                } else {
+                    showNotification(response.message || 'Không thể tải thông tin biến thể', 'error');
+                }
+            })
+            .fail(function() {
+                showNotification('Lỗi kết nối', 'error');
+            });
+    }
+
+    function saveVariant() {
+        const $btn = $('#saveVariantBtn');
+        const originalText = $btn.text();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...');
+
+        const formData = $('#variantForm').serialize();
+        const url = currentEditingVariantId > 0 ? urls.updateVariant : urls.addVariant;
+
+        $.post(url, formData)
+            .done(function(response) {
+                if (response.success) {
+                    showNotification(response.message, 'success');
+                    $('#variantModal').modal('hide');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                }
+            })
+            .fail(function() {
+                showNotification('Lỗi kết nối', 'error');
+            })
+            .always(function() {
+                $btn.prop('disabled', false).text(originalText);
+            });
+    }
+
+    function deleteVariant(variantId) {
+        const formData = new FormData();
+        formData.append('idBienThe', variantId);
+        formData.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val());
+
+        $.ajax({
+            url: urls.deleteVariant,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showNotification(response.message, 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showNotification(response.message || 'Không thể xóa biến thể', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Delete error:', error);
+                showNotification('Lỗi kết nối: ' + error, 'error');
+            }
+        });
+    }
+});
+</script>
+}

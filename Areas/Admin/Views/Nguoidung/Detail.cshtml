@@ -1,0 +1,209 @@
+@model Final_VS1.Data.TaiKhoan
+@{  ViewData["Title"] = "CHI TIẾT NGƯỜI DÙNG";
+    ViewData["PageTitle"] = "CHI TIẾT NGƯỜI DÙNG";
+    var normalizedRole = (Model.VaiTro ?? string.Empty).ToLowerInvariant();
+    var backUrl = Url.Action(normalizedRole == "nhanvien" ? "NhanVien" : "Index", "Nguoidung");
+}
+
+<link rel="stylesheet" href="~/css/Admin/nguoidung-detail.css" asp-append-version="true" />
+
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="@backUrl" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- User Info Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card user-detail-card h-100">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                        {
+                            <img src="@Model.AnhDaiDien" alt="Avatar" class="user-avatar-large mb-3">
+                        }
+                        else
+                        {
+                            <div class="user-avatar-large bg-secondary d-flex align-items-center justify-content-center text-white mx-auto mb-3">
+                                <i class="fas fa-user fa-3x"></i>
+                            </div>
+                        }
+                        <h5 class="mb-1 fw-bold text-dark">@(Model.HoTen ?? "Chưa cập nhật")</h5>
+                        <p class="text-muted mb-2">ID: #@Model.IdTaiKhoan</p>
+                        <p class="text-muted mb-2">Vai trò: #@Model.VaiTro</p>
+                        @if (normalizedRole == "admin")
+                        {
+                            <span class="badge bg-danger badge-custom">
+                                <i class="fas fa-shield-alt me-1"></i>Admin
+                            </span>
+                        }
+                        else if (normalizedRole == "nhanvien")
+                        {
+                            <span class="badge bg-info badge-custom text-dark">
+                                <i class="fas fa-user-tie me-1"></i>Nhân viên
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary badge-custom">
+                                <i class="fas fa-user me-1"></i>Khách hàng
+                            </span>
+                        }
+                        @if (Model.TrangThai == true)
+                        {
+                            <span class="badge bg-success badge-custom ms-1">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary badge-custom ms-1">Bị khóa</span>
+                        }
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            <i class="fas fa-envelope text-primary"></i> @Model.Email
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value">
+                            <i class="fas fa-phone text-success"></i> @(Model.SoDienThoai ?? "Chưa có")
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Ngày sinh</div>
+                        <div class="info-value">
+                            <i class="fas fa-birthday-cake text-warning"></i>
+                            @(Model.NgaySinh.HasValue ? Model.NgaySinh.Value.ToString("dd/MM/yyyy") : "Chưa cập nhật")
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Giới tính</div>
+                        <div class="info-value">
+                            <i class="fas fa-venus-mars text-info"></i> @(Model.GioiTinh ?? "Chưa cập nhật")
+                        </div>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="row text-center">
+                            <div class="col-6 mb-2">
+                                <h5 class="mb-0 text-primary">@Model.DonHangs.Count</h5>
+                                <small class="text-muted">Đơn hàng</small>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <h5 class="mb-0 text-success">@Model.DonHangs.Count(d => d.TrangThai == "Đã giao")</h5>
+                                <small class="text-muted">Hoàn thành</small>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="mb-0 text-warning">@Model.DanhGia.Count</h5>
+                                <small class="text-muted">Đánh giá</small>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="mb-0 text-danger">@Model.DonHangs.Sum(d => d.TongTien ?? 0).ToString("N0")₫</h5>
+                                <small class="text-muted">Tổng chi</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-top text-center">
+                        @if (Model.TrangThai == true)
+                        {
+                            <button class="btn btn-warning w-100" onclick="toggleUserStatus(@Model.IdTaiKhoan)">
+                                <i class="fas fa-lock me-2"></i>Khóa tài khoản
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success w-100" onclick="toggleUserStatus(@Model.IdTaiKhoan)">
+                                <i class="fas fa-lock-open me-2"></i>Mở khóa tài khoản
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Logs Section for staff -->
+        <div class="col-md-8 mb-4">
+            <div class="card user-detail-card h-100">
+                <div class="card-body p-4">
+                    <h5 class="section-header mb-3">
+                        <i class="fas fa-clipboard-list"></i> LỊCH SỬ HOẠT ĐỘNG
+                        <span class="badge bg-primary ms-2">@( (ViewBag.ActivityLogs as IEnumerable<Final_VS1.Data.LogHoatDong>)?.Count() ?? 0 )</span>
+                    </h5>
+                    <div style="max-height: 600px; overflow-y: auto;">
+                        @{ var logs = ViewBag.ActivityLogs as IEnumerable<Final_VS1.Data.LogHoatDong>; }
+                        @if (logs != null && logs.Any())
+                        {
+                            <ul class="timeline list-unstyled mb-0">
+                                @foreach (var log in logs)
+                                {
+                                    <li class="timeline-item">
+                                        <div class="timeline-marker"></div>
+                                        <div class="timeline-content">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <div class="fw-semibold text-dark">@log.HanhDong</div>
+                                                    <div class="text-muted small">Đối tượng: @log.DoiTuong @log.IdDoiTuong</div>
+                                                </div>
+                                                <div class="text-end small text-muted">
+                                                    @(log.ThoiGian?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                                                    @if (!string.IsNullOrEmpty(log.Ip))
+                                                    {
+                                                        <div>IP: @log.Ip</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p class="mb-0">Chưa có log hoạt động</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleUserStatus(userId) {
+            if (!confirm('Bạn có chắc muốn thay đổi trạng thái tài khoản này?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("ToggleStatus", "Nguoidung")',
+                type: 'POST',
+                data: {
+                    id: userId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi thay đổi trạng thái tài khoản!');
+                }
+            });
+        }
+    </script>
+    @Html.AntiForgeryToken()
+}

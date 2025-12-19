@@ -1,0 +1,602 @@
+﻿@model Final_VS1.Data.TaiKhoan
+@{
+    ViewData["Title"] = "ThongTin";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+    <!-- Animated Background Effects -->
+    <div class="animated-background">
+        <!-- Aurora Effect -->
+        <div class="aurora"></div>
+
+
+        <!-- Organic Nature Patterns -->
+        <div class="organic-pattern"></div>
+        <div class="organic-pattern"></div>
+        <div class="organic-pattern"></div>
+
+
+        <!-- Floating Leaves -->
+        <div class="leaf maple" style="left: 5%; animation-delay: 0s;">🍁</div>
+        <div class="leaf oak" style="left: 15%; animation-delay: -3s;">🍃</div>
+        <div class="leaf birch" style="left: 25%; animation-delay: -6s;">🌿</div>
+        <div class="leaf maple" style="left: 35%; animation-delay: -9s;">🍂</div>
+        <div class="leaf small" style="left: 45%; animation-delay: -12s;">🌱</div>
+        <div class="leaf oak" style="left: 55%; animation-delay: -2s;">🍃</div>
+        <div class="leaf birch" style="left: 65%; animation-delay: -5s;">🌿</div>
+        <div class="leaf maple" style="left: 75%; animation-delay: -8s;">🍁</div>
+        <div class="leaf small" style="left: 85%; animation-delay: -11s;">🌱</div>
+        <div class="leaf oak" style="left: 95%; animation-delay: -14s;">🍃</div>
+
+
+        <!-- Floating Flower Petals -->
+        <div class="flower-petal sakura" style="left: 8%; animation-delay: -1s;">🌸</div>
+        <div class="flower-petal rose" style="left: 18%; animation-delay: -4s;">🌹</div>
+        <div class="flower-petal daisy" style="left: 28%; animation-delay: -7s;">🌼</div>
+        <div class="flower-petal lavender" style="left: 38%; animation-delay: -10s;">💜</div>
+        <div class="flower-petal sakura" style="left: 48%; animation-delay: -13s;">🌸</div>
+        <div class="flower-petal rose" style="left: 58%; animation-delay: -2.5s;">🌺</div>
+        <div class="flower-petal daisy" style="left: 68%; animation-delay: -5.5s;">🌼</div>
+        <div class="flower-petal lavender" style="left: 78%; animation-delay: -8.5s;">🌻</div>
+        <div class="flower-petal sakura" style="left: 88%; animation-delay: -11.5s;">🌸</div>
+
+
+        <!-- Nature Elements -->
+        <div class="nature-element branch" style="left: 12%; animation-delay: -3s;">🌳</div>
+        <div class="nature-element grass" style="left: 32%; animation-delay: -8s;">🌾</div>
+        <div class="nature-element seed" style="left: 52%; animation-delay: -13s;">🌰</div>
+        <div class="nature-element branch" style="left: 72%; animation-delay: -5s;">🌲</div>
+        <div class="nature-element grass" style="left: 92%; animation-delay: -10s;">🌾</div>
+
+
+        <!-- Floating Bubbles -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+
+
+        <!-- Ripple Effects -->
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+
+
+        <!-- Floating Nature & Cosmetic Icons -->
+        <div class="floating-icons"><i class="bi bi-droplet-fill"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower1"></i></div>
+        <div class="floating-icons"><i class="bi bi-tree"></i></div>
+        <div class="floating-icons"><i class="bi bi-sun"></i></div>
+        <div class="floating-icons"><i class="bi bi-cloud"></i></div>
+        <div class="floating-icons"><i class="bi bi-droplet"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower2"></i></div>
+        <div class="floating-icons"><i class="bi bi-brightness-high"></i></div>
+        <div class="floating-icons"><i class="bi bi-egg"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower3"></i></div>
+        <div class="floating-icons"><i class="bi bi-water"></i></div>
+        <div class="floating-icons"><i class="bi bi-tree-fill"></i></div>
+        <div class="floating-icons">💄</div>
+        <div class="floating-icons">💅</div>
+        <div class="floating-icons">✨</div>
+        <div class="floating-icons">🌸</div>
+        <div class="floating-icons">🌺</div>
+        <div class="floating-icons">🦋</div>
+
+
+        <!-- Geometric Shapes -->
+        <div class="geo-shape circle" style="top: 15%; left: 5%; animation-delay: 0s;"></div>
+        <div class="geo-shape triangle" style="top: 30%; left: 85%; animation-delay: -1s;"></div>
+        <div class="geo-shape square" style="top: 50%; left: 10%; animation-delay: -2s;"></div>
+        <div class="geo-shape diamond" style="top: 70%; left: 75%; animation-delay: -3s;"></div>
+        <div class="geo-shape circle" style="top: 80%; left: 30%; animation-delay: -4s;"></div>
+        <div class="geo-shape triangle" style="top: 25%; left: 60%; animation-delay: -5s;"></div>
+        <div class="geo-shape square" style="top: 65%; left: 90%; animation-delay: -6s;"></div>
+        <div class="geo-shape diamond" style="top: 45%; left: 40%; animation-delay: -7s;"></div>
+
+
+        <!-- Sparkles -->
+        <div class="sparkle" style="top: 20%; left: 25%; animation-delay: 0s;"></div>
+        <div class="sparkle" style="top: 40%; left: 70%; animation-delay: -0.5s;"></div>
+        <div class="sparkle" style="top: 60%; left: 15%; animation-delay: -1s;"></div>
+        <div class="sparkle" style="top: 75%; left: 80%; animation-delay: -1.5s;"></div>
+        <div class="sparkle" style="top: 35%; left: 50%; animation-delay: -2s;"></div>
+        <div class="sparkle" style="top: 85%; left: 60%; animation-delay: -2.5s;"></div>
+        <div class="sparkle" style="top: 10%; left: 90%; animation-delay: -3s;"></div>
+        <div class="sparkle" style="top: 55%; left: 35%; animation-delay: -3.5s;"></div>
+        <div class="sparkle" style="top: 90%; left: 20%; animation-delay: -4s;"></div>
+        <div class="sparkle" style="top: 25%; left: 85%; animation-delay: -4.5s;"></div>
+
+
+        <!-- Floating Particles -->
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+
+
+        <!-- Wave Animation -->
+        <div class="wave-container">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+    </div>
+
+
+    <!-- Theme Toggle Button -->
+    <button class="btn btn-primary btn-theme-toggle" id="themeToggle" title="Chuyển đổi chế độ sáng/tối"
+            style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; border-radius: 50% !important; width: 60px !important; height: 60px !important; padding: 0 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important; margin: 0 !important; transform: none !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+        <i class="bi bi-sun-fill text-white" id="themeIcon" style="font-size: 1.5rem;"></i>
+    </button>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+<div class="main-container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-3">
+                @await Html.PartialAsync("_CustomerSidebar")
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-9">
+                <div class="p-4">
+                    <div class="card h-100 position-relative">
+                    <div class="card-header text-center">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-person-circle me-2"></i>
+                            Thông Tin
+                        </h6>
+                    </div>
+                    <div class="card-body d-flex flex-row align-items-start">
+                        <!-- Ảnh đại diện góc trên phải -->
+                        <div class="avatar-container position-absolute" style="top: 80px; right: 200px; min-width:180px;">
+                            <div class="profile-avatar mb-2" id="profileAvatar">
+                                @if (!string.IsNullOrEmpty(Model?.AnhDaiDien))
+                                {
+                                    <img id="avatarImg" src="@Model.AnhDaiDien" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+                                    <i class="bi bi-person" id="avatarIcon" style="font-size: 4.5rem; display: none;"></i>
+                                }
+                                else
+                                {
+                                    <img id="avatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+                                    <i class="bi bi-person" id="avatarIcon" style="font-size: 4.5rem;"></i>
+                                }
+                                <!-- name phải khớp với tham số controller: AnhDaiDien -->
+                                <input type="file" id="avatarInput" name="AnhDaiDien" accept="image/*" style="display:none;" onchange="handleAvatarChange(event)" />
+                                <input type="hidden" id="editAvatar" name="AnhDaiDien" value="@(Model?.AnhDaiDien ?? "")" />
+                             </div>
+                            <button class="btn btn-outline-primary btn-sm w-100" onclick="triggerAvatarUpload()" title="Thay đổi ảnh đại diện">
+                                <i class="bi bi-camera"></i> Thay đổi ảnh đại diện
+                            </button>
+                        </div>
+                        
+                        <!-- Thông tin cá nhân bên trái -->
+                        <div class="info-container flex-grow-1">
+                            <form id="profileForm" enctype="multipart/form-data">
+                                @Html.AntiForgeryToken()
+                                 <label for="editName" class="form-label mb-1" style="display:flex;align-items:center;gap:4px;">
+                                     <i class="bi bi-person" style="font-size:1rem;"></i>
+                                     <span style="font-size:0.85rem;">Họ và tên *</span>
+                                 </label>
+                                 <input type="text" class="form-control w-180" id="editName" value="@(Model?.HoTen ?? "")" required onkeydown="preventEnterSubmit(event)" style="max-width:400px;">
+
+                                 <label for="editEmail" class="form-label mb-1" style="display:flex;align-items:center;gap:4px;">
+                                     <i class="bi bi-envelope" style="font-size:1rem;"></i>
+                                     <span style="font-size:0.85rem;">Email *</span>
+                                 </label>
+                                 <input type="email" class="form-control w-50" id="editEmail" value="@(Model?.Email ?? "")" readonly title="Email không thể thay đổi" style="background-color: #f8f9fa; max-width:400px;">
+
+                                 <div class="mb-1 mt-2">
+                                    <label class="form-label">
+                                        <i class="bi bi-gender-ambiguous me-1"></i>Giới tính
+                                    </label>
+                                    <div class="d-flex gap-4 mt-1">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Nam" @(Model?.GioiTinh == "Nam" ? "checked" : "")>
+                                            <label class="form-check-label" for="genderMale">
+                                                <i class="bi bi-person me-1"></i>Nam
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Nữ" @(Model?.GioiTinh == "Nữ" ? "checked" : "")>
+                                            <label class="form-check-label" for="genderFemale">
+                                                <i class="bi bi-person-dress me-1"></i>Nữ
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-1">
+                                    <label class="form-label">
+                                        <i class="bi bi-bell me-1"></i>Thông báo
+                                    </label>
+                                    <div class="border rounded p-1 bg-light mt-1">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="emailNotifications" @(Model?.NhanEmailMarketing == true ? "checked" : "")>
+                                            <label class="form-check-label" for="emailNotifications">
+                                                <i class="bi bi-envelope me-1"></i>Nhận ưu đãi độc quyền qua email
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <!-- dùng button type=button để tránh xung đột các listener submit khác -->
+                                    <button type="button" id="saveProfileBtn" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-1"></i>Lưu thay đổi
+                                    </button>
+                                </div>
+                             </form>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Khuyến Mãi Đang Hoạt Động -->
+            <div class="p-4 pt-0">
+                <div class="card h-100 position-relative">
+                    <div class="card-header text-center">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-gift me-2"></i>
+                            Khuyến Mãi Đang Hoạt Động
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="promotionsList">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+<script>
+// Load active promotions
+document.addEventListener('DOMContentLoaded', function() {
+    loadActivePromotions();
+});
+
+function loadActivePromotions() {
+    fetch('/KhachHang/ThongTin/GetActivePromotions')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('promotionsList');
+            if (data && data.length > 0) {
+                let html = '<div class="row g-3">';
+                data.forEach(promo => {
+                    const typeIcon = getPromoTypeIcon(promo.loaiKhuyenMai);
+                    const typeName = getPromoTypeName(promo.loaiKhuyenMai);
+                    const discountText = getDiscountText(promo);
+                    const endDate = new Date(promo.ngayKetThuc).toLocaleDateString('vi-VN');
+                    
+                    html += `
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100 promo-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="promo-icon me-3">
+                                            <i class="${typeIcon}"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold">${promo.tenKhuyenMai}</h6>
+                                            <span class="badge bg-primary mb-2">${typeName}</span>
+                                            <p class="mb-1 text-success fw-semibold">${discountText}</p>
+                                            ${promo.giaTriDonHangToiThieu ? `<p class="mb-1 small text-muted"><i class="bi bi-cart3 me-1"></i>Đơn tối thiểu: ${formatCurrency(promo.giaTriDonHangToiThieu)}</p>` : ''}
+                                            <p class="mb-0 small text-muted"><i class="bi bi-clock me-1"></i>HSD: ${endDate}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="bi bi-gift display-4 text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Hiện không có khuyến mãi nào đang hoạt động</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading promotions:', error);
+            document.getElementById('promotionsList').innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-exclamation-circle display-4 mb-3"></i>
+                    <p>Không thể tải khuyến mãi</p>
+                </div>
+            `;
+        });
+}
+
+function getPromoTypeIcon(type) {
+    switch(type) {
+        case 'GIAM_GIA_SAN_PHAM': return 'bi bi-tag-fill text-danger';
+        case 'GIAM_GIA_DON_HANG': return 'bi bi-cart-check-fill text-success';
+        case 'FREESHIP': return 'bi bi-truck text-info';
+        default: return 'bi bi-gift-fill text-primary';
+    }
+}
+
+function getPromoTypeName(type) {
+    switch(type) {
+        case 'GIAM_GIA_SAN_PHAM': return 'Giảm giá sản phẩm';
+        case 'GIAM_GIA_DON_HANG': return 'Giảm giá đơn hàng';
+        case 'FREESHIP': return 'Miễn phí vận chuyển';
+        default: return 'Khuyến mãi';
+    }
+}
+
+function getDiscountText(promo) {
+    if (promo.hinhThucGiam === 'PHAN_TRAM') {
+        let text = `Giảm ${promo.giaTriGiam}%`;
+        if (promo.giaTriGiamToiDa) {
+            text += ` (tối đa ${formatCurrency(promo.giaTriGiamToiDa)})`;
+        }
+        return text;
+    } else if (promo.hinhThucGiam === 'SO_TIEN') {
+        return `Giảm ${formatCurrency(promo.giaTriGiam)}`;
+    } else {
+        return `Giá ${formatCurrency(promo.giaTriGiam)}`;
+    }
+}
+
+function formatCurrency(value) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+}
+</script>
+
+<style>
+.promo-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+.promo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+.promo-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+</style>
+
+<script>
+// Notification function
+function showNotification(message, type = 'success', duration = 4000) {
+    const container = document.getElementById('notificationContainer');
+    if (!container) return;
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.setAttribute('role', 'alert');
+    
+    // Set icon based on type
+    let icon = '';
+    switch(type) {
+        case 'success':
+            icon = '<i class="bi bi-check-circle-fill"></i>';
+            break;
+        case 'danger':
+            icon = '<i class="bi bi-exclamation-triangle-fill"></i>';
+            break;
+        case 'warning':
+            icon = '<i class="bi bi-exclamation-circle-fill"></i>';
+            break;
+        case 'info':
+            icon = '<i class="bi bi-info-circle-fill"></i>';
+            break;
+    }
+    
+    notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    `;
+    
+    // Add to container
+    container.appendChild(notification);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutTop 0.3s ease-in forwards';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, duration);
+}
+
+function preventEnterSubmit(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        return false;
+    }
+}
+
+// Chức năng thay đổi ảnh đại diện
+function triggerAvatarUpload() {
+    document.getElementById('avatarInput').click();
+}
+
+function handleAvatarChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        showNotification('Vui lòng chọn file hình ảnh hợp lệ!', 'warning');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) {
+        showNotification('Kích thước file không được vượt quá 10MB!', 'warning');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const avatarImg = document.getElementById('avatarImg');
+        const avatarIcon = document.getElementById('avatarIcon');
+        const editAvatar = document.getElementById('editAvatar');
+        
+        avatarImg.src = e.target.result;
+        avatarImg.style.display = 'block';
+        avatarIcon.style.display = 'none';
+        editAvatar.value = e.target.result;
+        document.getElementById('profileAvatar').classList.add('has-image');
+
+    };
+    reader.readAsDataURL(file);
+}
+
+/* GỌI API LƯU THÔNG TIN (tên + ảnh). Cập nhật UI khi server trả về thành công. */
+document.addEventListener('DOMContentLoaded', function () {
+    const saveBtn = document.getElementById('saveProfileBtn');
+    if (!saveBtn) return;
+
+    saveBtn.addEventListener('click', async function () {
+        const btn = this;
+        const nameEl = document.getElementById('editName');
+        const name = nameEl ? nameEl.value.trim() : '';
+        if (!name || name.length < 2) {
+            showNotification('Họ và tên phải có ít nhất 2 ký tự!', 'warning');
+            if (nameEl) nameEl.focus();
+            return;
+        }
+
+        // Build FormData
+        const formData = new FormData();
+        formData.append('HoTen', name);
+        const gender = document.querySelector('input[name="gender"]:checked')?.value || '';
+        formData.append('GioiTinh', gender);
+
+        // Thêm trạng thái email marketing
+        const emailNotifications = document.getElementById('emailNotifications');
+        const nhanEmailMarketing = emailNotifications ? emailNotifications.checked : false;
+        formData.append('NhanEmailMarketing', nhanEmailMarketing);
+
+        const avatarInput = document.getElementById('avatarInput');
+        if (avatarInput && avatarInput.files && avatarInput.files[0]) {
+            formData.append('AnhDaiDien', avatarInput.files[0]);
+        }
+
+        // antiforgery token
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+        // UI feedback
+        btn.disabled = true;
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Đang lưu...';
+
+        try {
+            const res = await fetch('/KhachHang/ThongTin/UpdateProfile', {
+                method: 'POST',
+                body: formData,
+                headers: { 'RequestVerificationToken': token }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                showNotification(data.message || 'Cập nhật thành công!', 'success');
+
+                // Cập nhật tên hiển thị (nếu header/layout có id tương ứng)
+                if (data.hoTen) {
+                    const headerName = document.getElementById('headerProfileName');
+                    if (headerName) headerName.textContent = data.hoTen;
+                    const profileName = document.getElementById('profileName');
+                    if (profileName) profileName.textContent = data.hoTen;
+                }
+
+                // Cập nhật avatar (server trả đường dẫn anhDaiDien)
+                if (data.anhDaiDien) {
+                    const avatarImg = document.getElementById('avatarImg');
+                    const avatarIcon = document.getElementById('avatarIcon');
+                    if (avatarImg) {
+                        avatarImg.src = data.anhDaiDien;
+                        avatarImg.style.display = 'block';
+                    }
+                    if (avatarIcon) avatarIcon.style.display = 'none';
+
+                    // header avatar nếu có
+                    const headerAvatar = document.getElementById('headerAvatarImg');
+                    if (headerAvatar) {
+                        headerAvatar.src = data.anhDaiDien;
+                        headerAvatar.style.display = 'block';
+                    }
+                }
+
+                // reset file input value để tránh re-upload
+                if (avatarInput) avatarInput.value = '';
+            } else {
+                showNotification(data.message || 'Cập nhật thất bại', 'danger');
+            }
+        } catch (err) {
+            console.error(err);
+            showNotification('Có lỗi xảy ra khi cập nhật thông tin!', 'danger');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+        }
+    });
+});
+
+// Thêm vào cuối script section
+// Submenu toggle function
+function toggleSubMenu(menu) {
+    const infoSubmenu = document.getElementById("infoSubMenu");
+    const ordersSubmenu = document.getElementById("ordersSubMenu");
+
+    if (menu === "info") {
+        infoSubmenu.classList.toggle("submenu-slide");
+        infoSubmenu.classList.toggle("submenu-hidden");
+        ordersSubmenu.classList.remove("submenu-slide");
+        ordersSubmenu.classList.add("submenu-hidden");
+    } else if (menu === "orders") {
+        ordersSubmenu.classList.toggle("submenu-slide");
+        ordersSubmenu.classList.toggle("submenu-hidden");
+        infoSubmenu.classList.remove("submenu-slide");
+        infoSubmenu.classList.add("submenu-hidden");
+    }
+}
+
+// Function stubs for order filtering (to prevent errors)
+function filterOrdersByStatus(status) {
+    window.location.href = '/KhachHang/DonHang/Index';
+}
+</script>
+
+
+
+
+
+
+

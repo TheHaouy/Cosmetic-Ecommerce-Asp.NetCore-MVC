@@ -1,0 +1,283 @@
+@model Final_VS1.Data.BienTheSanPham
+@{
+    var sanPham = ViewBag.SanPham as Final_VS1.Data.SanPham;
+    var thuocTinhs = ViewBag.ThuocTinhs as List<Final_VS1.Data.ThuocTinh>;
+    var isNew = Model.IdBienThe == 0;
+    ViewData["Title"] = isNew ? "Thêm biến thể" : "Sửa biến thể";
+    ViewData["PageTitle"] = isNew ? "THÊM BIẾN THỂ MỚI" : "CHỈNH SỮA BIẾN THỂ";
+    
+    if (sanPham == null)
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Lỗi: Không tìm thấy thông tin sản phẩm. Vui lòng <a href="@Url.Action("Index", "Sanpham", new { area = "Admin" })">quay lại danh sách sản phẩm</a>.
+        </div>
+        return;
+    }
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="mb-3">
+        @{
+            var backUrl = !string.IsNullOrEmpty(sanPham.Slug)
+                ? Url.RouteUrl("admin_product_details", new { slug = sanPham.Slug })
+                : Url.Action("ChiTiet", "Sanpham", new { id = sanPham.IdSanPham, area = "Admin" });
+        }
+        <a href="@backUrl" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại chi tiết sản phẩm
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-cube me-2"></i>
+                @(isNew ? "Thêm biến thể cho sản phẩm: " : "Chỉnh sửa biến thể cho sản phẩm: ")
+                @{
+                    var productDetailUrl = !string.IsNullOrEmpty(sanPham.Slug)
+                        ? Url.RouteUrl("admin_product_details", new { slug = sanPham.Slug })
+                        : Url.Action("ChiTiet", "Sanpham", new { id = sanPham.IdSanPham, area = "Admin" });
+                }
+                <a class="text-white" style="text-decoration:none;" href="@productDetailUrl">@sanPham.TenSanPham</a>
+            </h5>
+        </div>
+        <div class="card-body">
+            <form id="variantForm" asp-action="ThemSuaBienThe" asp-controller="Sanpham" asp-area="Admin" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdBienThe" />
+                <input type="hidden" asp-for="IdSanPham" value="@sanPham.IdSanPham" />
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- Thông tin cơ bản -->
+                        <div class="section-title mb-3">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                            <strong>Thông tin cơ bản</strong>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Sku" class="form-label">
+                                    SKU <small class="text-muted">(không bắt buộc)</small>
+                                </label>
+                                <input asp-for="Sku" class="form-control" placeholder="Ví dụ: SP001-RED-XL">
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="GiaBan" class="form-label">
+                                    Giá bán <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="GiaBan" type="number" class="form-control" min="0" step="1000" required placeholder="0">
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SoLuongTonKho" class="form-label">
+                                    Số lượng tồn kho <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="SoLuongTonKho" type="number" class="form-control" min="0" required placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- Thuộc tính biến thể -->
+                        <div class="section-title mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-tags me-2 text-success"></i>
+                                <strong>Thuộc tính biến thể</strong>
+                                <small class="text-muted ms-2">(Chọn tối đa 1 giá trị cho mỗi thuộc tính)</small>
+                            </div>
+                            <a href="@Url.Action("QuanLyThuocTinh", "Sanpham", new { area = "Admin" })" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-cog me-1"></i>Quản lý thuộc tính
+                            </a>
+                        </div>
+
+                        <div id="attributesContainer">
+                            @if (thuocTinhs != null && thuocTinhs.Any())
+                            {
+                                <div class="row g-3">
+                                    @foreach (var thuocTinh in thuocTinhs.Where(t => t.GiaTriThuocTinhs.Any()))
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="card attribute-card border">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title text-muted mb-3">
+                                                        <i class="fas fa-tag me-1"></i>@thuocTinh.TenThuocTinh
+                                                    </h6>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        @foreach (var giaTri in thuocTinh.GiaTriThuocTinhs)
+                                                        {
+                                                            var isChecked = Model.IdGiaTris != null && Model.IdGiaTris.Any(g => g.IdGiaTri == giaTri.IdGiaTri);
+                                                            <div class="form-check">
+                                                                <input class="form-check-input attribute-checkbox"
+                                                                       type="checkbox"
+                                                                       name="giaTriIds"
+                                                                       value="@giaTri.IdGiaTri"
+                                                                       id="attr_@giaTri.IdGiaTri"
+                                                                       data-attribute="@thuocTinh.IdThuocTinh"
+                                                                       @(isChecked ? "checked" : "")>
+                                                                <label class="form-check-label" for="attr_@giaTri.IdGiaTri">
+                                                                    @giaTri.GiaTri
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Chưa có thuộc tính nào. Hãy
+                                    <a href="@Url.Action("QuanLyThuocTinh", "Sanpham", new { area = "Admin" })"
+                                       target="_blank" class="alert-link">quản lý thuộc tính</a> để thêm.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Thêm nhanh thuộc tính -->
+                         <div class="card border-info mb-3">
+                            <div class="card-header bg-light">
+                                <strong><i class="fas fa-plus-circle me-2"></i>Thêm nhanh thuộc tính & giá trị</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label small">Tên thuộc tính mới</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="newAttributeName" class="form-control" placeholder="VD: Màu sắc, Kích thước..." autocomplete="off" />
+                                        <button type="button" id="addAttributeBtn" class="btn btn-success">
+                                            <i class="fas fa-plus me-1"></i> Thêm
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label small">Thêm giá trị cho thuộc tính</label>
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <select id="selectAttributeForValue" class="form-select form-select-sm">
+                                                <option value="">-- Chọn thuộc tính --</option>
+                                                @if (thuocTinhs != null && thuocTinhs.Any())
+                                                {
+                                                    foreach (var tt in thuocTinhs)
+                                                    {
+                                                        <option value="@tt.IdThuocTinh">@tt.TenThuocTinh</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <input type="text" id="newAttributeValues" class="form-control form-control-sm" placeholder="Giá trị (cách nhau bằng dấu phẩy)" autocomplete="off" />
+                                        </div>
+                                        <div class="col-12 d-grid">
+                                            <button type="button" id="addAttributeValuesBtn" class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-plus"></i> Thêm giá trị
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách biến thể hiện có -->
+                        @{
+                            var existingVariants = ViewBag.ExistingVariants as List<Final_VS1.Data.BienTheSanPham>;
+                        }
+                        @if (existingVariants != null && existingVariants.Any())
+                        {
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <strong><i class="fas fa-list me-2"></i>Biến thể hiện có (@existingVariants.Count)</strong>
+                                </div>
+                                <div class="card-body p-2" style="max-height: 800px; overflow-y: auto;">
+                                    @foreach (var variant in existingVariants)
+                                    {
+                                        var isCurrentVariant = variant.IdBienThe == Model.IdBienThe;
+                                        <div class="variant-item @(isCurrentVariant ? "border-success bg-light" : "") p-2 mb-2 border rounded">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1">
+                                                    @if (!string.IsNullOrEmpty(variant.Sku))
+                                                    {
+                                                        <div class="text-muted small mb-1">
+                                                                
+                                                            <strong>@variant.Sku</strong>
+                                                        </div>
+                                                    }
+                                                    <div class="mb-1">
+                                                        @if (variant.IdGiaTris != null && variant.IdGiaTris.Any())
+                                                        {
+                                                            @foreach (var giaTri in variant.IdGiaTris)
+                                                            {
+                                                                <span class="badge bg-secondary me-1" style="font-size: 0.7rem;">
+                                                                    @giaTri.GiaTri
+                                                                </span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted small">Không có thuộc tính</span>
+                                                        }
+                                                    </div>
+                                                    <div class="d-flex gap-2 align-items-center small">
+                                                        <span class="text-success fw-bold">@variant.GiaBan?.ToString("N0")₫</span>
+                                                        <span class="text-muted">|</span>
+                                                        <span class="text-primary">Kho: @variant.SoLuongTonKho</span>
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    @if (isCurrentVariant)
+                                                    {
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-edit"></i> Đang sửa
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="@Url.Action("ThemSuaBienThe", "Sanpham", new { idSanPham = sanPham.IdSanPham, idBienThe = variant.IdBienThe, area = "Admin" })" 
+                                                           class="btn btn-sm btn-outline-primary" 
+                                                           title="Chỉnh sửa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light text-end">
+                    <a href="@backUrl" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Hủy
+                    </a>
+                    <button type="submit" class="btn btn-success" id="saveVariantBtn">
+                        <i class="fas fa-save me-1"></i>Lưu biến thể
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<link rel="stylesheet" href="~/css/Admin/variants.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Admin/sanpham-themsuabienthe.css" asp-append-version="true" />
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    window.variantUrls = {
+        addAttribute: '@Url.Action("AddAttribute", "Sanpham", new { area = "Admin" })',
+        addAttributeValue: '@Url.Action("AddAttributeValue", "Sanpham", new { area = "Admin" })',
+        getAttributes: '@Url.Action("GetAttributes", "Sanpham", new { area = "Admin" })'
+    };
+</script>
+<script src="~/js/Admin/variant-form.js" asp-append-version="true"></script>
+}

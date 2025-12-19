@@ -1,0 +1,561 @@
+@model List<Final_VS1.Data.ThuocTinh>
+@{
+    ViewData["Title"] = "Quản lý thuộc tính";
+    ViewData["PageTitle"] = "QUẢN LÝ THUỘC TÍNH";
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <a href="@Url.Action("Index", "Sanpham", new { area = "Admin" })" class="btn btn-outline-secondary btn-sm bg-white">
+                    <i class="fas fa-arrow-left me-1"></i>Quay lại
+                </a>
+                <div class="vr"></div>
+                <h5 class="mb-0">
+                    <i class="fas fa-tags me-2"></i>Quản lý thuộc tính sản phẩm
+                </h5>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Form thêm thuộc tính -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <form id="addAttributeForm" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="newAttributeName" 
+                               placeholder="Tên thuộc tính (VD: Màu sắc, Kích thước...)" 
+                               autocomplete="off"
+                               required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-1"></i> Thêm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danh sách thuộc tính -->
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table id="attributeTable" class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 260px;">Tên thuộc tính</th>
+                            <th class="text-center">Giá trị</th>
+                            <th class="text-center" style="width: 300px;">Thêm giá trị mới</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var attr in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <div class="attr-name-wrap" data-id="@attr.IdThuocTinh">
+                                            <strong class="text-dark attr-name-text">@attr.TenThuocTinh</strong>
+                                            <button type="button" class="btn btn-link p-0 ms-2 text-decoration-none-dark edit-attr-btn" title="Sửa tên">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link p-0 ms-2 text-danger delete-attr-btn" title="Xóa thuộc tính" data-id="@attr.IdThuocTinh" data-name="@attr.TenThuocTinh">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="attr-name-edit d-none" data-id="@attr.IdThuocTinh">
+                                            @Html.AntiForgeryToken()
+                                            <div class="input-group input-group-sm" style="max-width: 260px;">
+                                                <input type="text" class="form-control attr-name-input" value="@attr.TenThuocTinh" maxlength="255" autocomplete="off">
+                                                <button class="btn btn-success save-attr-btn" data-id="@attr.IdThuocTinh" title="Lưu"><i class="fas fa-check"></i></button>
+                                                <button class="btn btn-secondary cancel-attr-btn" data-id="@attr.IdThuocTinh" title="Hủy"><i class="fas fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br><small class="text-muted">@attr.GiaTriThuocTinhs.Count giá trị</small>
+                                </td>
+                                <td>
+                                    <div class="attribute-values">
+                                        @if (attr.GiaTriThuocTinhs.Any())
+                                        {
+                                            @foreach (var value in attr.GiaTriThuocTinhs.OrderBy(v => v.GiaTri))
+                                            {
+                                                <span class="badge bg-light text-dark border me-1 mb-1 d-inline-flex align-items-center">
+                                                    @value.GiaTri
+                                                    <button type="button" class="btn-close btn-close-sm ms-2 delete-value-btn" 
+                                                            data-id="@value.IdGiaTri" 
+                                                            data-value="@value.GiaTri"
+                                                            title="Xóa giá trị này"></button>
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">Chưa có giá trị</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <form class="add-value-form d-flex gap-2" data-attribute-id="@attr.IdThuocTinh">
+                                        @Html.AntiForgeryToken()
+                                        <input type="text" class="form-control form-control-sm no-autocap" 
+                                               placeholder="Nhập giá trị thuộc tính" 
+                                               title="Nhấn Enter để lưu"
+                                               autocomplete="off"
+                                               autocapitalize="none"
+                                               autocorrect="off"
+                                               spellcheck="false"
+                                               required>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Thêm giá trị">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                <h6 class="text-muted">Chưa có thuộc tính nào</h6>
+                <p class="text-muted">Hãy thêm thuộc tính đầu tiên ở trên</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+<link rel="stylesheet" href="~/css/Admin/sanpham-quanlythuoctinh.css" asp-append-version="true" />
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    const antiForgeryToken = $('input[name="__RequestVerificationToken"]').first().val();
+    $('#newAttributeName').focus();
+
+    const renderAttributeRow = (attr) => `
+        <tr data-attr-id="${attr.id}">
+            <td>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="attr-name-wrap" data-id="${attr.id}">
+                        <strong class="text-dark attr-name-text">${attr.name}</strong>
+                        <button type="button" class="btn btn-link p-0 ms-2 text-decoration-none-dark edit-attr-btn" title="Sửa tên">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button type="button" class="btn btn-link p-0 ms-2 text-danger delete-attr-btn" title="Xóa thuộc tính" data-id="${attr.id}" data-name="${attr.name}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="attr-name-edit d-none" data-id="${attr.id}">
+                        <input name="__RequestVerificationToken" type="hidden" value="${antiForgeryToken}" />
+                        <div class="input-group input-group-sm" style="max-width: 260px;">
+                            <input type="text" class="form-control attr-name-input" value="${attr.name}" maxlength="255" autocomplete="off">
+                            <button class="btn btn-success save-attr-btn" data-id="${attr.id}" title="Lưu"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-secondary cancel-attr-btn" data-id="${attr.id}" title="Hủy"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <br><small class="text-muted">0 giá trị</small>
+            </td>
+            <td>
+                <div class="attribute-values">
+                    <span class="text-muted fst-italic">Chưa có giá trị</span>
+                </div>
+            </td>
+            <td class="text-center">
+                <form class="add-value-form d-flex gap-2" data-attribute-id="${attr.id}">
+                    <input name="__RequestVerificationToken" type="hidden" value="${antiForgeryToken}" />
+                    <input type="text" class="form-control form-control-sm no-autocap" 
+                           placeholder="Nhập giá trị thuộc tính" 
+                           title="Nhấn Enter để lưu"
+                           autocomplete="off"
+                           autocapitalize="none"
+                           autocorrect="off"
+                           spellcheck="false"
+                           required>
+                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Thêm giá trị">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>`;
+
+    const ensureTableExists = () => {
+        if ($('#attributeTable').length) return $('#attributeTable');
+
+        const tableHtml = `
+            <div class="table-responsive">
+                <table id="attributeTable" class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 260px;">Tên thuộc tính</th>
+                            <th class="text-center">Giá trị</th>
+                            <th class="text-center" style="width: 300px;">Thêm giá trị mới</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>`;
+
+        $('.card-body .text-center.py-5').remove();
+        $('.card-body').append(tableHtml);
+        return $('#attributeTable');
+    };
+
+    // Xử lý thêm thuộc tính
+    $('#addAttributeForm').submit(function(e) {
+        e.preventDefault();
+        
+        const $attributeInput = $('#newAttributeName');
+        const attributeName = $attributeInput.val().trim();
+        
+        if (!attributeName) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng nhập tên thuộc tính'
+            });
+            $attributeInput.focus();
+            return;
+        }
+        
+        const $btn = $(this).find('button[type="submit"]');
+        const originalText = $btn.html();
+        
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Đang thêm...');
+        
+        const postData = {
+            tenThuocTinh: attributeName,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+        
+        $.post('@Url.Action("AddAttribute", "Thuoctinh", new { area = "Admin" })', postData)
+            .done(function(response) {
+                if (response.success) {
+                    const table = ensureTableExists();
+                    const $tbody = table.find('tbody');
+                    $tbody.prepend(renderAttributeRow({ id: response.data.idThuocTinh, name: response.data.tenThuocTinh }));
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: response.message || 'Thêm thuộc tính thành công!'
+                    });
+
+                    $attributeInput.val('').focus();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: response.message || 'Không thể thêm thuộc tính'
+                    });
+                }
+            })
+            .fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối'
+                });
+            })
+            .always(function() {
+                $btn.prop('disabled', false).html(originalText);
+            });
+    });
+
+    // Xử lý thêm giá trị thuộc tính
+    $(document).on('submit', '.add-value-form', function(e) {
+        e.preventDefault();
+        
+        const $form = $(this);
+        const attributeId = $form.data('attribute-id');
+        const $input = $form.find('input[type="text"]');
+        const value = $input.val().trim();
+        
+        if (!value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng nhập giá trị'
+            });
+            return;
+        }
+        
+        const $btn = $form.find('button[type="submit"]');
+        const originalText = $btn.html();
+        
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+        
+        const postData = {
+            idThuocTinh: parseInt(attributeId),
+            giaTri: value,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+        
+        $.post('@Url.Action("AddAttributeValue", "Thuoctinh", new { area = "Admin" })', postData)
+            .done(function(response) {
+                if (response.success) {
+                    const $row = $form.closest('tr');
+                    const $valuesWrap = $row.find('.attribute-values');
+                    const dataList = response.data || [];
+
+                    // Remove placeholder if present
+                    if ($valuesWrap.find('.fst-italic').length) {
+                        $valuesWrap.empty();
+                    }
+
+                    dataList.forEach(item => {
+                        const badge = `
+                            <span class="badge bg-light text-dark border me-1 mb-1 d-inline-flex align-items-center">
+                                ${item.giaTri}
+                                <button type="button" class="btn-close btn-close-sm ms-2 delete-value-btn" 
+                                        data-id="${item.idGiaTri}" 
+                                        data-value="${item.giaTri}"
+                                        title="Xóa giá trị này"></button>
+                            </span>`;
+                        $valuesWrap.append(badge);
+                    });
+
+                    const newCount = $valuesWrap.find('.badge').length;
+                    $row.find('small.text-muted').text(`${newCount} giá trị`);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: response.message || 'Thêm giá trị thành công!'
+                    });
+
+                    $input.val('').focus();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: response.message || 'Không thể thêm giá trị'
+                    });
+                }
+            })
+            .fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối'
+                });
+            })
+            .always(function() {
+                $btn.prop('disabled', false).html(originalText);
+            });
+    });
+
+    // Xử lý xóa giá trị
+    $(document).on('click', '.delete-value-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const valueId = $(this).data('id');
+        const valueName = $(this).data('value');
+        
+        Swal.fire({
+            title: 'Xác nhận xóa',
+            text: `Bạn có chắc chắn muốn xóa giá trị "${valueName}" không?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const $btn = $(this);
+                $btn.prop('disabled', true).addClass('opacity-50');
+                
+                $.post('@Url.Action("DeleteAttributeValue", "Thuoctinh", new { area = "Admin" })', {
+                    idGiaTri: valueId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                })
+                    .done(function(response) {
+                        if (response.success) {
+                            const $row = $btn.closest('tr');
+                            const $valuesWrap = $row.find('.attribute-values');
+
+                            $btn.closest('.badge').remove();
+                            const remaining = $valuesWrap.find('.badge').length;
+
+                            if (remaining === 0) {
+                                $valuesWrap.html('<span class="text-muted fst-italic">Chưa có giá trị</span>');
+                            }
+
+                            $row.find('small.text-muted').text(`${remaining} giá trị`);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message || 'Xóa giá trị thành công!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message || 'Không thể xóa giá trị'
+                            });
+                            $btn.prop('disabled', false).removeClass('opacity-50');
+                        }
+                    })
+                    .fail(function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Lỗi kết nối'
+                        });
+                        $btn.prop('disabled', false).removeClass('opacity-50');
+                    });
+            }
+        });
+    });
+
+    // ===== ĐỔI TÊN THUỘC TÍNH =====
+    $(document).on('click', '.edit-attr-btn', function(e) {
+        e.preventDefault();
+        const $cell = $(this).closest('td');
+        $cell.find('.attr-name-wrap').addClass('d-none');
+        const $edit = $cell.find('.attr-name-edit');
+        $edit.removeClass('d-none');
+        const $input = $edit.find('.attr-name-input');
+        setTimeout(() => { $input.focus().select(); }, 100);
+    });
+
+    $(document).on('click', '.cancel-attr-btn', function(e) {
+        e.preventDefault();
+        const $cell = $(this).closest('td');
+        $cell.find('.attr-name-edit').addClass('d-none');
+        $cell.find('.attr-name-wrap').removeClass('d-none');
+    });
+
+    $(document).on('keydown', '.attr-name-input', function(e) {
+        if (e.key === 'Escape') {
+            const $cell = $(this).closest('td');
+            $cell.find('.attr-name-edit').addClass('d-none');
+            $cell.find('.attr-name-wrap').removeClass('d-none');
+        }
+        if (e.key === 'Enter') {
+            $(this).closest('.attr-name-edit').find('.save-attr-btn').trigger('click');
+        }
+    });
+
+    $(document).on('click', '.save-attr-btn', function(e) {
+        e.preventDefault();
+        const $cell = $(this).closest('td');
+        const id = $(this).data('id');
+        const $input = $cell.find('.attr-name-input');
+        const newName = ($input.val() || '').trim();
+        const oldName = $cell.find('.attr-name-text').text().trim();
+
+        if (!newName) {
+            Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập tên thuộc tính' });
+            $input.focus();
+            return;
+        }
+        if (newName === oldName) {
+            $cell.find('.attr-name-edit').addClass('d-none');
+            $cell.find('.attr-name-wrap').removeClass('d-none');
+            return;
+        }
+
+        const $btn = $(this);
+        const original = $btn.html();
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.post('@Url.Action("RenameAttribute", "Thuoctinh", new { area = "Admin" })', {
+            idThuocTinh: id,
+            tenThuocTinh: newName,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val()
+        })
+        .done(function(res) {
+            if (res.success) {
+                $cell.find('.attr-name-text').text(newName);
+                Swal.fire({ icon: 'success', title: 'Thành công', text: res.message || 'Cập nhật thành công', timer: 1200, showConfirmButton: false });
+                $cell.find('.attr-name-edit').addClass('d-none');
+                $cell.find('.attr-name-wrap').removeClass('d-none');
+            } else {
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message || 'Không thể cập nhật' });
+            }
+        })
+        .fail(function() {
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Lỗi kết nối' });
+        })
+        .always(function() {
+            $btn.prop('disabled', false).html(original);
+        });
+    });
+
+    // Xử lý xóa thuộc tính
+    $(document).on('click', '.delete-attr-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const attributeId = $(this).data('id');
+        const attributeName = $(this).data('name');
+        
+        Swal.fire({
+            title: 'Xác nhận xóa thuộc tính',
+            html: `Bạn có chắc chắn muốn xóa thuộc tính "<strong>${attributeName}</strong>"?<br><strong class='text-danger'>Tất cả các giá trị của thuộc tính này và liên kết với sản phẩm sẽ bị xóa.</strong><br>Hành động này không thể hoàn tác.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const $btn = $(this);
+                const $row = $btn.closest('tr');
+                $row.addClass('opacity-50');
+                
+                $.post('@Url.Action("DeleteThuocTinh", "Thuoctinh", new { area = "Admin" })', {
+                    id: attributeId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val()
+                })
+                    .done(function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message || 'Xóa thuộc tính thành công!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                $row.fadeOut(300, function() { $(this).remove(); });
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message || 'Không thể xóa thuộc tính.'
+                            });
+                            $row.removeClass('opacity-50');
+                        }
+                    })
+                    .fail(function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Lỗi kết nối. Vui lòng thử lại.'
+                        });
+                        $row.removeClass('opacity-50');
+                    });
+            }
+        });
+    });
+});
+</script>
+}

@@ -1,0 +1,401 @@
+@model List<Final_VS1.Data.DanhMuc>
+@{
+    ViewData["Title"] = "QUẢN LÝ DANH MỤC";
+    ViewData["Description"] = "Quản lý danh mục sản phẩm, tạo, sửa, xóa, sắp xếp thứ tự hiển thị, giao diện thân thiện SEO.";
+    ViewData["PageTitle"] = "QUẢN LÝ DANH MỤC";
+    ViewData["SearchPlaceholder"] = "Tìm kiếm danh mục...";
+}
+
+<link rel="stylesheet" href="~/css/Admin/danhmuc-list.css" asp-append-version="true" />
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <span>QUẢN LÝ DANH MỤC SẢN PHẨM</span>
+            <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#sortGuide" title="Hướng dẫn sắp xếp">
+                <i class="fas fa-question-circle"></i>
+            </button>
+        </div>
+        <div class="d-flex gap-2 filter-controls">
+            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Tìm kiếm danh mục..." style="width: 250px;">
+            <button class="btn btn-dark btn-sm" id="addCategoryBtn" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                <i class="fas fa-plus me-1"></i> Thêm danh mục
+            </button>
+        </div>
+    </div>
+    <div class="collapse" id="sortGuide">
+        <div class="card-body bg-light border-bottom">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-grip-vertical text-primary me-2 mt-1"></i>
+                        <div>
+                            <strong>Kéo thả để sắp xếp</strong>
+                            <p class="mb-0 small text-muted">Giữ biểu tượng 3 gạch và kéo lên/xuống để thay đổi vị trí</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-arrow-right text-info me-2 mt-1"></i>
+                        <div>
+                            <strong>Kéo sang phải → Gộp vào</strong>
+                            <p class="mb-0 small text-muted">Kéo sang phải 50px để biến thành danh mục con</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-arrow-left text-warning me-2 mt-1"></i>
+                        <div>
+                            <strong>Kéo sang trái ← Tách ra</strong>
+                            <p class="mb-0 small text-muted">Kéo sang trái 50px để tách thành danh mục cha</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="categoryTable" class="table table-hover" style="width:100%">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th width="5%"><i class="fas fa-sort"></i></th>
+                    <th width="8%">STT</th>
+                    <th width="10%">Ảnh</th>
+                    <th width="22%">Tên danh mục</th>
+                    <th width="22%">Mô tả</th>
+                    <th width="12%">Danh mục cha</th>
+                    <th width="10%">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="categoryTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @* Lấy danh sách danh mục cha (không có parent) *@
+                    var parentCategories = Model.Where(x => x.IdDanhMucCha == null).OrderBy(x => x.ThuTuHienThi ?? 0).ToList();
+                    
+                    @foreach (var category in parentCategories)
+                    {
+                        @* Lấy danh mục con của danh mục cha này và sắp xếp theo ThuTuHienThi *@
+                        var childCategories = Model.Where(x => x.IdDanhMucCha == category.IdDanhMuc).OrderBy(x => x.ThuTuHienThi ?? int.MaxValue).ToList();
+                        var hasChildren = childCategories.Any();
+                        
+                        @* Hiển thị danh mục cha *@
+                        <tr class="parent-category category-group" 
+                            data-group-id="group-@category.IdDanhMuc"
+                            data-category-id="@category.IdDanhMuc" 
+                            data-category-name="@category.TenDanhMuc"
+                            data-image="@category.AnhDaiDien"
+                            data-has-children="@hasChildren.ToString().ToLower()"
+                            style="background-color: #f8f9fa; font-weight: 500;">
+                            <td class="text-center"><i class="fas fa-grip-vertical sortable-handle text-muted"></i></td>
+                            <td class="text-center">@(category.ThuTuHienThi ?? 0)</td>
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(category.AnhDaiDien))
+                                {
+                                    <img src="@category.AnhDaiDien" alt="@category.TenDanhMuc" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                }
+                                else
+                                {
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                }
+                            </td>
+                            <td class="text-start">
+                                @if (hasChildren)
+                                {
+                                    <i class="fas fa-chevron-right toggle-icon me-2" style="transition: transform 0.3s; cursor: pointer;"></i>
+                                }
+                                <strong class="category-name">@category.TenDanhMuc</strong>
+                                @if (hasChildren)
+                                {
+                                    <span class="badge bg-secondary ms-2">@childCategories.Count con</span>
+                                }
+                            </td>
+                            <td class="text-start"><span class="text-muted">@(category.MoTa ?? "Chưa có mô tả")</span></td>
+                            <td class="text-center">
+                                <span class="text-muted">—</span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-primary edit-category-btn" 
+                                        data-category-id="@category.IdDanhMuc"
+                                        title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        @* Hiển thị danh mục con (ẩn mặc định) *@
+                        @foreach (var child in childCategories)
+                        {
+                            <tr class="child-category" 
+                                data-group-id="group-@category.IdDanhMuc"
+                                data-category-id="@child.IdDanhMuc" 
+                                data-category-name="@child.TenDanhMuc"
+                                data-parent-id="@category.IdDanhMuc"
+                                data-image="@child.AnhDaiDien"
+                                style="display: none;">
+                                <td class="text-center">
+                                    <i class="fas fa-grip-vertical sortable-handle text-muted" title="Kéo để sắp xếp"></i>
+                                </td>
+                                <td class="text-center"><span class="badge bg-light text-dark">@(child.ThuTuHienThi ?? 0)</span></td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(child.AnhDaiDien))
+                                    {
+                                        <img src="@child.AnhDaiDien" alt="@child.TenDanhMuc" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                    }
+                                </td>
+                                <td class="text-start ps-5">
+                                    <i class="fas fa-level-up-alt fa-rotate-90 me-2 text-muted"></i>
+                                    <strong class="category-name">@child.TenDanhMuc</strong>
+                                </td>
+                                <td class="text-start"><span class="text-muted">@(child.MoTa ?? "Chưa có mô tả")</span></td>
+                                <td class="text-center">
+                                    <span class="badge bg-info">@category.TenDanhMuc</span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary edit-category-btn" 
+                                            data-category-id="@child.IdDanhMuc"
+                                            title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có danh mục nào</h5>
+                            <p class="text-muted">Bấm nút "Thêm danh mục" để tạo danh mục đầu tiên</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Modals {
+    <!-- Modal: Thêm danh mục -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Thêm danh mục mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="categoryName" required maxlength="100">
+                            <div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="categoryDescription" rows="3" maxlength="255"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryParent" class="form-label">Danh mục cha</label>
+                            <select class="form-select" id="categoryParent">
+                                <option value="">-- Không có danh mục cha --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryImage" class="form-label">Ảnh đại diện <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="categoryImage" accept="image/*" required>
+                            <div class="invalid-feedback">Vui lòng chọn ảnh đại diện.</div>
+                            <div class="mt-2" id="imagePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #ddd;">
+                                <button type="button" class="btn btn-sm btn-danger mt-2" id="removeImageBtn">
+                                    <i class="fas fa-times"></i> Xóa ảnh
+                                </button>
+                            </div>
+                            <input type="hidden" id="categoryImageUrl">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" form="addCategoryForm" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Thêm danh mục
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Sửa danh mục -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Sửa danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCategoryForm">
+                        <input type="hidden" id="editCategoryId">
+                        <div class="mb-3">
+                            <label for="editCategoryName" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="editCategoryName" required maxlength="100">
+                            <div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryDescription" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="editCategoryDescription" rows="3" maxlength="255"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryParent" class="form-label">Danh mục cha</label>
+                            <select class="form-select" id="editCategoryParent">
+                                <option value="">-- Không có danh mục cha --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryImage" class="form-label">Ảnh đại diện</label>
+                            <input type="file" class="form-control" id="editCategoryImage" accept="image/*">
+                            <div class="mt-2" id="editImagePreview" style="display: none;">
+                                <img id="editPreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #ddd;">
+                                <button type="button" class="btn btn-sm btn-danger mt-2" id="editRemoveImageBtn">
+                                    <i class="fas fa-times"></i> Xóa ảnh
+                                </button>
+                            </div>
+                            <input type="hidden" id="editCategoryImageUrl">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" form="editCategoryForm" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Xem sản phẩm trong danh mục -->
+    <div class="modal fade" id="viewProductsModal" tabindex="-1" aria-labelledby="viewProductsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center w-100">
+                        <h5 class="modal-title me-2 text-start">Sản phẩm trong danh mục:</h5>
+                        <span id="categoryNameDisplay" class="text-dark fw-bold text-start" style="cursor: pointer; color: #2c3e50 !important;" title="Click để chỉnh sửa tên"></span>
+                        <div id="categoryNameEditGroup" class="d-none d-flex align-items-center gap-2">
+                            <input type="text" id="categoryNameEdit" class="form-control form-control-sm text-start" style="max-width: 250px; font-size: 20px; font-weight: bold;" placeholder="Tên danh mục">
+                            <button type="button" id="saveCategoryNameBtn" class="btn btn-sm btn-success" title="Lưu">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button type="button" id="cancelCategoryNameBtn" class="btn btn-sm btn-secondary" title="Hủy">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <input type="hidden" id="currentCategoryId">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productsList">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                            <p class="mt-2">Đang tải danh sách sản phẩm...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex align-items-center flex-grow-1 desc-area gap-2">
+                        <small class="text-muted me-1 text-start mb-0">Mô tả:</small>
+                        <span id="categoryDescDisplay" class="text-muted editable-title flex-grow-1 text-start" style="cursor: pointer;" title="Click để chỉnh sửa mô tả"></span>
+                        <div id="categoryDescEditGroup" class="d-none d-flex align-items-center gap-2 flex-grow-1">
+                            <input type="text" id="categoryDescEdit" class="form-control form-control-sm flex-grow-1 text-start" placeholder="Mô tả danh mục">
+                            <button type="button" id="saveCategoryDescBtn" class="btn btn-sm btn-success" title="Lưu">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button type="button" id="cancelCategoryDescBtn" class="btn btn-sm btn-secondary" title="Hủy">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-danger" id="deleteCategoryBtn" title="Xóa danh mục">
+                            <i class="fas fa-trash me-1"></i>Xóa
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Xác nhận xóa danh mục -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa danh mục
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                        <h6>Bạn có chắc chắn muốn xóa danh mục này?</h6>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Danh mục:</strong> <span id="deleteCategoryName" class="fw-bold"></span>
+                    </div>
+                    <div id="deleteWarning" class="alert alert-danger d-none">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Cảnh báo:</strong> Danh mục này có <span id="productCount" class="fw-bold"></span> sản phẩm. 
+                        Bạn cần di chuyển hoặc xóa tất cả sản phẩm trước khi xóa danh mục.
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hành động này không thể hoàn tác.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Hủy
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-1"></i>Xóa danh mục
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css">
+
+    
+    <script>
+        // Set up URL configuration for the JavaScript module
+        window.danhmucUrls = {
+            create: '@Url.Action("CreateCategory", "Danhmuc", new { area = "Admin" })',
+            update: '@Url.Action("UpdateCategory", "Danhmuc", new { area = "Admin" })',
+            delete: '@Url.Action("Delete", "Danhmuc", new { area = "Admin" })',
+            getCategoryProducts: '@Url.Action("GetCategoryProducts", "Danhmuc", new { area = "Admin" })',
+            updateOrder: '@Url.Action("UpdateOrder", "Danhmuc", new { area = "Admin" })',
+            updateParent: '@Url.Action("UpdateParent", "Danhmuc", new { area = "Admin" })',
+            uploadImage: '@Url.Action("UploadImage", "Danhmuc", new { area = "Admin" })',
+            getParentCategories: '@Url.Action("GetParentCategories", "Danhmuc", new { area = "Admin" })'
+        };
+    </script>
+    
+    <script src="~/js/Admin/danhmuc-index.js" asp-append-version="true"></script>
+}

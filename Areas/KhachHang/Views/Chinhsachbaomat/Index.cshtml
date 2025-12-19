@@ -1,0 +1,199 @@
+@{
+	ViewData["Title"] = "Chính sách bảo mật";
+	Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<link href="~/css/KhachHang/quanlitaikhoan.css" rel="stylesheet" />
+
+<style>
+	.guide-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 1.5rem;
+	}
+    
+	.guide-header {
+		text-align: center;
+		margin-bottom: 2rem;
+		background: var(--nature-green);
+		color: white;
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+    
+	.guide-header h1 {
+		font-size: 1.8rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+    
+	.guide-header p {
+		font-size: 1rem;
+		margin: 0;
+	}
+    
+	.step-section {
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 1.5rem;
+		padding: 1.5rem;
+		border-left: 4px solid var(--nature-green);
+	}
+    
+	.step-title {
+		color: var(--nature-green);
+		font-size: 1.3rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+	}
+    
+	.step-content p {
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #333;
+		margin-bottom: 0.8rem;
+	}
+    
+	.step-content ul {
+		padding-left: 1.2rem;
+		margin: 1rem 0;
+	}
+    
+	.step-content li {
+		font-size: 1rem;
+		color: #333;
+		margin-bottom: 0.5rem;
+	}
+    
+	.payment-list {
+		background: #f8f9fa;
+		padding: 1rem;
+		border-radius: 8px;
+		margin: 1rem 0;
+	}
+    
+	.payment-list li {
+		padding: 0.3rem 0;
+		border-bottom: 1px solid #e9ecef;
+	}
+    
+	.payment-list li:last-child {
+		border-bottom: none;
+	}
+    
+	.info-note {
+		background: #e8f5e8;
+		border-left: 4px solid var(--nature-green);
+		padding: 1rem;
+		margin: 1rem 0;
+		border-radius: 0 8px 8px 0;
+	}
+    
+	.contact-section {
+		background: var(--nature-green);
+		color: white;
+		padding: 1.5rem;
+		border-radius: 8px;
+		margin-top: 2rem;
+		text-align: center;
+	}
+    
+	.contact-section h4 {
+		margin-bottom: 1rem;
+		font-size: 1.2rem;
+	}
+    
+	.contact-section p {
+		margin: 0.3rem 0;
+		font-size: 0.95rem;
+	}
+    
+	@@media (max-width: 768px) {
+		.guide-container {
+			padding: 1rem;
+		}
+        
+		.guide-header h1 {
+			font-size: 1.5rem;
+		}
+        
+		.step-section {
+			padding: 1rem;
+		}
+	}
+</style>
+
+<div class="guide-container">
+	<div class="guide-header">
+		<h1><i class="bi bi-shield-lock me-2"></i>Chính Sách Bảo Mật</h1>
+		<p>Cam kết minh bạch về cách LittleFish Beauty thu thập, sử dụng và bảo vệ dữ liệu cá nhân</p>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">1. Giới thiệu chung</h3>
+		<div class="step-content">
+			<p>Chào mừng bạn đến với LittleFish Beauty. Chúng tôi hiểu rằng sự riêng tư và bảo mật thông tin cá nhân là vấn đề quan trọng đối với khách hàng. Chính sách bảo mật này được soạn thảo nhằm minh bạch hóa cách thức chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu của bạn khi truy cập website hoặc mua sắm các sản phẩm mỹ phẩm tại LittleFish Beauty. Bằng việc tiếp tục sử dụng dịch vụ và cung cấp thông tin cho chúng tôi, bạn được xem là đã đồng ý với các điều khoản được mô tả trong văn bản này.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">2. Phạm vi và thời điểm thu thập thông tin</h3>
+		<div class="step-content">
+			<p>LittleFish Beauty sẽ thu thập dữ liệu cá nhân của bạn trong quá trình bạn tương tác trực tiếp với hệ thống của chúng tôi. Cụ thể, việc thu thập thông tin diễn ra khi bạn đăng ký tài khoản thành viên, thực hiện các bước đặt mua hàng, đăng ký nhận bản tin khuyến mãi qua email, hoặc khi bạn chủ động liên hệ với bộ phận chăm sóc khách hàng để nhận tư vấn về sản phẩm và quy trình chăm sóc da. Ngoài ra, một số thông tin kỹ thuật về thiết bị và hành vi duyệt web cũng có thể được ghi nhận tự động thông qua cookies để tối ưu hóa trải nghiệm người dùng.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">3. Loại thông tin được thu thập</h3>
+		<div class="step-content">
+			<ul>
+				<li>Thông tin định danh và liên lạc: họ tên, ngày sinh, giới tính, địa chỉ giao hàng, địa chỉ email và số điện thoại.</li>
+				<li>Thông tin phục vụ tư vấn sản phẩm: loại da, tình trạng da hoặc mối quan tâm làm đẹp nếu bạn tham gia khảo sát hoặc phiên tư vấn trực tuyến.</li>
+				<li>Thông tin thanh toán và giao dịch: dữ liệu phục vụ đối soát, lịch sử mua hàng và bảo hành (được xử lý, lưu trữ bảo mật).</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">4. Mục đích sử dụng thông tin</h3>
+		<div class="step-content">
+			<ul>
+				<li>Xác nhận và xử lý đơn hàng, bao gồm vận chuyển và hỗ trợ thanh toán.</li>
+				<li>Duy trì tài khoản, cung cấp dịch vụ chăm sóc khách hàng, xử lý khiếu nại hoặc đổi trả.</li>
+				<li>Cá nhân hóa trải nghiệm, gợi ý sản phẩm dựa trên lịch sử mua sắm và đặc điểm làn da.</li>
+				<li>Gửi thông tin khuyến mãi, sản phẩm mới, bí quyết làm đẹp qua email khi bạn đồng ý.</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">5. Chia sẻ thông tin với bên thứ ba</h3>
+		<div class="step-content">
+			<p>LittleFish Beauty cam kết không bán, trao đổi hay chia sẻ thông tin cá nhân của khách hàng vì mục đích thương mại trái phép. Tuy nhiên, để hoàn tất quy trình phục vụ, chúng tôi cần cung cấp một số thông tin thiết yếu (như tên, địa chỉ, số điện thoại) cho các đối tác vận chuyển để họ thực hiện việc giao hàng. Chúng tôi cũng có thể chia sẻ thông tin với các đơn vị cung cấp dịch vụ cổng thanh toán hoặc cơ quan pháp luật trong trường hợp có yêu cầu điều tra hợp pháp theo quy định của Nhà nước Việt Nam.</p>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">6. Bảo mật và lưu trữ dữ liệu</h3>
+		<div class="step-content">
+			<p>Dữ liệu cá nhân của thành viên sẽ được lưu trữ an toàn trên hệ thống máy chủ của LittleFish Beauty. Chúng tôi áp dụng các biện pháp kỹ thuật và an ninh phù hợp, bao gồm mã hóa dữ liệu theo tiêu chuẩn, để ngăn chặn truy cập trái phép, sử dụng sai mục đích hoặc rò rỉ thông tin. Thông tin sẽ được lưu trữ cho đến khi có yêu cầu hủy bỏ từ phía khách hàng hoặc khi bạn tự đăng nhập và thực hiện thao tác xóa tài khoản. Trong mọi trường hợp khác, thông tin cá nhân thành viên sẽ được bảo mật tuyệt đối.</p>
+			<div class="info-note">
+				<strong>Lưu ý:</strong> Hãy bảo mật thông tin đăng nhập của bạn và thoát khỏi tài khoản sau mỗi phiên làm việc trên thiết bị công cộng.
+			</div>
+		</div>
+	</div>
+
+	<div class="step-section">
+		<h3 class="step-title">7. Quyền lợi của khách hàng</h3>
+		<div class="step-content">
+			<ul>
+				<li>Kiểm tra, cập nhật hoặc điều chỉnh thông tin cá nhân trong tài khoản bất kỳ lúc nào.</li>
+				<li>Quyền từ chối nhận thông tin quảng cáo bằng cách hủy đăng ký trong email hoặc liên hệ bộ phận hỗ trợ.</li>
+				<li>Yêu cầu gỡ bỏ, xóa dữ liệu cá nhân khỏi hệ thống theo quy định hiện hành.</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Mục liên hệ đã được gỡ theo yêu cầu -->
+</div>

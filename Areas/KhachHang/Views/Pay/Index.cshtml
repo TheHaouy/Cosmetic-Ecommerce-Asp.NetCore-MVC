@@ -1,0 +1,411 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+@section Styles {
+    <link href="~/css/KhachHang/thanhtoan.css" rel="stylesheet" asp-append-version="true">
+}
+
+@section Scripts {
+    <!-- Stripe SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Address API Module -->
+    <script src="~/js/KhachHang/address-api.js" asp-append-version="true"></script>
+    
+    <!-- Main Payment Page Script -->
+    <script src="~/js/KhachHang/thanhtoan.js" asp-append-version="true"></script>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="payment-container" style="padding:0 !important; margin:0 !important;">
+    <!-- Modern Back Button -->
+    <a href="#" id="backToCartBtn" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại giỏ hàng</span>
+    </a>
+
+    <!-- Hero Header -->
+    <div class="payment-header">
+        <h1>Thanh Toán Đơn Hàng</h1>
+        <p>Hoàn tất đơn hàng của bạn với quy trình thanh toán an toàn và nhanh chóng</p>
+    </div>
+
+<div class="row g-4 align-items-start">
+
+        <div class="col-lg-8">
+            <div class="modern-card">
+                <div class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Địa Chỉ Giao Hàng</span>
+                </div>
+
+                <div id="addressList">
+                    <div id="loadingAddresses" class="text-center" style="padding: 2rem 0; color: var(--text-muted);">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary);"></i>
+                        <h5 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Đang tải địa chỉ...</h5>
+                        <p style="margin: 0;">Vui lòng đợi trong giây lát</p>
+                    </div>
+
+                    <div id="emptyAddresses" class="text-center d-none" style="padding: 3rem 0; color: var(--text-muted);">
+                        <i class="fas fa-map-pin" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; color: var(--primary);"></i>
+                        <h4 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Chưa có địa chỉ giao hàng</h4>
+                        <p style="margin: 0;">Vui lòng thêm địa chỉ để tiếp tục đặt hàng</p>
+                    </div>
+                </div>
+
+                <button id="addAddressBtn" class="add-address-button">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Thêm địa chỉ giao hàng</span>
+                </button>
+            </div> <div class="modern-card">
+                <div class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Phương Thức Thanh Toán</span>
+                </div>
+
+                <div class="payment-methods">
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="COD" id="payment_cod" checked>
+                        <div class="payment-icon">
+                            <i class="fas fa-money-bill-wave" style="color: var(--primary); font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-0" style="color: var(--text-primary);">Thanh toán khi nhận hàng (COD)</h5>
+                            <p class="text-muted mb-0 mt-2">Thanh toán bằng tiền mặt khi nhận hàng</p>
+                            <small class="text-muted" style="margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-truck" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                Giao hàng tận nơi
+                            </small>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="VNPAY" id="payment_vnpay">
+                        <div class="payment-icon">
+                            <i class="fas fa-qrcode" style="color: #005A9C; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-0" style="color: var(--text-primary);">Thanh toán qua VNPAY-QR</h5>
+                            <p class="text-muted mb-0 mt-2">Quét mã QR bằng ứng dụng ngân hàng của bạn.</p>
+                            <small class="text-muted" style="margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-shield-alt" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                An toàn và nhanh chóng
+                            </small>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="STRIPE" id="payment_stripe">
+                        <div class="payment-icon">
+                            <i class="fab fa-stripe-s" style="color: #635bff; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-0">Thẻ Tín dụng/Ghi nợ (Quốc tế)</h5>
+                            <p class="text-muted mb-0 mt-2">Thanh toán an toàn qua Stripe (Visa, Mastercard...)</p>
+                        </div>
+                    </label>
+
+                    <div id="stripe-payment-element-container" style="display: none; margin: 15px 5px 5px 5px;">
+                        <div id="payment-element">
+                            </div>
+                        <div id="payment-message" role="alert" style="color: red; margin-top: 10px;"></div>
+
+                        <button id="stripe-submit-button" class="complete-order-btn" style="margin-top: 15px;">
+                            <i class="fas fa-check-circle" style="margin-right: 0.75rem;"></i>
+                            <span>Thanh toán Thẻ</span>
+                        </button>
+                    </div>
+                </div>
+            </div> </div> <div class="col-lg-4">
+            <div class="order-summary">
+                <div class="section-title">
+                    <i class="fas fa-receipt"></i>
+                    <span>Chi Tiết Đơn Hàng</span>
+                </div>
+
+                <div id="orderItemsContainer" style="max-height: 350px; overflow-y: auto; margin-bottom: 2rem;">
+                    </div>
+
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span class="fw-bold" id="subtotalAmount">0₫</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span class="fw-bold" style="color: #2d7b2c;">Miễn phí</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tổng cộng:</span>
+                        <span id="totalAmount">0₫</span>
+                    </div>
+                </div>
+
+                <button id="completeOrderBtn" class="complete-order-btn">
+                    <i class="fas fa-check-circle" style="margin-right: 0.75rem;"></i>
+                    <span>Hoàn Tất Đơn Hàng</span>
+                </button>
+
+                <!--<div class="text-center" style="margin-top: 1rem;">
+                    <small class="text-muted">
+                        <i class="fas fa-lock" style="margin-right: 0.5rem;"></i>
+                        Thông tin được bảo mật 100%
+                    </small>
+                </div>-->
+            </div>
+        </div>
+       
+
+<!-- Force reload JavaScript by adding timestamp -->
+<script>
+    // Clear any cached JavaScript
+    console.log('Payment page loaded at:', new Date().toISOString());
+    
+    // Xử lý dữ liệu "mua ngay" từ server
+    @if (ViewBag.IsBuyNow != null && (bool)ViewBag.IsBuyNow)
+    {
+        <text>
+        // Dữ liệu mua ngay từ server
+        window.buyNowData = @Html.Raw(ViewBag.BuyNowItem);
+        window.isBuyNow = true;
+        console.log('Buy Now mode activated successfully');
+        
+        // Cập nhật text của nút "Quay lại"
+        document.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.querySelector('#backToCartBtn span');
+            if (backBtn) {
+                backBtn.textContent = 'Quay lại sản phẩm';
+            }
+        });
+        </text>
+    }
+    else
+    {
+        <text>
+        window.isBuyNow = false;
+        console.log('Normal checkout mode');
+        </text>
+    }
+</script>
+
+<!-- Modal thêm địa chỉ -->
+<div id="addressModal" class="modern-modal d-none">
+    <div class="modal-content" style="max-width: 500px; border-radius: 16px; padding: 20px; background-color: #fff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="color: #2d7b2c; font-weight: 700; font-size: 20px;">
+                <i class="fas fa-plus-circle" style="margin-right: 8px;"></i>
+                Thêm địa chỉ mới
+            </h3>
+            <button id="closeModalBtn" style="border: none; background: transparent; font-size: 20px; color: #d9534f;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="addressForm" style="display: flex; flex-direction: column; gap: 10px;">
+
+            <!-- Họ và tên -->
+            <div>
+                <label style="font-size: 14px; color: #4b4b4b; font-weight: 500; margin-bottom: 4px; display: block;">
+                    <i class="fas fa-user" style="margin-right: 6px;"></i>
+                    Họ và tên
+                </label>
+                <input type="text" id="inputName" placeholder="Nhập họ và tên" class="form-control" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%;" />
+            </div>
+
+            <!-- Số điện thoại -->
+            <div>
+                <label style="font-size: 14px; color: #4b4b4b; font-weight: 500; margin-bottom: 4px; display: block;">
+                    <i class="fas fa-phone" style="margin-right: 6px;"></i>
+                    Số điện thoại
+                </label>
+                <input type="tel" id="inputPhone" placeholder="Nhập số điện thoại" class="form-control" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%;" />
+            </div>
+
+            <!-- Địa chỉ cụ thể -->
+            <div>
+                <label style="font-size: 14px; color: #4b4b4b; font-weight: 500; margin-bottom: 4px; display: block;">
+                    <i class="fas fa-home" style="margin-right: 6px;"></i>
+                    Địa chỉ
+                </label>
+                <input type="text" id="inputAddress" placeholder="Nhập địa chỉ cụ thể" class="form-control" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%;" />
+            </div>
+
+            <!-- Tỉnh/Thành phố và Phường/Xã -->
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; position: relative;">
+                    <label style="font-size: 14px; color: #4b4b4b; font-weight: 500; margin-bottom: 4px; display: block;">
+                        <i class="fas fa-building" style="margin-right: 6px;"></i>
+                        Tỉnh/Thành phố
+                    </label>
+                    <input type="text" id="inputCity" placeholder="Nhập tỉnh/thành phố" class="form-control" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%;" autocomplete="off" />
+                    <div id="cityDropdown" class="address-dropdown"></div>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <label style="font-size: 14px; color: #4b4b4b; font-weight: 500; margin-bottom: 4px; display: block;">
+                        <i class="fas fa-map-marker-alt" style="margin-right: 6px;"></i>
+                        Phường/Xã
+                    </label>
+                    <input type="text" id="inputWard" placeholder="Nhập phường/xã" class="form-control" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%;" autocomplete="off" />
+                    <div id="wardDropdown" class="address-dropdown"></div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+            <button id="cancelAddressBtn" style="padding: 8px 16px; border: 1px solid #ccc; background-color: white; border-radius: 8px;">
+                <i class="fas fa-times" style="margin-right: 6px;"></i> Hủy
+            </button>
+            <button id="saveAddressBtn" style="padding: 8px 16px; background-color: #2d7b2c; color: white; border: none; border-radius: 8px;">
+                <i class="fas fa-save" style="margin-right: 6px;"></i> LƯU ĐỊA CHỈ
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="paymentSuccessModal" class="modern-modal d-none">
+    <div class="modal-content success-modal">
+        <button id="closeSuccessModalBtn" class="success-modal-close" onclick="closeSuccessModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-body">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 class="fw-bold" style="color: var(--text-primary); margin-bottom: 1rem;">
+                Thanh Toán Thành Công!
+            </h3>
+            <p class="text-muted" style="margin-bottom: 2rem; line-height: 1.6;">
+                Đơn hàng của bạn đã được xử lý thành công.<br>
+                Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng!
+            </p>
+            <div style="background: var(--lighter); padding: 1rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <i class="fas fa-shipping-fast" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                <small class="text-muted">Đơn hàng sẽ được giao trong 2-3 ngày làm việc</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MoMo QR Code Modal 
+<div id="momoQrModal" class="modern-modal momo-qr-modal d-none">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class="fas fa-qrcode" style="background: linear-gradient(135deg, #a50064, #d82d8b); color: white;"></i>
+                <span>Thanh toán MoMo</span>
+            </div>
+        </div>
+        <div class="modal-body">
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem; text-align: center;">Quét mã QR để thanh toán</h4>
+            
+            <div class="momo-qr-container">
+                Left side - QR Code 
+                <div class="momo-qr-left">
+                    <div class="momo-qr-code-container">
+                        <img id="momoQrCode" src="~/Images/ThanhToan/momo.jpg" alt="QR Code MoMo">
+                    </div>
+                    <div style="text-align: center; margin-top: 0.5rem;">
+                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo Logo" style="width: 60px; height: auto;" onerror="this.style.display='none'">
+                    </div>
+                </div>
+
+                Right side - Instructions
+                <div class="momo-qr-right">
+                    <div class="momo-instruction-compact">
+                        <h5><i class="fas fa-mobile-alt"></i> Hướng dẫn thanh toán</h5>
+                        <div class="instruction-steps">
+                            <span>1. Mở ứng dụng MoMo</span>
+                            <span>2. Chọn "Quét mã QR"</span>
+                            <span>3. Quét mã QR bên trái</span>
+                            <span>4. Xác nhận thanh toán</span>
+                        </div>
+                    </div>
+
+                    <div class="momo-info-compact">
+                        <h5><i class="fas fa-clock"></i> Thời gian hiệu lực</h5>
+                        <p>Mã QR có hiệu lực trong <strong>15 phút</strong></p>
+                    </div>
+
+                    <div class="momo-warning-compact">
+                        <h5><i class="fas fa-info-circle"></i> Lưu ý quan trọng</h5>
+                        <p>Sau khi thanh toán thành công, nhấn <strong>"Xác nhận"</strong> để hoàn tất đơn hàng.</p>
+                    </div>
+                </div>
+            </div>
+
+             Action Buttons - Fixed position ->
+            <div class="momo-action-buttons">
+                @* <button id="cancelMomoPaymentBtn" class="btn-cancel-momo">
+                    <i class="fas fa-times"></i>
+                    <span>Hủy thanh toán</span>
+                </button> *@
+                <button id="confirmMomoPaymentBtn" class="btn-confirm-momo">
+                    <i class="fas fa-check"></i>
+                    <span>Xác nhận đã thanh toán</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<!-- No Address Modal -->
+<div id="noAddressModal" class="modern-modal d-none">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class="fas fa-exclamation-triangle" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white;"></i>
+                <span>Thông báo</span>
+            </div>
+            <button id="closeNoAddressModalBtn" class="close-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body text-center">
+            <div style="margin-bottom: 1.5rem;">
+                <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: var(--warning); opacity: 0.7;"></i>
+            </div>
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Chưa có địa chỉ giao hàng</h4>
+            <p class="text-muted" style="margin-bottom: 2rem; line-height: 1.6;">
+                Vui lòng thêm địa chỉ giao hàng để tiếp tục hoàn tất đơn hàng của bạn.
+            </p>
+            <div style="background: var(--lighter); padding: 1rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--warning);">
+                <i class="fas fa-info-circle" style="color: var(--warning); margin-right: 0.5rem;"></i>
+                <small class="text-muted">Địa chỉ giao hàng là bắt buộc để xử lý đơn hàng</small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="closeNoAddressBtn" class="btn-secondary">
+                <i class="fas fa-times"></i>
+                <span>Đóng</span>
+            </button>
+            <button id="addAddressFromModalBtn" class="btn-primary">
+                <i class="fas fa-plus-circle"></i>
+                <span>Thêm địa chỉ</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="alertModal" class="modern-modal d-none">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i id="alertModalIcon" class="fas fa-exclamation-circle"></i>
+                <span id="alertModalTitle">Thông báo</span>
+            </div>
+            <button class="close-button" id="alertModalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="alertModalMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-save" id="alertModalOk"><i class="fas fa-check"></i> Đã hiểu</button>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,206 @@
+@{
+    ViewData["Title"] = "Hướng dẫn đặt hàng";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<link href="~/css/KhachHang/quanlitaikhoan.css" rel="stylesheet" />
+
+<style>
+    .guide-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+    
+    .guide-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        background: var(--nature-green);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    
+    .guide-header h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .guide-header p {
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    .step-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        border-left: 4px solid var(--nature-green);
+    }
+    
+    .step-title {
+        color: var(--nature-green);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .step-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 0.8rem;
+    }
+    
+    .step-content ul {
+        padding-left: 1.2rem;
+        margin: 1rem 0;
+    }
+    
+    .step-content li {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .payment-list {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    
+    .payment-list li {
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .payment-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .info-note {
+        background: #e8f5e8;
+        border-left: 4px solid var(--nature-green);
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .contact-section {
+        background: var(--nature-green);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        text-align: center;
+    }
+    
+    .contact-section h4 {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .contact-section p {
+        margin: 0.3rem 0;
+        font-size: 0.95rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .guide-container {
+            padding: 1rem;
+        }
+        
+        .guide-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .step-section {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="guide-container">
+    <!-- Header -->
+    <div class="guide-header">
+        <h1><i class="bi bi-cart-check me-2"></i>Hướng Dẫn Đặt Hàng</h1>
+        <p>Quy trình đặt hàng đơn giản tại LittleFish Beauty</p>
+    </div>
+
+    <!-- Bước 1: Chọn sản phẩm -->
+    <div class="step-section">
+        <h3 class="step-title">➤ Bước 1: Chọn sản phẩm</h3>
+        <div class="step-content">
+            <p>Truy cập vào danh mục sản phẩm và lựa chọn mặt hàng bạn quan tâm.</p>
+            <p>Tại trang chi tiết, bạn có thể xem thông tin mô tả, công dụng, thành phần, dung tích, thời hạn sử dụng và giá bán.</p>
+            <p>Nếu cảm thấy phù hợp, nhấn <strong>"Thêm vào giỏ hàng"</strong> để tiếp tục mua sắm hoặc <strong>"Mua ngay"</strong> để chuyển đến bước thanh toán.</p>
+            <div class="info-note">
+                <strong>💡 LittleFish luôn hiển thị giá rõ ràng, không phát sinh chi phí ẩn nên bạn hoàn toàn yên tâm khi đặt mua.</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bước 2: Kiểm tra giỏ hàng -->
+    <div class="step-section">
+        <h3 class="step-title">➤ Bước 2: Kiểm tra giỏ hàng</h3>
+        <div class="step-content">
+            <p>Sau khi chọn xong sản phẩm, hãy nhấn vào biểu tượng giỏ hàng ở góc màn hình.</p>
+            <p>Tại đây, bạn có thể kiểm tra lại số lượng sản phẩm, thay đổi – xóa sản phẩm nếu muốn, áp dụng mã giảm giá hoặc nhập ưu đãi dành riêng cho thành viên.</p>
+            <p>Chọn hình thức giao hàng phù hợp trước khi sang bước thanh toán.</p>
+        </div>
+    </div>
+
+    <!-- Bước 3: Nhập thông tin giao hàng -->
+    <div class="step-section">
+        <h3 class="step-title">➤ Bước 3: Nhập thông tin giao hàng</h3>
+        <div class="step-content">
+            <p><strong>Điền thông tin đầy đủ và chính xác gồm:</strong></p>
+            <ul>
+                <li>Họ và tên người nhận</li>
+                <li>Số điện thoại</li>
+                <li>Địa chỉ giao hàng</li>
+                <li>Ghi chú (mốc thời gian nhận hàng, yêu cầu đặc biệt…)</li>
+            </ul>
+            <div class="info-note">
+                <strong>📍 Thông tin rõ ràng giúp đơn vị vận chuyển giao hàng chính xác và nhanh hơn.</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bước 4: Chọn phương thức thanh toán -->
+    <div class="step-section">
+        <h3 class="step-title">➤ Bước 4: Chọn phương thức thanh toán</h3>
+        <div class="step-content">
+            <p><strong>LittleFish hỗ trợ nhiều hình thức thanh toán an toàn, bảo mật:</strong></p>
+            <div class="payment-list">
+                <ul>
+                    <li>✔ Thanh toán khi nhận hàng (COD)</li>
+                    <li>✔ Chuyển khoản ngân hàng theo hướng dẫn</li>
+                    <li>✔ Ví điện tử (Momo, ZaloPay…) – tùy thời điểm hỗ trợ</li>
+                </ul>
+            </div>
+            <div class="info-note">
+                <strong>⚡ Ngay sau khi thanh toán, hệ thống tự động cập nhật thông tin đơn hàng để xử lý nhanh chóng.</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bước 5: Xác nhận đơn hàng -->
+    <div class="step-section">
+        <h3 class="step-title">➤ Bước 5: Xác nhận đơn hàng</h3>
+        <div class="step-content">
+            <ul>
+                <li>Khi hoàn tất, màn hình sẽ hiển thị thông báo đặt hàng thành công.</li>
+                <li>Đồng thời, khách hàng sẽ nhận tin nhắn hoặc email xác nhận kèm mã đơn hàng.</li>
+                <li>Đơn hàng của bạn sẽ được xử lý và đóng gói ngay trong ngày (trừ Chủ nhật hoặc ngày lễ).</li>
+                <li>Nếu cần theo dõi tình trạng vận chuyển, bạn có thể liên hệ qua Hotline, Fanpage, hoặc cung cấp mã đơn hàng để nhân viên hỗ trợ.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+

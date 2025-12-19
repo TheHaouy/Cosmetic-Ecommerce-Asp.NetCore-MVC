@@ -1,0 +1,176 @@
+@model List<Final_VS1.Data.TaiKhoan>
+@{
+    ViewData["Title"] = "QUẢN LÝ NGƯỜI DÙNG";
+    ViewData["PageTitle"] = "QUẢN LÝ NGƯỜI DÙNG";
+    ViewData["SearchPlaceholder"] = "Tìm kiếm người dùng...";
+}
+
+<link rel="stylesheet" href="~/css/Admin/nguoidung-list.css" asp-append-version="true" />
+
+<div class="container-fluid py-4">
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active text-white" href="@Url.Action("Index", "Nguoidung")">
+                <i class="fas fa-users me-2"></i>Khách hàng
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("NhanVien", "Nguoidung")">
+                <i class="fas fa-user-tie me-2"></i>Nhân viên
+            </a>
+        </li>
+    </ul>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="mb-0 fw-bold text-white">
+                                <i class="fas fa-users me-2 text-white"></i>DANH SÁCH KHÁCH HÀNG
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Filter Controls -->
+                    <div class="row mb-3 filter-controls">
+                        <div class="col-md-3">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên, email...">
+                        </div>
+                        <div class="col-md-3">
+                            <select id="statusFilter" class="form-select">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="true">Hoạt động</option>
+                                <option value="false">Bị khóa</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="userTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Avatar</th>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Trạng thái</th>
+                                    <th>Đơn hàng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr onclick="window.location.href='@Url.Action("Detail", "Nguoidung", new { id = user.IdTaiKhoan })'">
+                                        <td>@user.IdTaiKhoan</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(user.AnhDaiDien))
+                                            {
+                                                <img src="@user.AnhDaiDien" alt="Avatar" class="user-avatar">
+                                            }
+                                            else
+                                            {
+                                                <div class="user-avatar bg-secondary d-flex align-items-center justify-content-center text-white">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <strong>@(user.HoTen ?? "Chưa cập nhật")</strong>
+                                            @if (!string.IsNullOrEmpty(user.GioiTinh))
+                                            {
+                                                <br><small class="text-muted">@user.GioiTinh</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            @user.Email
+                                            @if (user.NgayTao.HasValue)
+                                            {
+                                                <br><small class="text-muted">Tham gia: @user.NgayTao.Value.ToString("dd/MM/yyyy")</small>
+                                            }
+                                        </td>
+                                        <td>@(user.SoDienThoai ?? "Chưa có")</td>
+                                        <td>
+                                            @if (user.TrangThai == true)
+                                            {
+                                                <span class="badge bg-success status-badge">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary status-badge">Bị khóa</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">@user.DonHangs.Count đơn</span>
+                                        </td>
+                                        <td onclick="event.stopPropagation();">
+                                            @if (user.TrangThai == true)
+                                            {
+                                                <button class="btn btn-sm btn-warning" onclick="toggleUserStatus(@user.IdTaiKhoan)" title="Khóa tài khoản">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-success" onclick="toggleUserStatus(@user.IdTaiKhoan)" title="Mở khóa tài khoản">
+                                                    <i class="fas fa-lock-open"></i>
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span class="text-muted">Hiển thị <strong id="currentCount">@Model.Count</strong> / <strong>@Model.Count</strong> người dùng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Admin/nguoidung-list.js" asp-append-version="true"></script>
+    <script>
+        function toggleUserStatus(userId) {
+            if (!confirm('Bạn có chắc muốn thay đổi trạng thái tài khoản này?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("ToggleStatus", "Nguoidung")',
+                type: 'POST',
+                data: {
+                    id: userId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi thay đổi trạng thái tài khoản!');
+                }
+            });
+        }
+    </script>
+    @Html.AntiForgeryToken()
+}

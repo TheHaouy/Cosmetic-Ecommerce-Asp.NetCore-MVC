@@ -1,0 +1,110 @@
+@model Final_VS1.Areas.KhachHang.Components.TawkToViewModel
+
+@if (Model.IsAuthenticated && !string.IsNullOrEmpty(Model.PropertyId) && !string.IsNullOrEmpty(Model.WidgetId))
+{
+    <!--Start of Tawk.to Script - Lazy Load-->
+    <script type="text/javascript">
+        // Biến để kiểm tra đã load Tawk.to chưa
+        var tawkLoaded = false;
+        
+        // Hàm load Tawk.to widget
+        function loadTawkTo() {
+            if (tawkLoaded) return;
+            tawkLoaded = true;
+            
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            
+            // ĐẶT THÔNG TIN NGƯỜI DÙNG - MỖI NGƯỜI MỘT CHAT RIÊNG
+            Tawk_API.visitor = {
+                name: '@Html.Raw(Model.UserInfo.Name)',
+                email: '@Html.Raw(Model.UserInfo.Email)',
+                @if (!string.IsNullOrEmpty(Model.UserInfo.Hash))
+                {
+                    <text>hash: '@Html.Raw(Model.UserInfo.Hash)'</text>
+                }
+            };
+
+            // Biến để theo dõi trạng thái đã mở chat lần đầu
+            var hasOpenedChatOnce = false;
+
+            // Hiển thị widget mặc định của Tawk.to
+            Tawk_API.onLoad = function(){
+                // Set attributes để phân biệt từng người dùng
+                Tawk_API.setAttributes({
+                    'userId': '@Html.Raw(Model.UserId)',
+                    'userName': '@Html.Raw(Model.UserInfo.Name)',
+                    'userEmail': '@Html.Raw(Model.UserInfo.Email)',
+                    'userType': 'KhachHang'
+                }, function(error){
+                    if(error){
+                        console.error('Lỗi set attributes:', error);
+                    }
+                });
+                
+                console.log('Tawk.to sẵn sàng cho:', '@Html.Raw(Model.UserInfo.Email)');
+                
+                // Ẩn widget ban đầu để người dùng chủ động mở
+                Tawk_API.hideWidget();
+                
+                // Hiển thị lại widget sau khi setup xong
+                setTimeout(function() {
+                    Tawk_API.showWidget();
+                }, 500);
+            };
+
+            // Khi người dùng click vào bubble chat
+            Tawk_API.onChatMaximized = function(){
+                console.log('Chat đã mở cho:', '@Html.Raw(Model.UserInfo.Email)');
+                
+                // Nếu chưa mở chat lần nào, tự động bắt đầu cuộc trò chuyện mới
+                if (!hasOpenedChatOnce) {
+                    hasOpenedChatOnce = true;
+                    
+                    // Gửi tin nhắn chào tự động từ phía khách hàng (tùy chọn)
+                    setTimeout(function() {
+                        // Tập trung vào input để người dùng có thể gõ ngay
+                        if (typeof Tawk_API.endChat === 'function') {
+                            // Widget đã sẵn sàng
+                        }
+                    }, 300);
+                }
+            };
+
+            // Tự động maximize chat khi click vào widget lần đầu
+            Tawk_API.onChatStarted = function(){
+                console.log('Cuộc trò chuyện mới đã bắt đầu');
+            };
+
+            // Load Tawk.to widget
+            (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/@Model.PropertyId/@Model.WidgetId';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+            })();
+        }
+
+        // Load Tawk.to khi:
+        // 1. User scroll xuống 30% trang
+        // 2. User di chuột (mousemove)
+        // 3. User chạm vào màn hình (touchstart)
+        // 4. Sau 5 giây (fallback)
+        
+        var scrollThreshold = false;
+        window.addEventListener('scroll', function() {
+            if (!scrollThreshold && window.scrollY > (document.body.scrollHeight * 0.3)) {
+                scrollThreshold = true;
+                loadTawkTo();
+            }
+        }, { passive: true });
+
+        window.addEventListener('mousemove', loadTawkTo, { once: true, passive: true });
+        window.addEventListener('touchstart', loadTawkTo, { once: true, passive: true });
+        
+        // Fallback: load sau 10 giây nếu không có tương tác (tránh bot crawl)
+        setTimeout(loadTawkTo, 10000);
+    </script>
+    <!--End of Tawk.to Script-->
+}

@@ -1,0 +1,280 @@
+@model Final_VS1.Data.DonHang
+@{
+    ViewData["Title"] = "CHI TIẾT ĐƠN HÀNG";
+    ViewData["PageTitle"] = "CHI TIẾT ĐƠN HÀNG";
+    ViewData["Title"] = "CHI TIẾT ĐƠN HÀNG #" + Model.IdDonHang;
+}
+
+<link rel="stylesheet" href="~/css/Admin/donhang-detail.css" asp-append-version="true" />
+
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "Donhang")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Order Info & Customer Info -->
+        <div class="col-md-4">
+            <!-- Order Info Card -->
+            <div class="card detail-card">
+                <div class="card-body p-4">
+                    <h5 class="section-header mb-3">
+                        <i class="fas fa-receipt"></i> THÔNG TIN ĐƠN HÀNG
+                    </h5>
+
+                    <div class="info-row">
+                        <div class="info-label">Mã đơn hàng</div>
+                        <div class="info-value">
+                            <strong class="text-primary">#@Model.IdDonHang</strong>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Ngày đặt</div>
+                        <div class="info-value">
+                            <i class="far fa-calendar text-primary"></i>
+                            @(Model.NgayDat.HasValue ? Model.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Trạng thái</div>
+                        <div class="info-value">
+                            @switch (Model.TrangThai)
+                            {
+                                case "Chờ xác nhận":
+                                    <span class="badge bg-warning text-dark badge-custom">Chờ xác nhận</span>
+                                    break;
+                                case "Đã xác nhận":
+                                    <span class="badge bg-info badge-custom">Đã xác nhận</span>
+                                    break;
+                                case "Đang giao":
+                                    <span class="badge bg-primary badge-custom">Đang giao</span>
+                                    break;
+                                case "Đã giao":
+                                    <span class="badge bg-success badge-custom">Đã giao</span>
+                                    break;
+                                case "Đã hủy":
+                                    <span class="badge bg-danger badge-custom">Đã hủy</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary badge-custom">@Model.TrangThai</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Phương thức thanh toán</div>
+                        <div class="info-value">
+                            <i class="fas fa-credit-card text-success"></i>
+                            @(Model.PhuongThucThanhToan ?? "Chưa xác định")
+                        </div>
+                    </div>
+
+                    @if (Model.IdVcNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Phương thức vận chuyển</div>
+                            <div class="info-value">
+                                <i class="fas fa-truck text-info"></i>
+                                @Model.IdVcNavigation.TenVc
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Customer Info Card -->
+            <div class="card detail-card">
+                <div class="card-body p-4">
+                    <h5 class="section-header mb-3">
+                        <i class="fas fa-user"></i> THÔNG TIN KHÁCH HÀNG
+                    </h5>
+
+                    @if (Model.IdTaiKhoanNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Họ tên</div>
+                            <div class="info-value">
+                                <strong>@Model.IdTaiKhoanNavigation.HoTen</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">
+                                <i class="fas fa-envelope text-primary"></i>
+                                @Model.IdTaiKhoanNavigation.Email
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.IdTaiKhoanNavigation.SoDienThoai))
+                        {
+                            <div class="info-row">
+                                <div class="info-label">Số điện thoại</div>
+                                <div class="info-value">
+                                    <i class="fas fa-phone text-success"></i>
+                                    @Model.IdTaiKhoanNavigation.SoDienThoai
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    @if (Model.IdDiaChiNavigation != null)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Người nhận</div>
+                            <div class="info-value">
+                                @Model.IdDiaChiNavigation.HoTenNguoiNhan
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">SĐT người nhận</div>
+                            <div class="info-value">
+                                <i class="fas fa-phone text-success"></i>
+                                @Model.IdDiaChiNavigation.SoDienThoai
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Địa chỉ giao hàng</div>
+                            <div class="info-value">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                @Model.IdDiaChiNavigation.DiaChiChiTiet
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            @if (Model.TimelineDonHangs.Any())
+            {
+                <div class="card detail-card">
+                    <div class="card-body p-4">
+                        <h5 class="section-header mb-3">
+                            <i class="fas fa-history"></i> LỊCH SỬ CẬP NHẬT
+                        </h5>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            @foreach (var timeline in Model.TimelineDonHangs.OrderByDescending(t => t.NgayCapNhat))
+                            {
+                                <div class="timeline-item">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <strong class="text-primary">@timeline.TrangThaiMoi</strong>
+                                        <small class="text-muted">
+                                            @(timeline.NgayCapNhat.HasValue ? timeline.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                                        </small>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(timeline.GhiChu))
+                                    {
+                                        <small class="text-muted">@timeline.GhiChu</small>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Right Column - Products -->
+        <div class="col-md-8">
+            <div class="card detail-card">
+                <div class="card-body p-4">
+                    <h5 class="section-header mb-3">
+                        <i class="fas fa-shopping-cart"></i> SẢN PHẨM
+                        <span class="badge bg-primary ms-2">@Model.ChiTietDonHangs.Count</span>
+                    </h5>
+
+                    @foreach (var item in Model.ChiTietDonHangs)
+                    {
+                        <div class="product-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    @if (item.IdBienTheNavigation?.IdSanPhamNavigation?.AnhSanPhams.Any() == true)
+                                    {
+                                        var anhUrl = item.IdBienTheNavigation.IdSanPhamNavigation.AnhSanPhams.First().DuongDan;
+                                        <img src="@anhUrl" alt="Product" class="product-image">
+                                    }
+                                    else
+                                    {
+                                        <div class="product-image bg-secondary d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-image text-white"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-5">
+                                    <div>
+                                        <strong class="text-dark">
+                                            @(item.IdBienTheNavigation?.IdSanPhamNavigation?.TenSanPham ?? "Sản phẩm không xác định")
+                                        </strong>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.IdBienTheNavigation?.Sku))
+                                    {
+                                        <small class="text-muted">SKU: @item.IdBienTheNavigation.Sku</small>
+                                    }
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <div class="text-muted">Số lượng</div>
+                                    <strong>@item.SoLuong</strong>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <div class="text-muted mb-1">Đơn giá: @item.GiaLucDat?.ToString("N0")₫</div>
+                                    <div class="text-price fs-5">
+                                        @((item.SoLuong * item.GiaLucDat)?.ToString("N0"))₫
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Total Section -->
+                    <div class="total-section mt-4">
+                        <div class="row">
+                            <div class="col-md-8 text-end">
+                                <h5 class="mb-0">TỔNG CỘNG:</h5>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <h4 class="mb-0 text-price">@Model.TongTien?.ToString("N0")₫</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 d-flex gap-2 justify-content-end">
+                        @if (Model.TrangThai == "Chờ xác nhận")
+                        {
+                            <button class="btn btn-success" onclick="updateStatus(@Model.IdDonHang, 'Đã xác nhận')">
+                                <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
+                            </button>
+                            <button class="btn btn-danger" onclick="updateStatus(@Model.IdDonHang, 'Đã hủy')">
+                                <i class="fas fa-times me-2"></i>Hủy đơn hàng
+                            </button>
+                        }
+                        else if (Model.TrangThai == "Đã xác nhận")
+                        {
+                            <button class="btn btn-primary" onclick="updateStatus(@Model.IdDonHang, 'Đang giao')">
+                                <i class="fas fa-truck me-2"></i>Bắt đầu giao hàng
+                            </button>
+                        }
+                        else if (Model.TrangThai == "Đang giao")
+                        {
+                            <button class="btn btn-success" onclick="updateStatus(@Model.IdDonHang, 'Đã giao')">
+                                <i class="fas fa-check-circle me-2"></i>Hoàn thành đơn hàng
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Admin/donhang-detail.js" asp-append-version="true"></script>
+}

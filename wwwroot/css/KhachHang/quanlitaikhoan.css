@@ -1,0 +1,953 @@
+:root {
+  --nature-green: #2d5016;
+  --nature-green-light: #4a7c59;
+  --nature-green-dark: #1b3409;
+  --nature-green-accent: #74c69d;
+  --nature-green-soft: #95d5b2;
+  --nature-green-pale: #b7e4c7;
+  --nature-green-very-pale: #d8f3dc;
+  --bs-primary: var(--nature-green);
+  --bs-primary-rgb: 45, 80, 22;
+  --bs-success: var(--nature-green-light);
+  --bs-success-rgb: 74, 124, 89;
+}
+
+body {
+  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--nature-green-very-pale) 0%,
+    #ffffff 100%
+  );
+  position: relative;
+  overflow-x: hidden;
+  height: auto; /* Allow the height to adjust dynamically */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+[data-bs-theme="dark"] body {
+  background: linear-gradient(
+    135deg,
+    var(--nature-green-dark) 0%,
+    #1a1a1a 100%
+  );
+}
+
+/* Simple background effects */
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.aurora {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(116, 198, 157, 0.2),
+    rgba(149, 213, 178, 0.2),
+    rgba(183, 228, 199, 0.2),
+    rgba(216, 243, 220, 0.2)
+  );
+  animation: aurora 12s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes aurora {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+    opacity: 0.6;
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.organic-pattern {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(116, 198, 157, 0.15) 0%,
+    rgba(149, 213, 178, 0.1) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: organicFloat 8s ease-in-out infinite;
+}
+
+.organic-pattern:nth-child(2) {
+  top: 20%;
+  left: 10%;
+  animation-delay: -2s;
+  width: 250px;
+  height: 250px;
+}
+.organic-pattern:nth-child(3) {
+  top: 40%;
+  right: 15%;
+  animation-delay: -4s;
+  width: 200px;
+  height: 200px;
+}
+.organic-pattern:nth-child(4) {
+  bottom: 20%;
+  left: 30%;
+  animation-delay: -6s;
+  width: 280px;
+  height: 280px;
+}
+
+@keyframes organicFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-15px) rotate(90deg) scale(1.1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg) scale(0.9);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateY(-15px) rotate(270deg) scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+.leaf,
+.flower-petal,
+.nature-element {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: naturalFall 15s linear infinite;
+  opacity: 0.8;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes naturalFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg) translateX(0px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) translateX(50px);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  width: 30px;
+  height: 30px;
+  background: rgba(116, 198, 157, 0.3);
+  border-radius: 50%;
+  animation: bubbleRise 12s linear infinite;
+  border: 1px solid rgba(149, 213, 178, 0.5);
+}
+
+.bubble:nth-child(1) {
+  left: 5%;
+  animation-delay: 0s;
+  width: 25px;
+  height: 25px;
+}
+.bubble:nth-child(2) {
+  left: 15%;
+  animation-delay: -3s;
+  width: 35px;
+  height: 35px;
+}
+.bubble:nth-child(3) {
+  left: 25%;
+  animation-delay: -6s;
+  width: 20px;
+  height: 20px;
+}
+.bubble:nth-child(4) {
+  left: 45%;
+  animation-delay: -2s;
+  width: 40px;
+  height: 40px;
+}
+.bubble:nth-child(5) {
+  left: 65%;
+  animation-delay: -5s;
+  width: 28px;
+  height: 28px;
+}
+.bubble:nth-child(6) {
+  left: 85%;
+  animation-delay: -8s;
+  width: 32px;
+  height: 32px;
+}
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+    transform: translateY(-10vh) scale(1) rotate(45deg);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-120vh) scale(0.5) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Remove ripple effects */
+.ripple {
+  display: none !important;
+}
+
+/* Remove wave animations */
+.wave-container {
+  display: none !important;
+}
+
+/* Remove floating particles */
+.particle {
+  display: none !important;
+}
+
+/* Remove sparkle effects */
+.sparkle {
+  display: none !important;
+}
+
+/* Remove geometric shapes */
+.geo-shape {
+  display: none !important;
+}
+
+/* Remove floating icons */
+.floating-icons {
+  display: none !important;
+}
+
+/* Remove organic patterns */
+.organic-pattern {
+  display: none !important;
+}
+
+/* Remove aurora effect */
+.aurora {
+  display: none !important;
+}
+
+/* Card Components */
+.card {
+  box-shadow: 0 0.5rem 1rem rgba(45, 80, 22, 0.1);
+  border: 1px solid var(--nature-green-pale);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+[data-bs-theme="dark"] .card {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid var(--nature-green-dark);
+}
+
+.form-section {
+  display: none;
+}
+
+.form-section.active {
+  display: block;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(
+    45deg,
+    var(--nature-green),
+    var(--nature-green-light)
+  );
+  border: none;
+  box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(
+    45deg,
+    var(--nature-green-dark),
+    var(--nature-green)
+  );
+  transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+  border-color: var(--nature-green);
+  color: var(--nature-green);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--nature-green);
+  border-color: var(--nature-green);
+}
+
+/* Profile Avatar */
+.profile-avatar {
+  width: 180px;
+  height: 180px;
+  background: linear-gradient(
+    45deg,
+    var(--nature-green),
+    var(--nature-green-light)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 4.5rem;
+  margin: 0 auto 20px;
+  box-shadow: 0 12px 30px rgba(45, 80, 22, 0.3);
+  position: relative;
+  overflow: hidden;
+  border: 4px solid var(--nature-green-accent);
+  cursor: default;
+}
+
+.profile-avatar.has-image {
+  background: none !important;
+}
+
+.profile-avatar.has-image i {
+  display: none !important;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Modern Address Card Redesign - Clean & Elegant */
+.address-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInFromBottom 0.4s ease-out;
+  margin-bottom: 1rem !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(45, 80, 22, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .address-card {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  border: 1px solid rgba(116, 198, 157, 0.2) !important;
+}
+
+.address-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(45, 80, 22, 0.15);
+  border-color: var(--nature-green-accent) !important;
+}
+
+.address-card .card {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.address-card .card-body {
+  padding: 1.25rem !important;
+  position: relative;
+}
+
+/* Modern Header Design */
+.address-card .card-title {
+  color: var(--nature-green-dark) !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.3 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.address-card .card-title::before {
+  content: "👤";
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Badge Styling - Modern Pills */
+.address-card .badge {
+  font-size: 0.75rem !important;
+  padding: 0.3rem 0.6rem !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.2px !important;
+  margin-right: 0.4rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+}
+
+.address-card .badge.bg-primary {
+  background: linear-gradient(
+    45deg,
+    var(--nature-green),
+    var(--nature-green-light)
+  ) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.address-card .badge.bg-secondary {
+  background: linear-gradient(45deg, #6c757d, #545b62) !important;
+  color: white !important;
+}
+
+.address-card .badge.bg-success {
+  background: linear-gradient(45deg, #28a745, #20c997) !important;
+  color: white !important;
+  position: relative !important;
+}
+
+.address-card .badge.bg-success::before {
+  content: "⭐";
+  font-size: 0.7rem;
+  margin-right: 0.2rem;
+}
+
+/* Address Text Styling */
+.address-card .card-text {
+  color: #495057 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0.8rem !important;
+  padding: 0.5rem 0 !important;
+  position: relative !important;
+}
+
+[data-bs-theme="dark"] .address-card .card-text {
+  color: #adb5bd !important;
+}
+
+.address-card .card-text i.bi-geo-alt {
+  color: var(--nature-green-accent) !important;
+  font-size: 1rem !important;
+  margin-right: 0.5rem !important;
+}
+
+/* Action Buttons - Modern Floating Design */
+.address-card .btn-group-vertical {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.4rem !important;
+  z-index: 10 !important;
+  opacity: 0.7 !important;
+  transition: all 0.3s ease !important;
+}
+
+.address-card:hover .btn-group-vertical {
+  opacity: 1 !important;
+  transform: translateX(-2px) !important;
+}
+
+.address-card .btn-group-vertical .btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid transparent !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Edit Button */
+.address-card .btn-outline-primary {
+  background: linear-gradient(45deg, #007bff, #0056b3) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.address-card .btn-outline-primary:hover {
+  background: linear-gradient(
+    45deg,
+    var(--nature-green),
+    var(--nature-green-dark)
+  ) !important;
+  transform: scale(1.1) rotate(5deg) !important;
+  box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3) !important;
+}
+
+/* Delete Button */
+.address-card .btn-outline-danger {
+  background: linear-gradient(45deg, #dc3545, #c82333) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.address-card .btn-outline-danger:hover {
+  background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+  transform: scale(1.1) rotate(-5deg) !important;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Quick Edit Button */
+.address-card .btn-outline-secondary {
+  background: linear-gradient(45deg, #6c757d, #545b62) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.address-card .btn-outline-secondary:hover {
+  background: linear-gradient(45deg, #ffc107, #e0a800) !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3) !important;
+}
+
+/* Button Icons */
+.address-card .btn i {
+  font-size: 0.85rem !important;
+  line-height: 1 !important;
+  transition: transform 0.2s ease !important;
+}
+
+.address-card .btn:hover i {
+  transform: scale(1.1) !important;
+}
+
+/* Content Layout Improvements */
+.address-card .d-flex.justify-content-between {
+  align-items: flex-start !important;
+  gap: 1rem !important;
+}
+
+.address-card .flex-grow-1 {
+  padding-right: 3rem !important;
+}
+
+/* Badge Container Styling */
+.address-card .d-flex.align-items-center {
+  flex-wrap: wrap !important;
+  gap: 0.3rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Default Address Special Styling */
+.address-card[data-default="true"] {
+  background: linear-gradient(
+    135deg,
+    var(--nature-green-very-pale) 0%,
+    #ffffff 100%
+  ) !important;
+  border: 2px solid var(--nature-green-accent) !important;
+  position: relative !important;
+}
+
+.address-card[data-default="true"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--nature-green),
+    var(--nature-green-accent)
+  );
+  border-radius: 12px 12px 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .address-card .card-body {
+    padding: 1rem !important;
+  }
+
+  .address-card .flex-grow-1 {
+    padding-right: 2.5rem !important;
+  }
+
+  .address-card .btn-group-vertical {
+    top: 0.8rem !important;
+    right: 0.8rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .address-card .btn-group-vertical .btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .address-card .btn i {
+    font-size: 0.75rem !important;
+  }
+
+  .address-card .card-title {
+    font-size: 1rem !important;
+  }
+
+  .address-card .card-text {
+    font-size: 0.9rem !important;
+  }
+
+  .address-card .badge {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .address-card .d-flex.align-items-center {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  .address-card .badge {
+    margin-right: 0.2rem !important;
+  }
+
+  .address-card .card-title::before {
+    display: none;
+  }
+}
+
+/* Loading Animation Enhancement */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+    scale: 0.95;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Hover Glow Effect */
+.address-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  opacity: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(45, 80, 22, 0.1),
+    rgba(116, 198, 157, 0.1)
+  );
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.address-card:hover::after {
+  opacity: 1;
+}
+
+/* Address Search Container Enhancement */
+.address-search-container {
+  margin-bottom: 1.5rem !important;
+  position: relative;
+}
+
+.address-search-container .input-group {
+  border-radius: 25px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.address-search-container .input-group:focus-within {
+  border-color: var(--nature-green-accent);
+  box-shadow: 0 4px 20px rgba(45, 80, 22, 0.15);
+}
+
+.address-search-container .input-group-text {
+  background: linear-gradient(
+    45deg,
+    var(--nature-green-very-pale),
+    var(--nature-green-pale)
+  ) !important;
+  border: none !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.address-search-container .form-control {
+  border: none !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.address-search-container .form-control:focus {
+  box-shadow: none !important;
+  background: white !important;
+}
+
+/* Centered Button Group Styling for Address Type - Horizontal Layout */
+.btn-group-centered {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
+}
+
+.btn-group-centered .btn {
+  flex: 1 !important;
+  text-align: center !important;
+  border-radius: 0 !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  padding: 10px 16px !important;
+  font-size: 0.95rem !important;
+}
+
+/* Horizontal layout for address type row */
+#addAddressSection .address-type-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1.5rem !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+}
+
+#addAddressSection .address-type-row .col-md-6:first-child {
+  flex: 0 0 auto !important;
+  min-width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+#addAddressSection .address-type-row .btn-group-centered {
+  flex: 1 !important;
+  max-width: 500px !important;
+  margin: 0 1.5rem !important;
+}
+
+#addAddressSection .address-type-row .col-md-6:last-child {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+#addAddressSection .address-type-row .form-label {
+  margin-bottom: 0 !important;
+  white-space: nowrap !important;
+  font-size: 1rem !important;
+  margin-right: 0.75rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #addAddressSection .address-type-row {
+    gap: 0.75rem !important;
+  }
+
+  #addAddressSection .btn-group-centered {
+    max-width: 350px !important;
+    margin: 0 0.75rem !important;
+  }
+
+  .btn-group-centered .btn {
+    font-size: 0.9rem !important;
+    padding: 8px 12px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #addAddressSection .address-type-row {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  #addAddressSection .address-type-row .col-md-6:first-child,
+  #addAddressSection .address-type-row .col-md-6:last-child {
+    flex: 1 1 100% !important;
+    justify-content: center !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  #addAddressSection .btn-group-centered {
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Responsive for ThongTin page - Avatar and Info layout */
+@media (max-width: 1200px) {
+  /* Avatar container adjustments for medium screens */
+  .avatar-container {
+    right: 100px !important;
+  }
+  
+  .info-container .form-control {
+    max-width: 350px !important;
+  }
+}
+
+@media (max-width: 992px) {
+  /* Switch to vertical layout for tablets */
+  .card-body.d-flex.flex-row {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .avatar-container {
+    position: relative !important;
+    top: 0 !important;
+    right: 0 !important;
+    margin-bottom: 1.5rem !important;
+    min-width: 180px !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+  }
+  
+  .avatar-container .btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+  
+  .info-container {
+    width: 100% !important;
+    max-width: 500px !important;
+  }
+  
+  .info-container .form-control {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile layout adjustments */
+  .main-container .row {
+    margin: 0 !important;
+  }
+  
+  .main-container .col-md-3,
+  .main-container .col-md-9 {
+    padding: 0 0.5rem !important;
+  }
+  
+  .profile-avatar {
+    width: 150px !important;
+    height: 150px !important;
+    font-size: 3.5rem !important;
+  }
+  
+  .avatar-container {
+    min-width: 150px !important;
+  }
+  
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .info-container {
+    padding: 0 !important;
+  }
+  
+  .d-flex.gap-4 {
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Extra small mobile screens */
+  .main-container .p-4 {
+    padding: 0.5rem !important;
+  }
+  
+  .profile-avatar {
+    width: 120px !important;
+    height: 120px !important;
+    font-size: 3rem !important;
+  }
+  
+  .avatar-container {
+    min-width: 120px !important;
+  }
+  
+  .card-header h6 {
+    font-size: 1rem !important;
+  }
+  
+  .form-label {
+    font-size: 0.85rem !important;
+  }
+  
+  .form-control,
+  .btn {
+    font-size: 0.9rem !important;
+  }
+  
+  .d-flex.gap-2 {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .d-flex.gap-2 .btn {
+    width: 100% !important;
+  }
+}

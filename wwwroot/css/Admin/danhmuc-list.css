@@ -1,0 +1,182 @@
+.sortable-placeholder {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    visibility: visible !important;
+    height: 60px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sortable-placeholder.indent-intent {
+    padding-left: 40px;
+    background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 3px dashed #2196f3;
+    border-left: 6px solid #2196f3;
+}
+
+.sortable-placeholder.indent-intent::before {
+    content: "↳ Gộp vào danh mục cha";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #1976d2;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.sortable-placeholder.outdent-intent {
+    padding-left: 0px;
+    background: linear-gradient(90deg, #fff3cd 0%, #ffe69c 100%);
+    border: 3px dashed #ff9800;
+    border-left: 6px solid #ff9800;
+}
+
+.sortable-placeholder.outdent-intent::before {
+    content: "← Tách ra thành danh mục cha";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #f57c00;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.ui-sortable-helper {
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: rotate(2deg);
+}
+
+.sortable-handle {
+    cursor: grab;
+}
+
+.sortable-handle:active {
+    cursor: grabbing;
+}
+
+/* Drop target feedback */
+.droppable-category {
+    transition: background-color 0.3s ease;
+}
+
+.drop-target-hover {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #2196f3;
+}
+
+/* Tree view styles */
+.parent-category {
+    background-color: #f8f9fa !important;
+    font-weight: 500;
+}
+
+.parent-category:hover {
+    background-color: #e9ecef !important;
+}
+
+.child-category {
+    background-color: #ffffff;
+}
+
+.child-category:hover {
+    background-color: #f8f9fa;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.toggle-icon.rotate-down {
+    transform: rotate(90deg);
+}
+
+.product-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid #e3e6f0;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-description {
+    flex: 1;
+    margin-right: 8px;
+}
+
+.product-price {
+    flex-shrink: 0;
+}
+
+.card-title {
+    font-size: 0.9rem;
+}
+
+.product-card .card-body {
+    padding: 0.75rem;
+}
+
+.editable-title:hover {
+    background-color: #f8f9fa;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#deleteCategoryBtn:hover {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.modal-footer .d-flex:first-child {
+    white-space: normal;
+    overflow: visible;
+}
+
+.modal-footer .desc-area {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: .5rem;
+}
+
+.modal-footer .desc-area .editable-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.modal-footer #categoryDescEdit {
+    white-space: normal;
+}
+
+#categoryNameDisplay {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Highlight parent row when its children are visible */
+tr.parent-category.expanded {
+    background-color: #e7f1ff !important;
+    font-weight: 700;
+    border-left: 4px solid #101011;
+}
+
+tr.parent-category.expanded:hover {
+    background-color: #d9eaff !important;
+}

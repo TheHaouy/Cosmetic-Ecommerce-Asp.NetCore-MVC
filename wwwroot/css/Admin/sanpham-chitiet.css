@@ -1,0 +1,99 @@
+/* Main Image Container */
+.main-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 0.5rem auto;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
+}
+
+.main-image-container::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.main-product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
+}
+
+.main-product-image:hover {
+    transform: scale(1.02);
+}
+
+/* Thumbnail Container */
+.thumbnail-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    border-radius: 0.25rem;
+}
+
+.thumbnail-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.thumbnail-image:hover {
+    transform: scale(1.05);
+    border-color: #6c757d;
+}
+
+.thumbnail-image.active {
+    border: 2px solid #007bff;
+    transform: scale(1.02);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Sticky positioning */
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+/* Table styling */
+.table-sm th,
+.table-sm td {
+    padding: 0.25rem 0.5rem;
+    vertical-align: middle;
+}
+
+/* Scrollbar styling */
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

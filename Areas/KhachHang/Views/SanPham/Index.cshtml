@@ -1,0 +1,436 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Final_VS1.Areas.KhachHang.Models
+@model List<SanPhamViewModel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+@section Styles {
+    <link href="~/css/KhachHang/sanpham.css" rel="stylesheet" asp-append-version="true">
+}
+
+@Html.AntiForgeryToken()
+
+<!-- Mobile/Tablet Filter Toggle Button -->
+<div class="mobile-filter-toggle d-lg-none">
+    <button class="btn btn-filter-toggle" id="filterToggleBtn">
+        <i class="fas fa-bars"></i>
+        <span>Danh Mục & Bộ Lọc</span>
+    </button>
+</div>
+
+<!-- Overlay cho mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="container mt-4 pt-3">
+    <div class="row">
+        <!-- Sidebar với class sidebar-mobile-menu -->
+        <div class="col-lg-3 sidebar-mobile-menu" id="sidebarMenu">
+            <!-- Close button cho mobile -->
+            <button class="btn-close-sidebar d-lg-none" id="closeSidebarBtn">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <!-- Price Filter -->
+            <div class="filter-section">
+                <h6><i class="fas fa-dollar-sign"></i> Khoảng Giá</h6>
+                <form asp-action="Index" asp-controller="SanPham" asp-area="KhachHang" method="get" id="priceForm">
+                    @if (!string.IsNullOrEmpty(ViewBag.SearchQuery as string))
+                    {
+                        <input type="hidden" name="search" value="@ViewBag.SearchQuery" />
+                    }
+                    @if (ViewBag.CurrentCategory != null)
+                    {
+                        var currentCat = ViewBag.CurrentCategory as Final_VS1.Data.DanhMuc;
+                        if (currentCat != null)
+                        {
+                            <input type="hidden" name="category" value="@currentCat.IdDanhMuc" />
+                        }
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.SortBy as string))
+                    {
+                        <input type="hidden" name="sortBy" value="@ViewBag.SortBy" />
+                    }
+                    <div class="price-range-slider">
+                        <div class="price-display mb-3" id="priceRangeDisplay">
+                            0₫ - @((ViewBag.MaxPrice ?? 1000000).ToString("N0"))₫
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="priceSlider" min="0" max="1000000" step="50000" value="@(ViewBag.MaxPrice ?? 1000000)" class="price-slider-single" />
+                            <input type="hidden" name="minPrice" value="0" />
+                            <input type="hidden" name="maxPrice" id="maxPriceValue" value="@(ViewBag.MaxPrice ?? 1000000)" />
+                        </div>
+                        <div class="price-labels">
+                            <span>0₫</span>
+                            <span>1.000.000₫</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success btn-sm w-100 mt-2">Áp dụng</button>
+                </form>
+            </div>
+
+            <!-- Categories -->
+            <div class="sidebar">
+                <h5><i class="fas fa-list"></i> Danh Mục</h5>
+                <ul class="category-list">
+                    <li><a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="@(ViewBag.CurrentCategory == null ? "active" : "")"><i class="fas fa-leaf"></i>Tất Cả Sản Phẩm</a></li>
+                    @if (ViewBag.DanhMucs != null)
+                    {
+                        @foreach (var danhMuc in (ViewBag.DanhMucs as List<Final_VS1.Data.DanhMuc>) ?? new List<Final_VS1.Data.DanhMuc>())
+                        {
+                            <li class="category-item-wrapper @(danhMuc.InverseIdDanhMucChaNavigation.Any() ? "has-children" : "")">
+                                @if (!string.IsNullOrEmpty(danhMuc.DuongDanSeo))
+                                {
+                                    <a asp-route="category_slug" asp-route-slug="@danhMuc.DuongDanSeo" 
+                                       class="category-parent-link @(ViewBag.CurrentCategory?.IdDanhMuc == danhMuc.IdDanhMuc ? "active" : "")">
+                                        @switch (danhMuc.IdDanhMuc)
+                                        {
+                                            case 1: <i class="fas fa-spa"></i> break;
+                                            case 2: <i class="fas fa-palette"></i> break;
+                                            case 3: <i class="fas fa-cut"></i> break;
+                                            case 4: <i class="fas fa-sun"></i> break;
+                                            case 5: <i class="fas fa-seedling"></i> break;
+                                            case 6: <i class="fas fa-heart"></i> break;
+                                            default: <i class="fas fa-box"></i> break;
+                                        }
+                                        @danhMuc.TenDanhMuc
+                                        @if (danhMuc.InverseIdDanhMucChaNavigation.Any())
+                                        {
+                                            <i class="fas fa-chevron-down category-arrow"></i>
+                                        }
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang", category = danhMuc.IdDanhMuc })" 
+                                       class="category-parent-link @(ViewBag.CurrentCategory?.IdDanhMuc == danhMuc.IdDanhMuc ? "active" : "")">
+                                        <!-- Same icon switch -->
+                                        @danhMuc.TenDanhMuc
+                                    </a>
+                                }
+                                
+                                @if (danhMuc.InverseIdDanhMucChaNavigation.Any())
+                                {
+                                    <ul class="category-children">
+                                        @foreach (var subCategory in danhMuc.InverseIdDanhMucChaNavigation.OrderBy(s => s.ThuTuHienThi ?? 0))
+                                        {
+                                            <li>
+                                                @if (!string.IsNullOrEmpty(subCategory.DuongDanSeo))
+                                                {
+                                                    <a asp-route="category_slug" asp-route-slug="@subCategory.DuongDanSeo"
+                                                       class="@(ViewBag.CurrentCategory?.IdDanhMuc == subCategory.IdDanhMuc ? "active" : "")">
+                                                        <i class="fas fa-angle-right"></i>
+                                                        @subCategory.TenDanhMuc
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang", category = subCategory.IdDanhMuc })"
+                                                       class="@(ViewBag.CurrentCategory?.IdDanhMuc == subCategory.IdDanhMuc ? "active" : "")">
+                                                        <i class="fas fa-angle-right"></i>
+                                                        @subCategory.TenDanhMuc
+                                                    </a>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Controls Bar -->
+            <div class="controls-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <span class="me-3">Hiển thị @(Model?.Count ?? 0) sản phẩm</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <form asp-action="Index" asp-controller="SanPham" asp-area="KhachHang" method="get" class="d-inline">
+                        @if (!string.IsNullOrEmpty(ViewBag.SearchQuery as string))
+                        {
+                            <input type="hidden" name="search" value="@ViewBag.SearchQuery" />
+                        }
+                        @if (ViewBag.CurrentCategory != null)
+                        {
+                            var currentCat = ViewBag.CurrentCategory as Final_VS1.Data.DanhMuc;
+                            if (currentCat != null)
+                            {
+                                <input type="hidden" name="category" value="@currentCat.IdDanhMuc" />
+                            }
+                        }
+                        @if (ViewBag.MinPrice != null)
+                        {
+                            <input type="hidden" name="minPrice" value="@ViewBag.MinPrice" />
+                        }
+                        @if (ViewBag.MaxPrice != null)
+                        {
+                            <input type="hidden" name="maxPrice" value="@ViewBag.MaxPrice" />
+                        }
+                        <select name="sortBy" class="sort-dropdown" onchange="this.form.submit()">
+                            <option value="newest" selected="@(string.IsNullOrEmpty(ViewBag.SortBy as string) || ViewBag.SortBy as string == "newest" ? "selected" : null)">Mới nhất</option>
+                            <option value="price-asc" selected="@(ViewBag.SortBy as string == "price-asc" ? "selected" : null)">Giá thấp đến cao</option>
+                            <option value="price-desc" selected="@(ViewBag.SortBy as string == "price-desc" ? "selected" : null)">Giá cao đến thấp</option>
+                            <option value="bestseller" selected="@(ViewBag.SortBy as string == "bestseller" ? "selected" : null)">Bán chạy</option>
+                        </select>
+                    </form>
+                    <div class="view-toggle">
+                        <button class="view-btn grid-view active" data-view="grid" onclick="toggleView('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn list-view" data-view="list" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row" id="products-container">
+                @if (Model != null && Model.Count > 0)
+                {
+                    @foreach (var sanPham in Model)
+                    {
+                        <div class="col-lg-4 col-md-6 mb-4 product-item">
+                            <div class="product-card">
+                                @if (!string.IsNullOrEmpty(sanPham.Slug))
+                                {
+                                    <a asp-route="product_slug" asp-route-slug="@sanPham.Slug" class="product-link">
+                                        <div class="product-image-container">
+                                            @{
+                                                var defaultImage = "/Images/noimage.jpg";
+                                                var anhChinh = defaultImage;
+                                                
+                                                if (sanPham.AnhChinhs != null && sanPham.AnhChinhs.Count > 0 && !string.IsNullOrEmpty(sanPham.AnhChinhs[0]))
+                                                {
+                                                    anhChinh = sanPham.AnhChinhs[0];
+                                                }
+                                            }
+                                            <img src="@anhChinh" class="product-image" alt="@(sanPham.TenSanPham ?? "")" onerror="this.src='/Images/noimage.jpg'">
+                                            
+                                            @* Badge khuyến mãi *@
+                                            @if (sanPham.CoKhuyenMai && sanPham.PhanTramGiam.HasValue)
+                                            {
+                                                if (sanPham.IsFlashSale)
+                                                {
+                                                    <span class="badge badge-flash-sale">
+                                                        <i class="fas fa-bolt"></i> -@sanPham.PhanTramGiam%
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-discount">-@sanPham.PhanTramGiam%</span>
+                                                }
+                                            }
+                                            else if (sanPham.NgayTao != null && sanPham.NgayTao >= DateTime.Now.AddDays(-7))
+                                            {
+                                                <span class="badge badge-new">Mới</span>
+                                            }
+                                        </div>
+                                    </a>
+                                    <a asp-route="product_slug" asp-route-slug="@sanPham.Slug" class="product-info-link">
+                                        <div class="product-info">
+                                            <div class="product-name product-col">
+                                                @sanPham.TenSanPham
+                                            </div>
+                                            <div class="product-rating product-col">
+                                                <!-- Đã loại bỏ phần sao đánh giá -->
+                                            </div>
+                                            <div class="product-price product-col">
+                                                @if (sanPham.CoKhuyenMai && sanPham.GiaKhuyenMai.HasValue)
+                                                {
+                                                    <div class="price-group">
+                                                        <span class="promotion-price">@sanPham.GiaKhuyenMai.Value.ToString("N0")₫</span>
+                                                        <span class="original-price-small">@sanPham.GiaBan?.ToString("N0")₫</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    var minPrice = sanPham.GiaBan;
+                                                    string priceDisplay = "0";
+                                                    
+                                                    if (minPrice.HasValue)
+                                                    {
+                                                        priceDisplay = minPrice.Value.ToString("N0");
+                                                    }
+                                                    <span class="current-price">@priceDisplay₫</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-area="KhachHang" asp-controller="ChiTiet" asp-action="Index" asp-route-id="@sanPham.IdSanPham" class="product-link">
+                                        <!-- Same product display -->
+                                    </a>
+                                    <a asp-area="KhachHang" asp-controller="ChiTiet" asp-action="Index" asp-route-id="@sanPham.IdSanPham" class="product-info-link">
+                                        <!-- Same product info -->
+                                    </a>
+                                }
+                                <div class="product-actions d-flex gap-2">
+                                    <button class="btn btn-success btn-sm flex-fill btn-add-to-cart" data-product-id="@sanPham.IdSanPham" title="Thêm giỏ hàng">
+                                        <i class="fas fa-shopping-cart"></i> Thêm giỏ hàng
+                                    </button>
+                                    <button class="btn btn-danger btn-sm flex-fill btn-buy-now" 
+                                            data-product-id="@sanPham.IdSanPham" 
+                                            data-variant-id="@(sanPham.IdBienTheGiaThapNhat ?? 0)"
+                                            data-has-variants="@sanPham.HasVariants.ToString().ToLower()"
+                                            title="Mua ngay">
+                                        Mua ngay
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Không tìm thấy sản phẩm nào</h5>
+                            <p class="text-muted">Hãy thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc</p>
+                            <a href="@Url.Action("Index", "SanPham", new { area = "KhachHang" })" class="btn btn-success">Xem tất cả sản phẩm</a>
+                        </div>
+                    </div>
+                }
+
+
+
+
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" style="display: none;">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang tải sản phẩm...</p>
+            </div>
+
+            <!-- Modal yêu cầu đăng nhập -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content login-modal-content">
+            <div class="modal-header login-modal-header">
+                <h5 class="modal-title login-modal-title" id="loginRequiredLabel">
+                    <i class="fas fa-user-lock login-modal-icon"></i>
+                    YÊU CẦU ĐĂNG NHẬP
+                </h5>
+                <button type="button" class="btn-close login-modal-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body login-modal-body">
+                <div class="login-modal-icon-wrapper">
+                    <i class="fas fa-sign-in-alt login-modal-main-icon"></i>
+                </div>
+                <h6 class="login-modal-message">
+                    Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng
+                </h6>
+                <p class="login-modal-sub-message">
+                    Vui lòng đăng nhập hoặc đăng ký để tiếp tục mua sắm!
+                </p>
+            </div>
+            <div class="" style="display: flex; justify-content: center; gap: 15px; padding: 10px;">
+                <a href="/DangNhap?returnUrl=@(Context.Request.Path + Context.Request.QueryString)" class="btn-login-modal">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Đăng nhập</span>
+                </a>
+                <a href="@Url.Action("Index", "DangKi", new { area = "", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="btn-register-modal">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Đăng ký</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Pagination -->
+            <nav aria-label="Product pagination">
+                <ul class="pagination justify-content-center">
+                    @{
+                        var currentPage = ViewBag.CurrentPage ?? 1;
+                        var totalPages = ViewBag.TotalPages ?? 1;
+                        var totalProducts = ViewBag.TotalProducts ?? 0;
+                        
+                        // Tạo parameters cho URL để giữ lại filter
+                        var routeValues = new Dictionary<string, object>
+                        {
+                            ["area"] = "KhachHang"
+                        };
+                        
+                        if (!string.IsNullOrEmpty(ViewBag.CurrentSearch as string))
+                            routeValues["search"] = ViewBag.CurrentSearch;
+                        if (!string.IsNullOrEmpty(ViewBag.CurrentCategoryString as string))
+                            routeValues["category"] = ViewBag.CurrentCategoryString;
+                        if (ViewBag.CurrentMinPrice != null)
+                            routeValues["minPrice"] = ViewBag.CurrentMinPrice;
+                        if (ViewBag.CurrentMaxPrice != null)
+                            routeValues["maxPrice"] = ViewBag.CurrentMaxPrice;
+                        if (!string.IsNullOrEmpty(ViewBag.CurrentSortBy as string))
+                            routeValues["sortBy"] = ViewBag.CurrentSortBy;
+                    }
+                    
+                    <!-- Nút Previous -->
+                    @if (currentPage > 1)
+                    {
+                        var prevRouteValues = new Dictionary<string, object>(routeValues) { ["page"] = currentPage - 1 };
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "SanPham", prevRouteValues)">Trước</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Trước</span>
+                        </li>
+                    }
+                    
+                    <!-- Các số trang -->
+                    @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                    {
+                        var pageRouteValues = new Dictionary<string, object>(routeValues) { ["page"] = i };
+                        
+                        if (i == currentPage)
+                        {
+                            <li class="page-item active">
+                                <span class="page-link">@i</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", "SanPham", pageRouteValues)">@i</a>
+                            </li>
+                        }
+                    }
+                    
+                    <!-- Nút Next -->
+                    @if (currentPage < totalPages)
+                    {
+                        var nextRouteValues = new Dictionary<string, object>(routeValues) { ["page"] = currentPage + 1 };
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", "SanPham", nextRouteValues)">Sau</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Sau</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/KhachHang/sanpham.js" asp-append-version="true"></script>
+}
+

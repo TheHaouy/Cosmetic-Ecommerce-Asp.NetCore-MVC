@@ -1,0 +1,684 @@
+/* ===== TRANG SẢN PHẨM - RESPONSIVE STYLES ===== */
+
+/* ===== SCROLL LOCK FOR MODALS ===== */
+/* Prevent scroll jump when modal opens/closes */
+html.modal-scroll-locked {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+html.modal-scroll-locked body {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+/* ===== CARD HEADER ===== */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px 25px;
+}
+
+.card-header .header-title h5 {
+    margin: 0;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.card-header .header-title h5 i {
+    font-size: 1.1rem;
+}
+
+.card-header .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.card-header .btn-sm {
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.card-header .btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== PRODUCT TABLE GENERAL ===== */
+#productTable {
+    table-layout: fixed;
+    width: 100% !important;
+}
+
+#productTable thead th,
+#productTable tbody td {
+    vertical-align: middle !important;
+    text-align: center !important;
+    padding: 12px 8px !important;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+/* Product info cell */
+.product-info {
+    text-align: left;
+}
+
+.product-name {
+    color: #2c3e50;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    display: block;
+}
+
+.product-desc {
+    color: #6c757d;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
+
+.price-text {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Căn chỉnh cột tên sản phẩm về trái */
+#productTable tbody td:nth-child(3) {
+    text-align: left !important;
+    padding-left: 16px !important;
+}
+
+/* Table wrapper responsive */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ===== PRODUCT IMAGE ===== */
+.product-image-container {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+}
+
+.product-thumbnail {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.image-count-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== TABLE ROW ===== */
+#productTable tbody tr {
+    height: 80px;
+    transition: all 0.3s ease;
+}
+
+#productTable tbody tr:hover {
+    background-color: rgba(185, 215, 192, 0.1) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    font-size: 0.75rem !important;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* ===== MODAL SIZES - DESKTOP ===== */
+@media (min-width: 769px) {
+    #productDetailModal .modal-dialog,
+    .product-detail-modal {
+        max-width: 100vw !important;
+        width: 100vw !important;
+        margin: 0 auto !important;
+        transform: scale(1) !important;
+        transform-origin: center center !important;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        margin-left: -50vw !important;
+        margin-top: -50vh !important;
+    }
+
+    #productDetailModal .modal-content,
+    .product-detail-modal .modal-content {
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+    }
+
+    #productDetailModal .modal-body,
+    .product-detail-modal-body {
+        max-height: calc(100vh - 60px) !important;
+        overflow-y: auto;
+    }
+}
+
+/* Other modals */
+#addEditProductModal .modal-dialog,
+#variantModal .modal-dialog,
+#attributeModal .modal-dialog,
+#thanhPhanModal .modal-dialog {
+    max-width: calc(1140px * 1.5);
+}
+
+#addEditProductModal .modal-body,
+#thanhPhanModal .modal-body,
+#attributeModal .modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#variantModal .modal-body {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* ===== TABLE IN MODALS ===== */
+#productDetailModal .table,
+#addEditProductModal .table,
+#variantModal .table,
+#attributeModal .table,
+#thanhPhanModal .table {
+    min-width: 100%;
+    table-layout: auto;
+}
+
+#productDetailModal .table td,
+#productDetailModal .table th,
+#addEditProductModal .table td,
+#addEditProductModal .table th,
+#variantModal .table td,
+#variantModal .table th,
+#attributeModal .table td,
+#attributeModal .table th,
+#thanhPhanModal .table td,
+#thanhPhanModal .table th {
+    white-space: nowrap;
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+}
+
+/* ===== VARIANT TABLE COLUMNS ===== */
+#variantModal .table td:first-child,
+#variantModal .table th:first-child {
+    min-width: 140px;
+}
+
+#variantModal .table td:nth-child(2),
+#variantModal .table th:nth-child(2) {
+    min-width: 240px;
+}
+
+#variantModal .table td:nth-child(3),
+#variantModal .table th:nth-child(3) {
+    min-width: 140px;
+    text-align: right;
+}
+
+#variantModal .table td:nth-child(4),
+#variantModal .table th:nth-child(4) {
+    min-width: 120px;
+    text-align: center;
+}
+
+#variantModal .table td:nth-child(5),
+#variantModal .table th:nth-child(5) {
+    min-width: 140px;
+    text-align: center;
+}
+
+/* ===== RESPONSIVE FOR TABLETS (≤1024px) ===== */
+@media (max-width: 1024px) {
+    .card-header {
+        padding: 18px 20px;
+    }
+    
+    .card-header .header-title h5 {
+        font-size: 1rem;
+    }
+    
+    .card-header .header-actions {
+        gap: 8px;
+    }
+    
+    .card-header .btn-sm {
+        font-size: 0.8rem;
+        padding: 7px 12px;
+    }
+    
+    #productTable thead th,
+    #productTable tbody td {
+        padding: 10px 6px !important;
+        font-size: 0.85rem;
+    }
+    
+    .product-thumbnail {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .product-image-container {
+        width: 50px;
+        height: 50px;
+    }
+    
+    #productTable tbody tr {
+        height: 70px;
+    }
+}
+
+/* ===== RESPONSIVE FOR MOBILE (≤768px) ===== */
+@media (max-width: 768px) {
+    /* Card Header */
+    .card-header {
+        padding: 15px;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    .card-header .header-title h5 {
+        font-size: 0.9rem;
+    }
+    
+    .card-header .header-title h5 i {
+        font-size: 1rem;
+    }
+    
+    .card-header .header-actions {
+        width: 100%;
+        gap: 8px;
+    }
+    
+    .card-header .btn-sm {
+        font-size: 0.75rem;
+        padding: 8px 12px;
+        flex: 1;
+    }
+    
+    .card-header .btn-text {
+        display: none;
+    }
+    
+    .card-header .btn-sm i {
+        margin-right: 0 !important;
+    }
+    
+    /* Hide less important columns on mobile */
+    #productTable th:nth-child(1),
+    #productTable td:nth-child(1),
+    #productTable th:nth-child(4),
+    #productTable td:nth-child(4),
+    #productTable th:nth-child(6),
+    #productTable td:nth-child(6) {
+        display: none;
+    }
+    
+    /* Adjust remaining columns */
+    #productTable th:nth-child(2),
+    #productTable td:nth-child(2) {
+        width: 60px !important;
+    }
+    
+    #productTable th:nth-child(3),
+    #productTable td:nth-child(3) {
+        width: auto !important;
+    }
+    
+    #productTable th:nth-child(5),
+    #productTable td:nth-child(5) {
+        width: 100px !important;
+    }
+    
+    #productTable th:nth-child(7),
+    #productTable td:nth-child(7) {
+        width: 90px !important;
+    }
+    
+    /* Product image on mobile */
+    .product-thumbnail {
+        width: 45px !important;
+        height: 45px !important;
+    }
+    
+    .product-image-container {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .image-count-badge {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+        min-width: 16px;
+        height: 16px;
+    }
+    
+    /* Table rows */
+    #productTable tbody tr {
+        height: auto;
+        min-height: 60px;
+    }
+    
+    #productTable thead th,
+    #productTable tbody td {
+        padding: 8px 4px !important;
+        font-size: 0.75rem;
+    }
+    
+    /* Product name column */
+    #productTable tbody td:nth-child(3) {
+        padding-left: 8px !important;
+    }
+    
+    #productTable tbody td:nth-child(3) strong {
+        font-size: 0.8rem;
+    }
+    
+    #productTable tbody td:nth-child(3) small {
+        font-size: 0.65rem;
+        display: block;
+        margin-top: 2px;
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.65rem !important;
+        padding: 4px 8px;
+    }
+    
+    /* Modals on mobile */
+    #productDetailModal .modal-dialog,
+    #addEditProductModal .modal-dialog,
+    #variantModal .modal-dialog,
+    #attributeModal .modal-dialog,
+    #thanhPhanModal .modal-dialog,
+    #addEditThanhPhanModal .modal-dialog {
+        max-width: 95% !important;
+        margin: 0.5rem auto;
+    }
+    
+    #productDetailModal .modal-body,
+    #addEditProductModal .modal-body,
+    #variantModal .modal-body,
+    #attributeModal .modal-body,
+    #thanhPhanModal .modal-body {
+        padding: 15px;
+        max-height: 70vh;
+    }
+    
+    /* Modal tables on mobile */
+    .modal .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #variantModal .table td,
+    #variantModal .table th {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.3rem;
+    }
+    
+    /* Button groups in modals */
+    .modal-footer .btn {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+    }
+}
+
+/* ===== RESPONSIVE FOR SMALL MOBILE (≤576px) ===== */
+@media (max-width: 576px) {
+    .card-header {
+        padding: 12px;
+    }
+    
+    .card-header .header-title h5 {
+        font-size: 0.85rem;
+    }
+    
+    .card-header .header-title h5 i {
+        font-size: 0.9rem;
+        margin-right: 8px;
+    }
+    
+    .card-header .header-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .card-header .btn-sm {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .card-header .btn-sm i {
+        font-size: 0.85rem;
+    }
+    
+    #productTable thead th,
+    #productTable tbody td {
+        padding: 6px 3px !important;
+        font-size: 0.7rem;
+    }
+    
+    .product-thumbnail {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .product-image-container {
+        width: 40px;
+        height: 40px;
+    }
+    
+    #productTable tbody td:nth-child(3) strong {
+        font-size: 0.75rem;
+    }
+    
+    .badge {
+        font-size: 0.6rem !important;
+        padding: 3px 6px;
+    }
+    
+    /* Modals full width on small screens */
+    .modal-dialog {
+        margin: 0.25rem;
+        max-width: calc(100% - 0.5rem) !important;
+    }
+    
+    .modal-header {
+        padding: 12px 15px;
+    }
+    
+    .modal-header .modal-title {
+        font-size: 1rem;
+    }
+    
+    .modal-body {
+        padding: 12px;
+    }
+    
+    .modal-footer {
+        padding: 10px 15px;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .card-header .btn,
+    .modal,
+    #productTable th:last-child,
+    #productTable td:last-child {
+        display: none !important;
+    }
+    
+    #productTable {
+        font-size: 10pt;
+    }
+    
+    .badge {
+        border: 1px solid #000;
+        color: #000 !important;
+        background: transparent !important;
+    }
+}
+
+/* ===== LOADING STATES ===== */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+.loading-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== SCROLLBAR STYLING IN MODALS ===== */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+/* ===== FULL SCREEN MODAL ON MOBILE ===== */
+@media (max-width: 768px) {
+    /* Force modal to be full screen */
+    #productDetailModal {
+        padding: 0 !important;
+    }
+
+    #productDetailModal.show {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #productDetailModal .modal-dialog {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    #productDetailModal .modal-content {
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    #productDetailModal .modal-header {
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+        flex-shrink: 0 !important;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 15px;
+    }
+
+    #productDetailModal .modal-body {
+        height: calc(100vh - 56px) !important;
+        max-height: calc(100vh - 56px) !important;
+        overflow-y: auto !important;
+        padding: 15px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* NOTE: Do NOT lock body with CSS here to avoid scroll jump when closing modals.
+       Scroll locking is handled in JS to preserve scroll position properly. */
+
+    /* Other modals on mobile */
+    #addEditProductModal .modal-dialog,
+    #variantModal .modal-dialog,
+    #attributeModal .modal-dialog,
+    #thanhPhanModal .modal-dialog {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 2.5vh auto !important;
+    }
+
+    #addEditProductModal .modal-content,
+    #variantModal .modal-content,
+    #attributeModal .modal-content,
+    #thanhPhanModal .modal-content {
+        height: 95vh !important;
+        max-height: 95vh !important;
+    }
+
+    #addEditProductModal .modal-body,
+    #variantModal .modal-body,
+    #attributeModal .modal-body,
+    #thanhPhanModal .modal-body {
+        height: calc(95vh - 60px) !important;
+        max-height: calc(95vh - 60px) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+}

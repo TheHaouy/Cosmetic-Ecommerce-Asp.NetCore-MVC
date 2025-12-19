@@ -1,0 +1,748 @@
+@model Final_VS1.Data.KhuyenMai
+@{
+    ViewData["Title"] = Model.IdKhuyenMai == 0 ? "Tạo Khuyến Mãi Mới" : "Chỉnh Sửa Khuyến Mãi";
+    ViewData["PageTitle"] = Model.IdKhuyenMai == 0 ? "TẠO KHUYẾN MÃI MỚI" : "CHỈNH SỬA KHUYẾN MÃI";
+    var sanPhams = ViewBag.SanPhams as List<Final_VS1.Data.SanPham> ?? new List<Final_VS1.Data.SanPham>();
+    var danhMucs = ViewBag.DanhMucs as List<Final_VS1.Data.DanhMuc> ?? new List<Final_VS1.Data.DanhMuc>();
+    var isNewPromotion = Model.IdKhuyenMai == 0;
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-tags me-2"></i>
+                @(isNewPromotion ? "Tạo Khuyến Mãi Mới" : "Chỉnh Sửa Khuyến Mãi")
+            </h5>
+            <a href="@Url.Action("Index", "KhuyenMai")" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Quay lại
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <form id="khuyenMaiForm" method="post">
+            @Html.AntiForgeryToken()
+            
+            @if (!isNewPromotion)
+            {
+                <input type="hidden" name="IdKhuyenMai" value="@Model.IdKhuyenMai" />
+                <input type="hidden" name="SoLuongDaBan" value="@Model.SoLuongDaBan" />
+            }
+
+            
+            <!-- SECTION 1: Thông Tin Cơ Bản -->
+            <div class="mb-4">
+                <h6 class="mb-3 border-bottom pb-2">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>Thông Tin Cơ Bản
+                </h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Tên Chương Trình <span class="text-danger">*</span></label>
+                            <input type="text" name="TenKhuyenMai" class="form-control" 
+                                   value="@Model.TenKhuyenMai" required 
+                                   placeholder="VD: Sale Cuối Tuần 50%">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Loại Khuyến Mãi <span class="text-danger">*</span></label>
+                            <select name="LoaiKhuyenMai" class="form-select" required>
+                                <option value="GIAM_GIA_SAN_PHAM" selected="@(Model.LoaiKhuyenMai == "GIAM_GIA_SAN_PHAM")">Giảm Giá Sản Phẩm</option>
+                                <option value="GIAM_GIA_DON_HANG" selected="@(Model.LoaiKhuyenMai == "GIAM_GIA_DON_HANG")">Giảm Giá Đơn Hàng</option>
+                                <option value="MA_GIAM_GIA" selected="@(Model.LoaiKhuyenMai == "MA_GIAM_GIA")">Mã Giảm Giá</option>
+                                <option value="FREESHIP" selected="@(Model.LoaiKhuyenMai == "FREESHIP")">Freeship</option>
+                                <option value="TANG_QUA" selected="@(Model.LoaiKhuyenMai == "TANG_QUA")">Tặng Quà</option>
+                                <option value="COMBO" selected="@(Model.LoaiKhuyenMai == "COMBO")">Combo Sản Phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mô Tả</label>
+                    <textarea name="MoTa" class="form-control" rows="3" 
+                              placeholder="Mô tả chi tiết về chương trình khuyến mãi...">@Model.MoTa</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Hình Thức Giảm <span class="text-danger">*</span></label>
+                            <select name="HinhThucGiam" id="hinhThucGiam" class="form-select" required>
+                                <option value="PHAN_TRAM" selected="@(Model.HinhThucGiam == "PHAN_TRAM")">Giảm Theo %</option>
+                                <option value="SO_TIEN" selected="@(Model.HinhThucGiam == "SO_TIEN")">Giảm Cố Định (VNĐ)</option>
+                                <option value="GIA_CO_DINH" selected="@(Model.HinhThucGiam == "GIA_CO_DINH")">Set Giá Mới</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Giá Trị Giảm <span class="text-danger">*</span></label>
+                            <input type="number" name="GiaTriGiam" class="form-control" 
+                                   value="@Model.GiaTriGiam" required min="0" step="0.01">
+                            <small class="text-muted" id="giaTriHint">Nhập % hoặc số tiền</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="giaTriToiDaDiv">
+                        <div class="mb-3">
+                            <label class="form-label">Giảm Tối Đa (VNĐ)</label>
+                            <input type="number" name="GiaTriGiamToiDa" class="form-control" 
+                                   value="@Model.GiaTriGiamToiDa" min="0" step="1000"
+                                   placeholder="Giới hạn số tiền giảm">
+                            <small class="text-muted">Chỉ áp dụng khi giảm theo %</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Thời Gian Áp Dụng -->
+            <div class="mb-4">
+                <h6 class="mb-3 border-bottom pb-2">
+                    <i class="fas fa-calendar-alt me-2 text-primary"></i>Thời Gian Áp Dụng
+                </h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ngày Bắt Đầu <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="NgayBatDau" class="form-control" 
+                                   value="@Model.NgayBatDau.ToString("yyyy-MM-ddTHH:mm")" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ngày Kết Thúc <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="NgayKetThuc" class="form-control" 
+                                   value="@Model.NgayKetThuc.ToString("yyyy-MM-ddTHH:mm")" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="enableFlashSale" 
+                           checked="@(Model.GioBatDau.HasValue)">
+                    <label class="form-check-label" for="enableFlashSale">
+                        <strong>Flash Sale - Giới hạn theo giờ</strong>
+                        <small class="d-block text-muted">Khuyến mãi chỉ áp dụng trong khung giờ cụ thể mỗi ngày</small>
+                    </label>
+                </div>
+
+                <div id="flashSaleTime" style="display: @(Model.GioBatDau.HasValue ? "block" : "none");">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Giờ Bắt Đầu</label>
+                                <input type="time" name="gioBatDauStr" class="form-control" 
+                                       value="@Model.GioBatDau?.ToString(@"hh\:mm")">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Giờ Kết Thúc</label>
+                                <input type="time" name="gioKetThucStr" class="form-control" 
+                                       value="@Model.GioKetThuc?.ToString(@"hh\:mm")">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giới Hạn Số Lượng</label>
+                    <input type="number" name="SoLuongGioiHan" class="form-control" 
+                           value="@Model.SoLuongGioiHan" min="0" 
+                           placeholder="Để trống nếu không giới hạn">
+                    <small class="text-muted">Số lượng sản phẩm được bán với giá khuyến mãi</small>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Áp Dụng Cho -->
+            <div class="mb-4">
+                <h6 class="mb-3 border-bottom pb-2">
+                    <i class="fas fa-shopping-bag me-2 text-primary"></i>Áp Dụng Cho
+                </h6>
+                
+                <div class="mb-3">
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungTatCa" value="tatca" autocomplete="off"
+                               checked="@(!Model.KhuyenMaiDanhMucs.Any() && !Model.KhuyenMaiSanPhams.Any())">
+                        <label class="btn btn-outline-primary" for="apDungTatCa">Tất Cả Sản Phẩm</label>
+
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungDanhMuc" value="danhmuc" autocomplete="off" 
+                               checked="@(Model.KhuyenMaiDanhMucs.Any())">
+                        <label class="btn btn-outline-primary" for="apDungDanhMuc">Theo Danh Mục</label>
+
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungSanPham" value="sanpham" autocomplete="off"
+                               checked="@(Model.KhuyenMaiSanPhams.Any())">
+                        <label class="btn btn-outline-primary" for="apDungSanPham">Chọn Sản Phẩm Cụ Thể</label>
+                    </div>
+                </div>
+
+                <!-- Chọn Danh Mục -->
+                <div id="danhMucSelection" style="display: @(Model.KhuyenMaiDanhMucs.Any() ? "block" : "none");">
+                    <label class="form-label">Chọn Danh Mục</label>
+                    <select name="selectedCategories" class="form-select" multiple size="8">
+                        @foreach (var dm in danhMucs)
+                        {
+                            var isSelected = Model.KhuyenMaiDanhMucs.Any(k => k.IdDanhMuc == dm.IdDanhMuc);
+                            <option value="@dm.IdDanhMuc" selected="@isSelected">@dm.TenDanhMuc</option>
+                        }
+                    </select>
+                    <small class="text-muted">Giữ Ctrl để chọn nhiều danh mục</small>
+                </div>
+
+                <!-- Chọn Sản Phẩm -->
+                <div id="sanPhamSelection" style="display: @(Model.KhuyenMaiSanPhams.Any() ? "block" : "none");">
+                    <div class="mb-2">
+                        <input type="text" id="searchProduct" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                    </div>
+                    <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        @foreach (var sp in sanPhams)
+                        {
+                            var isChecked = Model.KhuyenMaiSanPhams.Any(k => k.IdSanPham == sp.IdSanPham);
+                            <div class="form-check product-item">
+                                <input class="form-check-input" type="checkbox" name="selectedProducts" 
+                                       value="@sp.IdSanPham" id="sp_@sp.IdSanPham" checked="@isChecked">
+                                <label class="form-check-label" for="sp_@sp.IdSanPham">
+                                    @sp.TenSanPham
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <small class="text-muted">Đã chọn: <span id="selectedCount">0</span> sản phẩm</small>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Cài Đặt Nâng Cao -->
+            <div class="mb-4">
+                <h6 class="mb-3 border-bottom pb-2">
+                    <i class="fas fa-cog me-2 text-primary"></i>Cài Đặt Nâng Cao
+                </h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ưu Tiên</label>
+                            <input type="number" name="UuTien" class="form-control" 
+                                   value="@(Model.UuTien == 0 ? 1 : Model.UuTien)" min="1" max="10">
+                            <small class="text-muted">Số càng cao càng được ưu tiên (1-10)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Trạng Thái</label>
+                            <select name="TrangThai" class="form-select">
+                                <option value="NHAP" selected="@(Model.TrangThai == "NHAP")">Nháp</option>
+                                <option value="DANG_HOAT_DONG" selected="@(Model.TrangThai == "DANG_HOAT_DONG")">Hoạt Động</option>
+                                <option value="TAM_DUNG" selected="@(Model.TrangThai == "TAM_DUNG")">Tạm Dừng</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="CoTheKetHop" 
+                               id="coTheKetHop" checked="@Model.CoTheKetHop">
+                        <label class="form-check-label" for="coTheKetHop">
+                            Cho phép kết hợp với khuyến mãi khác
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="HienThiTrangChu" 
+                               id="hienThiTrangChu" checked="@Model.HienThiTrangChu">
+                        <label class="form-check-label" for="hienThiTrangChu">
+                            Hiển thị banner trên trang chủ
+                        </label>
+                    </div>
+                </div>
+
+                <div id="bannerUpload" style="display: @(Model.HienThiTrangChu ? "block" : "none");">
+                    <div class="mb-3">
+                        <label class="form-label">URL Ảnh Banner</label>
+                        <input type="text" name="AnhBanner" class="form-control" 
+                               value="@Model.AnhBanner" placeholder="https://...">
+                        <small class="text-muted">Nhập URL ảnh banner khuyến mãi</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-save me-1"></i>Lưu Khuyến Mãi
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            updateSelectedCount();
+            toggleGiaTriToiDa();
+
+            // Trigger change để hiển thị đúng selection khi load
+            $('input[name="apDungType"]:checked').trigger('change');
+
+            // Hình thức giảm change
+            $('#hinhThucGiam').on('change', toggleGiaTriToiDa);
+
+            // Flash sale toggle
+            $('#enableFlashSale').on('change', function() {
+                $('#flashSaleTime').toggle(this.checked);
+                if (!this.checked) {
+                    $('input[name="gioBatDauStr"]').val('');
+                    $('input[name="gioKetThucStr"]').val('');
+                }
+            });
+
+            // Banner toggle
+            $('#hienThiTrangChu').on('change', function() {
+                $('#bannerUpload').toggle(this.checked);
+            });
+
+            // Áp dụng type change
+            $('input[name="apDungType"]').on('change', function() {
+                $('#danhMucSelection, #sanPhamSelection').hide();
+                if (this.value === 'danhmuc') {
+                    $('#danhMucSelection').show();
+                } else if (this.value === 'sanpham') {
+                    $('#sanPhamSelection').show();
+                }
+            });
+
+            // Search product
+            $('#searchProduct').on('keyup', function() {
+                const searchText = $(this).val().toLowerCase();
+                $('.product-item').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.indexOf(searchText) > -1);
+                });
+            });
+
+            // Count selected products
+            $('input[name="selectedProducts"]').on('change', updateSelectedCount);
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Tên Chương Trình <span class="text-danger">*</span></label>
+                            <input type="text" name="TenKhuyenMai" class="form-control" 
+                                   value="@Model.TenKhuyenMai" required 
+                                   placeholder="VD: Sale Cuối Tuần 50%">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Loại Khuyến Mãi <span class="text-danger">*</span></label>
+                            <select name="LoaiKhuyenMai" class="form-select" required>
+                                <option value="GIAM_GIA_SAN_PHAM" selected="@(Model.LoaiKhuyenMai == "GIAM_GIA_SAN_PHAM")">Giảm Giá Sản Phẩm</option>
+                                <option value="GIAM_GIA_DON_HANG" selected="@(Model.LoaiKhuyenMai == "GIAM_GIA_DON_HANG")">Giảm Giá Đơn Hàng</option>
+                                <option value="MA_GIAM_GIA" selected="@(Model.LoaiKhuyenMai == "MA_GIAM_GIA")">Mã Giảm Giá</option>
+                                <option value="FREESHIP" selected="@(Model.LoaiKhuyenMai == "FREESHIP")">Freeship</option>
+                                <option value="TANG_QUA" selected="@(Model.LoaiKhuyenMai == "TANG_QUA")">Tặng Quà</option>
+                                <option value="COMBO" selected="@(Model.LoaiKhuyenMai == "COMBO")">Combo Sản Phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mô Tả</label>
+                    <textarea name="MoTa" class="form-control" rows="3" 
+                              placeholder="Mô tả chi tiết về chương trình khuyến mãi...">@Model.MoTa</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Hình Thức Giảm <span class="text-danger">*</span></label>
+                            <select name="HinhThucGiam" id="hinhThucGiam" class="form-select" required>
+                                <option value="PHAN_TRAM" selected="@(Model.HinhThucGiam == "PHAN_TRAM")">Giảm Theo %</option>
+                                <option value="SO_TIEN" selected="@(Model.HinhThucGiam == "SO_TIEN")">Giảm Cố Định (VNĐ)</option>
+                                <option value="GIA_CO_DINH" selected="@(Model.HinhThucGiam == "GIA_CO_DINH")">Set Giá Mới</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Giá Trị Giảm <span class="text-danger">*</span></label>
+                            <input type="number" name="GiaTriGiam" class="form-control" 
+                                   value="@Model.GiaTriGiam" required min="0" step="0.01">
+                            <small class="text-muted" id="giaTriHint">Nhập % hoặc số tiền</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="giaTriToiDaDiv">
+                        <div class="mb-3">
+                            <label class="form-label">Giảm Tối Đa (VNĐ)</label>
+                            <input type="number" name="GiaTriGiamToiDa" class="form-control" 
+                                   value="@Model.GiaTriGiamToiDa" min="0" step="1000"
+                                   placeholder="Giới hạn số tiền giảm">
+                            <small class="text-muted">Chỉ áp dụng khi giảm theo %</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Thời Gian Áp Dụng -->
+            <div class="step-content" data-step="2">
+                <h6 class="mb-3 text-primary"><i class="fas fa-calendar-alt me-2"></i>Bước 2: Thời Gian Áp Dụng</h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ngày Bắt Đầu <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="NgayBatDau" class="form-control" 
+                                   value="@Model.NgayBatDau.ToString("yyyy-MM-ddTHH:mm")" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ngày Kết Thúc <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="NgayKetThuc" class="form-control" 
+                                   value="@Model.NgayKetThuc.ToString("yyyy-MM-ddTHH:mm")" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="enableFlashSale" 
+                           checked="@(Model.GioBatDau.HasValue)">
+                    <label class="form-check-label" for="enableFlashSale">
+                        <strong>Flash Sale - Giới hạn theo giờ</strong>
+                        <small class="d-block text-muted">Khuyến mãi chỉ áp dụng trong khung giờ cụ thể mỗi ngày</small>
+                    </label>
+                </div>
+
+                <div id="flashSaleTime" style="display: @(Model.GioBatDau.HasValue ? "block" : "none");">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Giờ Bắt Đầu</label>
+                                <input type="time" name="gioBatDauStr" class="form-control" 
+                                       value="@Model.GioBatDau?.ToString(@"hh\:mm")">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Giờ Kết Thúc</label>
+                                <input type="time" name="gioKetThucStr" class="form-control" 
+                                       value="@Model.GioKetThuc?.ToString(@"hh\:mm")">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giới Hạn Số Lượng (Flash Sale)</label>
+                    <input type="number" name="SoLuongGioiHan" class="form-control" 
+                           value="@Model.SoLuongGioiHan" min="0" 
+                           placeholder="Để trống nếu không giới hạn">
+                    <small class="text-muted">Số lượng sản phẩm được bán với giá khuyến mãi</small>
+                </div>
+            </div>
+
+            <!-- STEP 3: Chọn Sản Phẩm/Danh Mục Áp Dụng -->
+            <div class="step-content" data-step="3">
+                <h6 class="mb-3 text-primary"><i class="fas fa-shopping-bag me-2"></i>Bước 3: Áp Dụng Cho</h6>
+                
+                <div class="mb-3">
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungTatCa" value="tatca" autocomplete="off"
+                               checked="@(!Model.KhuyenMaiDanhMucs.Any() && !Model.KhuyenMaiSanPhams.Any())">
+                        <label class="btn btn-outline-primary" for="apDungTatCa">Tất Cả Sản Phẩm</label>
+
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungDanhMuc" value="danhmuc" autocomplete="off" 
+                               checked="@(Model.KhuyenMaiDanhMucs.Any())">
+                        <label class="btn btn-outline-primary" for="apDungDanhMuc">Theo Danh Mục</label>
+
+                        <input type="radio" class="btn-check" name="apDungType" id="apDungSanPham" value="sanpham" autocomplete="off"
+                               checked="@(Model.KhuyenMaiSanPhams.Any())">
+                        <label class="btn btn-outline-primary" for="apDungSanPham">Chọn Sản Phẩm Cụ Thể</label>
+                    </div>
+                </div>
+
+                <!-- Chọn Danh Mục -->
+                <div id="danhMucSelection" style="display: @(Model.KhuyenMaiDanhMucs.Any() ? "block" : "none");">
+                    <label class="form-label">Chọn Danh Mục <span class="text-danger">*</span></label>
+                    <select name="selectedCategories" class="form-select" multiple size="8">
+                        @foreach (var dm in danhMucs)
+                        {
+                            var isSelected = Model.KhuyenMaiDanhMucs.Any(k => k.IdDanhMuc == dm.IdDanhMuc);
+                            <option value="@dm.IdDanhMuc" selected="@isSelected">@dm.TenDanhMuc</option>
+                        }
+                    </select>
+                    <small class="text-muted">Giữ Ctrl để chọn nhiều danh mục</small>
+                </div>
+
+                <!-- Chọn Sản Phẩm -->
+                <div id="sanPhamSelection" style="display: @(Model.KhuyenMaiSanPhams.Any() ? "block" : "none");">
+                    <div class="mb-2">
+                        <input type="text" id="searchProduct" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                    </div>
+                    <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        @foreach (var sp in sanPhams)
+                        {
+                            var isChecked = Model.KhuyenMaiSanPhams.Any(k => k.IdSanPham == sp.IdSanPham);
+                            <div class="form-check product-item">
+                                <input class="form-check-input" type="checkbox" name="selectedProducts" 
+                                       value="@sp.IdSanPham" id="sp_@sp.IdSanPham" checked="@isChecked">
+                                <label class="form-check-label" for="sp_@sp.IdSanPham">
+                                    @sp.TenSanPham
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <small class="text-muted">Đã chọn: <span id="selectedCount">0</span> sản phẩm</small>
+                </div>
+            </div>
+
+            <!-- STEP 4: Cài Đặt Nâng Cao -->
+            <div class="step-content" data-step="4">
+                <h6 class="mb-3 text-primary"><i class="fas fa-cog me-2"></i>Bước 4: Cài Đặt Nâng Cao</h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Ưu Tiên (khi có nhiều KM)</label>
+                            <input type="number" name="UuTien" class="form-control" 
+                                   value="@(Model.UuTien == 0 ? 1 : Model.UuTien)" min="1" max="10">
+                            <small class="text-muted">Số càng cao càng được ưu tiên (1-10)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Trạng Thái</label>
+                            <select name="TrangThai" class="form-select">
+                                <option value="NHAP" selected="@(Model.TrangThai == "NHAP")">Nháp</option>
+                                <option value="DANG_HOAT_DONG" selected="@(Model.TrangThai == "DANG_HOAT_DONG")">Hoạt Động</option>
+                                <option value="TAM_DUNG" selected="@(Model.TrangThai == "TAM_DUNG")">Tạm Dừng</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="CoTheKetHop" 
+                               id="coTheKetHop" checked="@Model.CoTheKetHop">
+                        <label class="form-check-label" for="coTheKetHop">
+                            Cho phép kết hợp với khuyến mãi khác
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="HienThiTrangChu" 
+                               id="hienThiTrangChu" checked="@Model.HienThiTrangChu">
+                        <label class="form-check-label" for="hienThiTrangChu">
+                            Hiển thị banner trên trang chủ
+                        </label>
+                    </div>
+                </div>
+
+                <div id="bannerUpload" style="display: @(Model.HienThiTrangChu ? "block" : "none");">
+                    <div class="mb-3">
+                        <label class="form-label">URL Ảnh Banner</label>
+                        <input type="text" name="AnhBanner" class="form-control" 
+                               value="@Model.AnhBanner" placeholder="https://...">
+                        <small class="text-muted">Nhập URL ảnh banner khuyến mãi</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                    <i class="fas fa-arrow-left me-1"></i>Quay Lại
+                </button>
+                <div class="ms-auto">
+                    <button type="button" class="btn btn-primary" id="nextBtn">
+                        Tiếp Theo <i class="fas fa-arrow-right ms-1"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                        <i class="fas fa-save me-1"></i>Lưu Khuyến Mãi
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        $(document).ready(function() {
+            updateStepDisplay();
+            updateSelectedCount();
+            toggleGiaTriToiDa();
+
+            // Trigger change để hiển thị đúng selection khi load
+            $('input[name="apDungType"]:checked').trigger('change');
+
+            // Hình thức giảm change
+            $('#hinhThucGiam').on('change', toggleGiaTriToiDa);
+
+            // Flash sale toggle
+            $('#enableFlashSale').on('change', function() {
+                $('#flashSaleTime').toggle(this.checked);
+                if (!this.checked) {
+                    // Clear time values if unchecked
+                    $('input[name="gioBatDauStr"]').val('');
+                    $('input[name="gioKetThucStr"]').val('');
+                }
+            });
+
+            // Banner toggle
+            $('#hienThiTrangChu').on('change', function() {
+                $('#bannerUpload').toggle(this.checked);
+            });
+
+            // Áp dụng type change
+            $('input[name="apDungType"]').on('change', function() {
+                $('#danhMucSelection, #sanPhamSelection').hide();
+                if (this.value === 'danhmuc') {
+                    $('#danhMucSelection').show();
+                } else if (this.value === 'sanpham') {
+                    $('#sanPhamSelection').show();
+                }
+            });
+
+            // Search product
+            $('#searchProduct').on('keyup', function() {
+                const searchText = $(this).val().toLowerCase();
+                $('.product-item').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.indexOf(searchText) > -1);
+                });
+            });
+
+            // Count selected products
+            $('input[name="selectedProducts"]').on('change', updateSelectedCount);
+
+            // Navigation
+            $('#nextBtn').on('click', function() {
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    if (currentStep > totalSteps) currentStep = totalSteps;
+                    updateStepDisplay();
+                }
+            });
+
+            $('#prevBtn').on('click', function() {
+                currentStep--;
+                if (currentStep < 1) currentStep = 1;
+                updateStepDisplay();
+            });
+
+            // Form submit
+            $('#khuyenMaiForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateAllSteps()) {
+                    return false;
+                }
+
+                const formData = $(this).serialize();
+                const url = '@(isNewPromotion ? Url.Action("Create") : Url.Action("Update"))';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = '@Url.Action("Index")';
+                        } else {
+                            alert(response.message || 'Có lỗi xảy ra!');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText);
+                        alert('Có lỗi xảy ra khi kết nối server! ' + error);
+                    }
+                });
+            });
+        });
+
+        function updateStepDisplay() {
+            // Update step indicator
+            $('.step').removeClass('active completed');
+            $('.step').each(function() {
+                const stepNum = parseInt($(this).data('step'));
+                if (stepNum === currentStep) {
+                    $(this).addClass('active');
+                } else if (stepNum < currentStep) {
+                    $(this).addClass('completed');
+                }
+            });
+
+            // Update content
+            $('.step-content').removeClass('active');
+            $(`.step-content[data-step="${currentStep}"]`).addClass('active');
+
+            // Update buttons
+            $('#prevBtn').toggle(currentStep > 1);
+            $('#nextBtn').toggle(currentStep < totalSteps);
+            $('#submitBtn').toggle(currentStep === totalSteps);
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            const $content = $(`.step-content[data-step="${step}"]`);
+
+            // Check required fields in current step
+            $content.find('[required]').each(function() {
+                if (!this.checkValidity()) {
+                    $(this).addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+            }
+
+            return isValid;
+        }
+
+        function validateAllSteps() {
+            for (let i = 1; i <= totalSteps; i++) {
+                if (!validateStep(i)) {
+                    currentStep = i;
+                    updateStepDisplay();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function toggleGiaTriToiDa() {
+            const hinhThuc = $('#hinhThucGiam').val();
+            $('#giaTriToiDaDiv').toggle(hinhThuc === 'PHAN_TRAM');
+            
+            if (hinhThuc === 'PHAN_TRAM') {
+                $('#giaTriHint').text('Nhập % (VD: 50 = giảm 50%)');
+            } else {
+                $('#giaTriHint').text('Nhập số tiền (VNĐ)');
+            }
+        }
+
+        function updateSelectedCount() {
+            const count = $('input[name="selectedProducts"]:checked').length;
+            $('#selectedCount').text(count);
+        }
+    </script>
+}

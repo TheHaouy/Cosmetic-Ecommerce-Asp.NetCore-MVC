@@ -1,0 +1,93 @@
+/* Tùy chỉnh Tawk.to Widget */
+
+/* Đảm bảo widget luôn hiển thị ở góc phải dưới */
+#tawk-bubble-container {
+    z-index: 9999 !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+}
+
+/* Container chứa widget chat */
+.tawk-min-container {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}
+
+/* Nút bóng chat */
+.tawk-button {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}
+
+/* Đảm bảo widget luôn hiển thị, không bị ẩn */
+#tawk-bubble-container,
+.tawk-min-container,
+.tawk-button {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    #tawk-bubble-container,
+    .tawk-min-container,
+    .tawk-button {
+        bottom: 15px !important;
+        right: 15px !important;
+    }
+    
+    /* Thu nhỏ chat window trên mobile */
+    .tawk-min-container {
+        max-width: 90vw !important;
+        max-height: 70vh !important;
+    }
+}
+
+/* Responsive cho tablet */
+@media (max-width: 1024px) and (min-width: 769px) {
+    #tawk-bubble-container,
+    .tawk-min-container,
+    .tawk-button {
+        bottom: 18px !important;
+        right: 18px !important;
+    }
+}
+
+/* Animation khi widget xuất hiện */
+#tawk-bubble-container {
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover effect cho nút chat */
+#tawk-bubble-container:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Đảm bảo widget không bị che bởi các thành phần khác */
+body {
+    position: relative;
+}
+
+/* Đảm bảo widget không bị ẩn khi scroll */
+#tawk-bubble-container,
+.tawk-min-container {
+    position: fixed !important;
+}

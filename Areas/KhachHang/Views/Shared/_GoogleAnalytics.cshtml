@@ -1,0 +1,26 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@{
+    var gaEnabled = Configuration["GoogleAnalytics:Enabled"];
+    var gaMeasurementId = Configuration["GoogleAnalytics:MeasurementId"];
+    var isEnabled = !string.IsNullOrEmpty(gaEnabled) && gaEnabled.ToLower() == "true";
+    var hasValidId = !string.IsNullOrEmpty(gaMeasurementId) && gaMeasurementId != "G-XXXXXXXXXX";
+}
+
+@if (isEnabled && hasValidId)
+{
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gaMeasurementId"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '@gaMeasurementId');
+    </script>
+}
+else
+{
+    <!-- Google Analytics: Disabled or not configured -->
+    <!-- To enable: Set GoogleAnalytics:Enabled=true and GoogleAnalytics:MeasurementId in appsettings.json -->
+}

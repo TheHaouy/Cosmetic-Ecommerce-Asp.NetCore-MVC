@@ -1,0 +1,560 @@
+@model IEnumerable<Final_VS1.Data.DanhGium>
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+    ViewData["PageTitle"] = "Quản lý đánh giá";
+}
+
+<link rel="stylesheet" href="~/css/Admin/danhgia.css" asp-append-version="true" />
+
+<div class="container-fluid px-4 py-4">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card bg-primary">
+                <div class="stats-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.TotalReviews</div>
+                    <div class="stats-label">Tổng đánh giá</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-warning">
+                <div class="stats-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.AverageRating.ToString("0.0")</div>
+                    <div class="stats-label">Điểm trung bình</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-success">
+                <div class="stats-icon">
+                    <i class="fas fa-reply"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.ReviewsWithReply</div>
+                    <div class="stats-label">Đã trả lời</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-danger">
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@ViewBag.ReviewsWithoutReply</div>
+                    <div class="stats-label">Chưa trả lời</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Danh sách đánh giá
+                </h5>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @{ var reviewOrders = ViewBag.ReviewOrders as Dictionary<int, (int Id, string Status, string Date)>; }
+            <style>
+                .reviews-table { border-collapse: separate; border-spacing: 0 12px; }
+                .reviews-table thead th { background: linear-gradient(90deg,#2f8f4a,#3fb36b); color: #fff; border: none; vertical-align: middle; }
+                .reviews-table thead th:first-child { border-top-left-radius: 10px; }
+                .reviews-table thead th:last-child { border-top-right-radius: 10px; }
+                .reviews-table tbody tr { background: transparent; }
+                .reviews-table tbody td { background: #fff; border: none; padding: 18px; vertical-align: middle; }
+                .reviews-table .badge { font-weight: 600; }
+                .review-actions .btn { margin-left: 6px; }
+
+                .rating-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 6px 10px;
+                    border-radius: 12px;
+                    background: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                }
+
+                .rating-score {
+                    font-weight: 700;
+                    color: #e0a800;
+                    font-size: 13px;
+                    line-height: 1;
+                }
+
+                .rating-stars i {
+                    font-size: 13px;
+                    color: #e0a800;
+                }
+
+                .rating-stars i.muted {
+                    color: #cbd5e0;
+                }
+            </style>
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table reviews-table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="50">ID</th>
+                                <th>Khách hàng</th>
+                                <th>Sản phẩm</th>
+                                <th width="160">Đơn hàng</th>
+                                <th width="120">Đánh giá</th>
+                                <th>Nội dung</th>
+                                <th width="140">Ngày đánh giá</th>
+                                <th width="100">Trạng thái</th>
+                                <th width="180">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="review-row" data-review-id="@item.IdDanhGia">
+                                    <td>
+                                        <span class="badge bg-secondary">#@item.IdDanhGia</span>
+                                    </td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <strong>@(item.IdTaiKhoanNavigation?.HoTen ?? "Khách ẩn danh")</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="product-info">
+                                            @(item.IdSanPhamNavigation?.TenSanPham ?? "Không xác định")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (reviewOrders != null && reviewOrders.TryGetValue(item.IdDanhGia, out var orderInfo))
+                                        {
+                                            var orderDetailUrl = Url.Action("Detail", "Donhang", new { area = "NhanVien", id = orderInfo.Id });
+                                            <div class="d-flex flex-column">
+                                                <a class="btn btn-outline-primary btn-sm" target="_blank" 
+                                                   href="@orderDetailUrl">
+                                                    <i class="fas fa-receipt me-1"></i>Đơn #@orderInfo.Id
+                                                </a>
+                                                <small class="text-muted mt-1">
+                                                    <i class="far fa-clock me-1"></i>@orderInfo.Date
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>@orderInfo.Status
+                                                </small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <em class="text-muted">Không tìm thấy đơn</em>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{ var rating = item.SoSao ?? 0; }
+                                        <div class="rating-chip" title="@rating sao">
+                                            <span class="rating-score">@rating</span>
+                                            <span class="rating-stars">
+                                                
+                                                        <i class="fas fa-star"></i>
+                                              
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="review-content">
+                                            @if (!string.IsNullOrEmpty(item.BinhLuan))
+                                            {
+                                                @(item.BinhLuan.Length > 80 ? item.BinhLuan.Substring(0, 80) + "..." : item.BinhLuan)
+                                            }
+                                            else
+                                            {
+                                                <em class="text-muted">Không có nhận xét</em>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            @item.NgayDanhGia?.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.TraLoiCuaShop))
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Đã trả lời
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Chưa trả lời
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm review-actions">
+                                            <button class="btn btn-info btn-toggle-detail" data-id="@item.IdDanhGia" data-has-reply="@(!string.IsNullOrEmpty(item.TraLoiCuaShop))" title="Xem chi tiết">
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-delete" data-id="@item.IdDanhGia" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="review-detail-row" id="detail-@item.IdDanhGia" style="display: none;">
+                                    <td colspan="9">
+                                        <div class="review-detail-container">
+                                            <div class="loading-indicator">
+                                                <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                                                <span class="ms-2">Đang tải chi tiết...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Không có đánh giá nào</p>
+                </div>
+            }
+        </div>
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="card-footer bg-white">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                <a class="page-link" href="?page=@i">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+@section Modals {
+    <div class="modal fade" id="reviewImageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body p-0 position-relative">
+                    <button type="button" class="btn-close position-absolute end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img id="reviewImageModalImg" src="" alt="Review image" class="w-100" style="max-height:80vh; object-fit:contain;" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @Html.AntiForgeryToken()
+    <script>
+        const reviewRoutes = {
+            reply: '/nhanvien/reviews/replyreview',
+            deleteOne: '/nhanvien/reviews/deletereview',
+            deleteMany: '/nhanvien/reviews/deletemultiple',
+            detail: '/nhanvien/reviews/getreviewdetail',
+            orderDetail: '@Url.Action("Detail", "Donhang", new { area = "NhanVien", id = 0 })'
+        };
+
+        $(document).ready(function () {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $('.btn-toggle-detail').on('click', function () {
+                const reviewId = $(this).data('id');
+                const hasReply = $(this).data('has-reply');
+                const $detailRow = $(`#detail-${reviewId}`);
+                const $icon = $(this).find('i');
+                const $row = $(this).closest('tr');
+
+                $('.review-detail-row').not($detailRow).slideUp(300);
+                $('.btn-toggle-detail').not(this).find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                $('.review-row').not($row).removeClass('active');
+
+                if ($detailRow.is(':visible')) {
+                    $detailRow.slideUp(300);
+                    $icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                    $row.removeClass('active');
+                } else {
+                    const showReplyForm = !(hasReply === true || hasReply === 'True' || hasReply === 'true');
+                    if ($detailRow.find('.loading-indicator').length) {
+                        loadReviewDetail(reviewId, showReplyForm);
+                    }
+                    $detailRow.slideDown(300);
+                    $icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                    $row.addClass('active');
+                }
+            });
+
+            $(document).on('click', '.btn-submit-reply-inline', function () {
+                const reviewId = $(this).data('id');
+                const $textarea = $(`#replyText-${reviewId}`);
+                const replyText = $textarea.val().trim();
+
+                if (!replyText) {
+                    Swal.fire({ icon: 'warning', title: 'Cảnh báo', text: 'Vui lòng nhập nội dung trả lời' });
+                    return;
+                }
+
+                const $btn = $(this);
+                const originalText = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...');
+
+                $.ajax({
+                    url: reviewRoutes.reply,
+                    type: 'POST',
+                    data: {
+                        idDanhGia: reviewId,
+                        traLoi: replyText,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({ icon: 'success', title: 'Thành công', text: response.message, timer: 1500, showConfirmButton: false })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Lỗi', text: response.message });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi gửi phản hồi' });
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                });
+            });
+
+            $(document).on('click', '.btn-cancel-reply-inline', function () {
+                const reviewId = $(this).data('id');
+                $(`#replyText-${reviewId}`).val('');
+            });
+
+            $('.btn-delete').on('click', function () {
+                const reviewId = $(this).data('id');
+                confirmDelete([reviewId]);
+            });
+
+            function confirmDelete(ids) {
+                const isMultiple = ids.length > 1;
+                const message = isMultiple ? `Bạn có chắc chắn muốn xóa ${ids.length} đánh giá đã chọn?` : 'Bạn có chắc chắn muốn xóa đánh giá này?';
+
+                Swal.fire({
+                    title: 'Xác nhận xóa',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteReviews(ids);
+                    }
+                });
+            }
+
+            function deleteReviews(ids) {
+                const url = ids.length === 1 ? reviewRoutes.deleteOne : reviewRoutes.deleteMany;
+                const data = ids.length === 1
+                    ? { id: ids[0], __RequestVerificationToken: token }
+                    : { ids: ids, __RequestVerificationToken: token };
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({ icon: 'success', title: 'Thành công', text: response.message, timer: 1500, showConfirmButton: false })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Lỗi', text: response.message });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi xóa đánh giá' });
+                    }
+                });
+            }
+
+            function loadReviewDetail(reviewId, showReplyForm) {
+                const $container = $(`#detail-${reviewId} .review-detail-container`);
+
+                $.ajax({
+                    url: reviewRoutes.detail,
+                    type: 'GET',
+                    data: { id: reviewId },
+                    success: function (response) {
+                        if (response.success) {
+                            const data = response.data;
+                            const initials = getInitials(data.tenKhachHang);
+                            const orderUrl = data.orderId ? reviewRoutes.orderDetail.replace('0', data.orderId) : null;
+
+                            let html = `
+                                <div class="review-detail-content-wrapper">
+                                    <div class="review-header-section">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="customer-avatar-inline">${initials}</div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-1 fw-bold">${data.tenKhachHang}</h6>
+                                                <div class="rating-display-inline mb-1">${generateStars(data.soSao)}</div>
+                                                <div class="d-flex align-items-center gap-3 text-muted small">
+                                                    <span><i class="far fa-calendar-alt me-1"></i>${data.ngayDanhGia || ''}</span>
+                                                    <span><i class="fas fa-box me-1"></i>${data.tenSanPham || ''}</span>
+                                                </div>
+                                                ${orderUrl ? `
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-outline-primary btn-sm" onclick="window.open('${orderUrl}', '_blank')">
+                                                            <i class="fas fa-receipt me-1"></i>Đơn #${data.orderId}
+                                                        </button>
+                                                        <span class="text-muted small ms-2">
+                                                            <i class="far fa-clock me-1"></i>${data.orderDate || ''}
+                                                        </span>
+                                                        ${data.orderStatus ? `<span class="badge bg-info ms-2">${data.orderStatus}</span>` : ''}
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="review-body-section">
+                                        <div class="row">
+                                            <div class="${data.anhDanhGia ? 'col-lg-7' : 'col-12'}">
+                                                <div class="review-comment-full">
+                                                    <label class="fw-bold mb-2 text-secondary">
+                                                        <i class="fas fa-comment-dots me-2"></i>Nội dung đánh giá
+                                                    </label>
+                                                    <div class="comment-text">${data.binhLuan || '<em class="text-muted">Không có nhận xét</em>'}</div>
+                                                </div>
+
+                                                ${data.traLoiCuaShop ? `
+                                                    <div class="shop-reply-section mt-3">
+                                                        <div class="shop-reply-header-inline">
+                                                            <i class="fas fa-store me-2"></i>
+                                                            <strong>Phản hồi từ Shop</strong>
+                                                            ${data.ngayTraLoi ? `<small class="text-muted ms-2">(${data.ngayTraLoi})</small>` : ''}
+                                                        </div>
+                                                        <div class="shop-reply-text">${data.traLoiCuaShop}</div>
+                                                    </div>
+                                                ` : (showReplyForm ? `
+                                                    <div class="reply-form-section mt-3">
+                                                        <div class="reply-form-header">
+                                                            <i class="fas fa-reply me-2"></i>
+                                                            <strong>Trả lời đánh giá này</strong>
+                                                        </div>
+                                                        <div class="reply-form-body">
+                                                            <textarea class="form-control" id="replyText-${reviewId}" rows="4" placeholder="Nhập phản hồi của bạn cho khách hàng..."></textarea>
+                                                            <div class="reply-form-actions mt-3">
+                                                                <button type="button" class="btn btn-secondary btn-cancel-reply-inline" data-id="${reviewId}">
+                                                                    <i class="fas fa-times me-2"></i>Hủy
+                                                                </button>
+                                                                <button type="button" class="btn btn-primary btn-submit-reply-inline" data-id="${reviewId}">
+                                                                    <i class="fas fa-paper-plane me-2"></i>Gửi phản hồi
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ` : `
+                                                    <div class="alert alert-info mt-3 mb-0">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        Chưa có phản hồi từ Shop
+                                                    </div>
+                                                `)}
+                                            </div>
+
+                                            ${data.anhDanhGia ? `
+                                                <div class="col-lg-5">
+                                                    <div class="review-images-section">
+                                                        <label class="fw-bold mb-2 text-secondary">
+                                                            <i class="fas fa-images me-2"></i>Hình ảnh đính kèm
+                                                        </label>
+                                                        <div class="review-images-grid">${generateReviewImages(data.anhDanhGia)}</div>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                            $container.html(html);
+                        } else {
+                            $container.html(`<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-triangle me-2"></i>${response.message}</div>`);
+                        }
+                    },
+                    error: function () {
+                        $container.html('<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Có lỗi xảy ra khi tải chi tiết đánh giá</div>');
+                    }
+                });
+            }
+
+            function generateStars(rating) {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= rating
+                        ? '<i class="fas fa-star text-warning"></i> '
+                        : '<i class="far fa-star text-muted"></i> ';
+                }
+                return stars;
+            }
+
+            function getInitials(name) {
+                if (!name) return '?';
+                const parts = name.trim().split(' ');
+                if (parts.length >= 2) {
+                    return parts[0][0].toUpperCase() + parts[parts.length - 1][0].toUpperCase();
+                }
+                return name[0].toUpperCase();
+            }
+
+            function generateReviewImages(anhDanhGia) {
+                if (!anhDanhGia) return '';
+                const images = anhDanhGia.split(/[,;]/).map(img => img.trim()).filter(img => img);
+                return images.map(img => `
+                    <div class="review-image-item">
+                        <img src="${img}" alt="Review image" class="review-image-thumb" onerror="this.src='/images/noimage.jpg'">
+                    </div>
+                `).join('');
+            }
+
+            $(document).on('click', '.review-image-thumb', function () {
+                const src = $(this).attr('src');
+                $('#reviewImageModalImg').attr('src', src);
+                const modalEl = document.getElementById('reviewImageModal');
+                if (modalEl) {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,1780 @@
+﻿@{
+    ViewData["Title"] = "DiaChi";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+
+<style>
+    /* Autocomplete Dropdown Styling - Fixed Height with Scroll */
+    .autocomplete-container {
+        position: relative;
+    }
+    
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1050;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+        margin-top: 1px;
+    }
+    
+    .autocomplete-dropdown.show {
+        display: block;
+    }
+    
+    .autocomplete-item {
+        padding: 6px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+    
+    .autocomplete-item:last-child {
+        border-bottom: none;
+    }
+    
+    .autocomplete-item:hover,
+    .autocomplete-item.selected {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+        color: var(--nature-green-dark);
+        transform: translateX(3px);
+    }
+    
+    .autocomplete-item strong {
+        color: var(--nature-green);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .autocomplete-item small {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+    
+    .autocomplete-item.text-muted {
+        cursor: default;
+        font-style: italic;
+        color: #999;
+        text-align: center;
+    }
+    
+    .autocomplete-item.text-muted:hover {
+        background: transparent;
+        transform: none;
+    }
+    
+    /* Dark mode support */
+    [data-bs-theme="dark"] .autocomplete-dropdown {
+        background: #2d2d2d;
+        border-color: #444;
+    }
+    
+    [data-bs-theme="dark"] .autocomplete-item {
+        border-bottom-color: #444;
+    }
+    
+    [data-bs-theme="dark"] .autocomplete-item:hover,
+    [data-bs-theme="dark"] .autocomplete-item.selected {
+        background: linear-gradient(135deg, #1b3409 0%, #2d5016 100%);
+        color: #95d5b2;
+    }
+    
+    /* Custom scrollbar for dropdown */
+    .autocomplete-dropdown::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .autocomplete-dropdown::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 0 0 8px 0;
+    }
+    
+    .autocomplete-dropdown::-webkit-scrollbar-thumb {
+        background: var(--nature-green-accent);
+        border-radius: 4px;
+    }
+    
+    .autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+        background: var(--nature-green);
+    }
+    
+    [data-bs-theme="dark"] .autocomplete-dropdown::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+    
+    /* Form Add Address - Nature Theme Colors */
+    #addAddressSection .card-header {
+        background: transparent;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    #addAddressSection .card-header h5.card-title {
+        font-weight: 600;
+    }
+    
+    #addAddressSection .card-header h5.card-title i {
+        color: var(--nature-green);
+    }
+    
+    #addAddressSection .card-header .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+        background: white;
+        z-index: 10;
+    }
+    
+    #addAddressSection .card-header .btn-outline-secondary:hover {
+        color: white;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    
+    #addAddressSection .form-label {
+        color: var(--nature-green-dark);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    #addAddressSection .form-label i {
+        color: var(--nature-green);
+    }
+    
+    #addAddressSection .form-label.required::after {
+        content: " *";
+        color: #dc3545;
+    }
+    
+    #addAddressSection .form-control:focus {
+        border-color: var(--nature-green-accent);
+        box-shadow: 0 0 0 0.25rem rgba(116, 198, 157, 0.25);
+    }
+    
+    #addAddressSection .btn-outline-primary {
+        color: var(--nature-green);
+        border-color: var(--nature-green);
+    }
+    
+    #addAddressSection .btn-outline-primary:hover,
+    #addAddressSection .btn-outline-primary.active {
+        background-color: var(--nature-green);
+        border-color: var(--nature-green);
+        color: white;
+    }
+    
+    #addAddressSection .btn-primary {
+        background: linear-gradient(135deg, var(--nature-green) 0%, var(--nature-green-light) 100%);
+        border: none;
+        font-weight: 600;
+    }
+    
+    #addAddressSection .btn-primary:hover {
+        background: linear-gradient(135deg, var(--nature-green-dark) 0%, var(--nature-green) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+    }
+    
+    #addAddressSection .form-check-input:checked {
+        background-color: var(--nature-green);
+        border-color: var(--nature-green);
+    }
+    
+    #addAddressSection .form-check-label {
+        color: var(--nature-green-dark);
+        font-weight: 500;
+    }
+    
+    #addAddressSection .form-check-label i {
+        color: var(--nature-green-accent);
+    }
+    
+    /* Dark mode for form */
+    [data-bs-theme="dark"] #addAddressSection .card-header {
+        background: linear-gradient(135deg, var(--nature-green-dark) 0%, var(--nature-green) 100%);
+    }
+    
+    [data-bs-theme="dark"] #addAddressSection .form-label {
+        color: var(--nature-green-soft);
+    }
+    
+    [data-bs-theme="dark"] #addAddressSection .form-check-label {
+        color: var(--nature-green-pale);
+    }
+    
+    /* Sidebar Optimization - Compact Size */
+    .customer-sidebar {
+        max-width: 240px;
+    }
+    
+    .customer-sidebar .card-header h4 {
+        font-size: 1rem !important;
+        white-space: nowrap;
+    }
+    
+    .customer-sidebar .nav-link {
+        padding: 0.7rem 0.9rem !important;
+        font-size: 0.9rem;
+    }
+    
+    .customer-sidebar .nav-link i {
+        font-size: 1rem !important;
+        width: 20px !important;
+    }
+    
+    .customer-sidebar .nav-link span {
+        font-size: 0.9rem !important;
+        white-space: nowrap;
+    }
+    
+    @@media (max-width: 991px) {
+        .customer-sidebar {
+            max-width: 100%;
+        }
+    }
+</style>
+
+    <!-- ...existing animated background code... -->
+    <!-- Animated Background Effects -->
+    <div class="animated-background">
+        <!-- Aurora Effect -->
+        <div class="aurora"></div>
+
+
+        <!-- Organic Nature Patterns -->
+        <div class="organic-pattern"></div>
+        <div class="organic-pattern"></div>
+        <div class="organic-pattern"></div>
+
+
+        <!-- Floating Leaves -->
+        <div class="leaf maple" style="left: 5%; animation-delay: 0s;">🍁</div>
+        <div class="leaf oak" style="left: 15%; animation-delay: -3s;">🍃</div>
+        <div class="leaf birch" style="left: 25%; animation-delay: -6s;">🌿</div>
+        <div class="leaf maple" style="left: 35%; animation-delay: -9s;">🍂</div>
+        <div class="leaf small" style="left: 45%; animation-delay: -12s;">🌱</div>
+        <div class="leaf oak" style="left: 55%; animation-delay: -2s;">🍃</div>
+        <div class="leaf birch" style="left: 65%; animation-delay: -5s;">🌿</div>
+        <div class="leaf maple" style="left: 75%; animation-delay: -8s;">🍁</div>
+        <div class="leaf small" style="left: 85%; animation-delay: -11s;">🌱</div>
+        <div class="leaf oak" style="left: 95%; animation-delay: -14s;">🍃</div>
+
+
+        <!-- Floating Flower Petals -->
+        <div class="flower-petal sakura" style="left: 8%; animation-delay: -1s;">🌸</div>
+        <div class="flower-petal rose" style="left: 18%; animation-delay: -4s;">🌹</div>
+        <div class="flower-petal daisy" style="left: 28%; animation-delay: -7s;">🌼</div>
+        <div class="flower-petal lavender" style="left: 38%; animation-delay: -10s;">💜</div>
+        <div class="flower-petal sakura" style="left: 48%; animation-delay: -13s;">🌸</div>
+        <div class="flower-petal rose" style="left: 58%; animation-delay: -2.5s;">🌺</div>
+        <div class="flower-petal daisy" style="left: 68%; animation-delay: -5.5s;">🌼</div>
+        <div class="flower-petal lavender" style="left: 78%; animation-delay: -8.5s;">🌻</div>
+        <div class="flower-petal sakura" style="left: 88%; animation-delay: -11.5s;">🌸</div>
+
+
+        <!-- Nature Elements -->
+        <div class="nature-element branch" style="left: 12%; animation-delay: -3s;">🌳</div>
+        <div class="nature-element grass" style="left: 32%; animation-delay: -8s;">🌾</div>
+        <div class="nature-element seed" style="left: 52%; animation-delay: -13s;">🌰</div>
+        <div class="nature-element branch" style="left: 72%; animation-delay: -5s;">🌲</div>
+        <div class="nature-element grass" style="left: 92%; animation-delay: -10s;">🌾</div>
+
+
+        <!-- Floating Bubbles -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+
+
+        <!-- Ripple Effects -->
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+
+
+        <!-- Floating Nature & Cosmetic Icons -->
+        <div class="floating-icons"><i class="bi bi-droplet-fill"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower1"></i></div>
+        <div class="floating-icons"><i class="bi bi-tree"></i></div>
+        <div class="floating-icons"><i class="bi bi-sun"></i></div>
+        <div class="floating-icons"><i class="bi bi-cloud"></i></div>
+        <div class="floating-icons"><i class="bi bi-droplet"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower2"></i></div>
+        <div class="floating-icons"><i class="bi bi-brightness-high"></i></div>
+        <div class="floating-icons"><i class="bi bi-egg"></i></div>
+        <div class="floating-icons"><i class="bi bi-flower3"></i></div>
+        <div class="floating-icons"><i class="bi bi-water"></i></div>
+        <div class="floating-icons"><i class="bi bi-tree-fill"></i></div>
+        <div class="floating-icons">💄</div>
+        <div class="floating-icons">💅</div>
+        <div class="floating-icons">✨</div>
+        <div class="floating-icons">🌸</div>
+        <div class="floating-icons">🌺</div>
+        <div class="floating-icons">🦋</div>
+
+
+        <!-- Geometric Shapes -->
+        <div class="geo-shape circle" style="top: 15%; left: 5%; animation-delay: 0s;"></div>
+        <div class="geo-shape triangle" style="top: 30%; left: 85%; animation-delay: -1s;"></div>
+        <div class="geo-shape square" style="top: 50%; left: 10%; animation-delay: -2s;"></div>
+        <div class="geo-shape diamond" style="top: 70%; left: 75%; animation-delay: -3s;"></div>
+        <div class="geo-shape circle" style="top: 80%; left: 30%; animation-delay: -4s;"></div>
+        <div class="geo-shape triangle" style="top: 25%; left: 60%; animation-delay: -5s;"></div>
+        <div class="geo-shape square" style="top: 65%; left: 90%; animation-delay: -6s;"></div>
+        <div class="geo-shape diamond" style="top: 45%; left: 40%; animation-delay: -7s;"></div>
+
+
+        <!-- Sparkles -->
+        <div class="sparkle" style="top: 20%; left: 25%; animation-delay: 0s;"></div>
+        <div class="sparkle" style="top: 40%; left: 70%; animation-delay: -0.5s;"></div>
+        <div class="sparkle" style="top: 60%; left: 15%; animation-delay: -1s;"></div>
+        <div class="sparkle" style="top: 75%; left: 80%; animation-delay: -1.5s;"></div>
+        <div class="sparkle" style="top: 35%; left: 50%; animation-delay: -2s;"></div>
+        <div class="sparkle" style="top: 85%; left: 60%; animation-delay: -2.5s;"></div>
+        <div class="sparkle" style="top: 10%; left: 90%; animation-delay: -3s;"></div>
+        <div class="sparkle" style="top: 55%; left: 35%; animation-delay: -3.5s;"></div>
+        <div class="sparkle" style="top: 90%; left: 20%; animation-delay: -4s;"></div>
+        <div class="sparkle" style="top: 25%; left: 85%; animation-delay: -4.5s;"></div>
+
+
+        <!-- Floating Particles -->
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+
+
+        <!-- Wave Animation -->
+        <div class="wave-container">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="main-container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-3">
+                 @await Html.PartialAsync("_CustomerSidebar")
+            </div>
+           
+       
+
+
+
+            <!-- Main Content - Address Management -->
+            <div class="col-md-9 col-lg-9">
+                <div class="p-4">
+                    <!-- Add Address Form Section - Simplified -->
+                    <div class="card mb-4" id="addAddressSection" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold">
+                                <i class="bi bi-geo-alt me-2"></i>Thêm Địa Chỉ Mới
+                            </h5>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="hideAddressForm()">
+                                <i class="bi bi-x-circle me-1"></i>Đóng
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <form id="addressForm" class="needs-validation" novalidate>
+                                <input type="hidden" id="addressId">
+                                
+                                <!-- Personal Information Row -->
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="recipientName" class="form-label required">
+                                            <i class="bi bi-person-fill me-1 text-primary"></i>Họ và tên
+                                        </label>
+                                        <input type="text" class="form-control" id="recipientName" name="recipientName" required
+                                               placeholder="LittleFish Beauty">
+                                        <div class="invalid-feedback">
+                                            Vui lòng nhập họ và tên người nhận.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="phone" class="form-label required">
+                                            <i class="bi bi-telephone-fill me-1 text-primary"></i>Số điện thoại
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" required
+                                               placeholder="0987654321"
+                                               pattern="[0-9]{10,11}"
+                                               maxlength="11">
+                                        <div class="invalid-feedback">
+                                            Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Location Row -->
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="province" class="form-label required">
+                                            <i class="bi bi-geo-alt-fill me-1 text-primary"></i>Tỉnh/Thành phố
+                                        </label>
+                                        <div class="autocomplete-container">
+                                            <input type="text" class="form-control" id="province" name="province" required
+                                                   placeholder="Nhập tỉnh/thành phố..."
+                                                   autocomplete="off">
+                                            <div class="autocomplete-dropdown" id="provinceDropdown"></div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Vui lòng nhập tỉnh/thành phố.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="ward" class="form-label required">
+                                            <i class="bi bi-signpost-split me-1 text-primary"></i>Phường/Xã
+                                        </label>
+                                        <div class="autocomplete-container">
+                                            <input type="text" class="form-control" id="ward" name="ward" required
+                                                   placeholder="Nhập phường/xã..."
+                                                   autocomplete="off">
+                                            <div class="autocomplete-dropdown" id="wardDropdown"></div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Vui lòng nhập phường/xã.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detail Address Row -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="detailAddress" class="form-label required">
+                                            <i class="bi bi-house-door-fill me-1 text-primary"></i>Địa chỉ cụ thể
+                                        </label>
+                                        <textarea class="form-control" id="detailAddress" name="detailAddress" rows="2" required
+                                                  placeholder="Số nhà, tên đường, khu vực..."
+                                                  minlength="5"></textarea>
+                                        <div class="invalid-feedback">
+                                            Vui lòng nhập địa chỉ cụ thể (ít nhất 5 ký tự).
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Address Type and Settings Row -->
+                                <div class="row mb-4 address-type-row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            Loại địa chỉ
+                                        </label>
+                                        <!-- CENTERED BUTTON GROUP -->
+                                        <div class="d-flex justify-content-center">
+                                            <div class="btn-group btn-group-centered" role="group" aria-label="Loại địa chỉ">
+                                                <input type="radio" class="btn-check" name="addressType" id="addressTypeHome" value="home" checked>
+                                                <label class="btn btn-outline-primary" for="addressTypeHome">
+                                                    <i class="bi bi-house me-1"></i>Nhà Riêng
+                                                </label>
+
+                                                <input type="radio" class="btn-check" name="addressType" id="addressTypeOffice" value="office">
+                                                <label class="btn btn-outline-primary" for="addressTypeOffice">
+                                                    <i class="bi bi-building me-1"></i>Văn Phòng
+                                                </label>
+
+                                                <!-- NEW: Other type -->
+                                                <input type="radio" class="btn-check" name="addressType" id="addressTypeOther" value="other">
+                                                <label class="btn btn-outline-primary" for="addressTypeOther">
+                                                    <i class="bi bi-three-dots me-1"></i>Khác
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check-container">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="isDefault" name="isDefault">
+                                                <label class="form-check-label" for="isDefault">
+                                                    <i class="bi bi-star me-1"></i>Đặt làm địa chỉ mặc định
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="d-flex gap-2 justify-content-end">
+
+                                    <button type="button" id="saveAddressBtn" class="btn btn-primary" onclick="saveAddress()">
+                                        <i class="bi bi-check-circle me-1"></i>Lưu Địa Chỉ
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Address Management Card -->
+                    <div class="card" id="addressManagementSection">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-geo-alt-fill me-2"></i>Quản Lý Địa Chỉ Giao Hàng
+                            </h5>
+                            <div>
+                                <button class="btn btn-success btn-add-address" onclick="showAddressForm()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm Địa Chỉ Mới
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Address Search and Filter -->
+                            <div class="address-search-container">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-search text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control address-search-input border-start-0" id="addressSearch"
+                                           placeholder="Tìm kiếm địa chỉ theo tên, số điện thoại, địa chỉ...">
+                                </div>
+                            </div>
+
+                            <!-- Address List -->
+                            <div id="addressList"></div>
+                                <!-- Address cards will be dynamically generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===========================
+// TINHTHANHPHO.COM API - DỮ LIỆU SAU SÁP NHẬP
+// ===========================
+const API_BASE = 'https://www.tinhthanhpho.com/api/v1';
+
+// Cache data để giảm số lần gọi API
+let provincesData = [];
+let communesCache = {}; // Cache cho xã/phường
+
+// Variables for form state
+let selectedProvince = '';
+let selectedProvinceCode = '';
+let filteredCommunes = [];
+
+// ===========================
+// LOAD PROVINCES DATA FROM API
+// ===========================
+async function loadProvinces() {
+    try {
+        const url = `${API_BASE}/new-provinces?limit=100`;
+        console.log('🔄 Loading provinces from:', url);
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.error('API error:', result.message);
+            showNotification('Lỗi tải danh sách tỉnh: ' + result.message, 'error');
+            return [];
+        }
+        
+        const data = result.data || [];
+        console.log('✅ Provinces loaded:', data.length, 'provinces (sau sáp nhập 01/07/2025)');
+        if (data.length > 0) {
+            console.log('📍 Sample province:', data[0]);
+        }
+        
+        // API trả về: {success: true, data: [{code, name, type}], metadata: {total, page, limit}}
+        provincesData = data.map(p => ({
+            id: p.code,
+            code: p.code,
+            name: p.name,
+            shortName: p.name,
+            type: p.type
+        }));
+        return provincesData;
+    } catch (error) {
+        console.error('Error loading provinces:', error);
+        showNotification('Không thể tải danh sách tỉnh/thành phố!', 'error');
+        return [];
+    }
+}
+
+// ===========================
+// LOAD COMMUNES (XÃ/PHƯỜNG) BY PROVINCE CODE - SAU SÁP NHẬP
+// ===========================
+async function loadCommunes(provinceCode) {
+    // Check cache first
+    if (communesCache[provinceCode]) {
+        console.log('Using cached communes for province:', provinceCode);
+        return communesCache[provinceCode];
+    }
+    
+    try {
+        const url = `${API_BASE}/new-provinces/${provinceCode}/wards?limit=1000`;
+        console.log('Loading wards from:', url);
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.error('API error:', result.message);
+            showNotification('Lỗi tải danh sách xã/phường: ' + result.message, 'error');
+            return [];
+        }
+        
+        const wards = result.data || [];
+        
+        // API trả về: {success: true, data: [{code, name, type, province_code}], metadata: {total, page, limit}}
+        const allCommunes = wards.map(w => ({
+            id: w.code,
+            code: w.code,
+            name: w.name,
+            shortName: w.name,
+            type: w.type,
+            provinceCode: w.province_code || provinceCode
+        }));
+        
+        console.log('Wards loaded:', allCommunes.length, 'wards for province', provinceCode, '(sau sáp nhập 01/07/2025)');
+        if (allCommunes.length > 0) {
+            console.log('Sample ward:', allCommunes[0]);
+        }
+        
+        // Cache the result
+        communesCache[provinceCode] = allCommunes;
+        return allCommunes;
+    } catch (error) {
+        console.error('Error loading wards:', error);
+        showNotification('Không thể tải danh sách xã/phường!', 'error');
+        return [];
+    }
+}
+
+// ===========================
+// AUTOCOMPLETE FUNCTIONALITY - SỬ DỤNG ADDRESSKIT API
+// ===========================
+function setupAddressAutocomplete(inputId, dropdownId, dataType) {
+    console.log(`🔧 Setting up autocomplete for ${dataType}:`, inputId, dropdownId);
+    
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    
+    console.log(`🔍 Elements check:`, { 
+        input: input, 
+        inputType: typeof input,
+        dropdown: dropdown,
+        dropdownType: typeof dropdown 
+    });
+    
+    if (!input || !dropdown) {
+        console.error(`❌ Missing elements for ${dataType}:`, { input: !!input, dropdown: !!dropdown });
+        return;
+    }
+    
+    if (typeof input.addEventListener !== 'function') {
+        console.error(`❌ Input element does not have addEventListener method:`, input);
+        return;
+    }
+    
+    console.log(`✅ Autocomplete elements found for ${dataType}`);
+    
+    input.addEventListener('input', async function() {
+        console.log(`⌨️ Input event fired for ${dataType}, value:`, this.value);
+        
+        // Bỏ qua nếu đang fill form từ edit
+        if (this.getAttribute('data-filling') === 'true') {
+            console.log('⏭️ Skipping because data-filling=true');
+            return;
+        }
+        
+        const value = this.value.toLowerCase().trim();
+        dropdown.innerHTML = '';
+        
+        if (value.length === 0) {
+            console.log('⏭️ Empty value, hiding dropdown');
+            dropdown.classList.remove('show');
+            return;
+        }
+        
+        let dataToFilter = [];
+        
+        // Handle different data types
+        if (dataType === 'province') {
+            dataToFilter = provincesData;
+            console.log('📊 Filtering provinces, total available:', dataToFilter.length, 'search term:', value);
+        } else if (dataType === 'commune') {
+            if (!selectedProvinceCode) {
+                console.log('⚠️ No province selected yet');
+                showWarning(dropdown, 'Vui lòng chọn Tỉnh/Thành phố trước');
+                return;
+            }
+            dataToFilter = filteredCommunes;
+            console.log('📊 Filtering communes, total available:', dataToFilter.length, 'search term:', value);
+        }
+        
+        // Filter data - AddressKit sử dụng 'name' cho tên
+        const filtered = dataToFilter.filter(item => 
+            item.name.toLowerCase().includes(value)
+        );
+        console.log('🔍 Filtered results:', filtered.length, 'items');
+        
+        if (filtered.length > 0) {
+            console.log('📝 Creating dropdown items...');
+            filtered.slice(0, 15).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong>
+                        ${dataType === 'commune' && item.type ? `<br><small class="text-muted">${item.type}</small>` : ''}
+                    </div>
+                `;
+                div.dataset.code = item.id || item.code;
+                
+                div.addEventListener('click', async function() {
+                    console.log(`🖱️ Selected ${dataType}:`, item.name, 'code:', item.id || item.code);
+                    input.value = item.name;
+                    dropdown.classList.remove('show');
+                    dropdown.innerHTML = '';
+                    
+                    // Handle selection based on type
+                    if (dataType === 'province') {
+                        selectedProvince = item.name;
+                        selectedProvinceCode = item.id;
+                        console.log('📍 Province selected, loading wards for code:', item.id);
+                        await updateCommunesList(item.id);
+                    }
+                });
+                
+                dropdown.appendChild(div);
+            });
+            console.log('✅ Adding show class to dropdown');
+            dropdown.classList.add('show');
+            console.log('✅ Dropdown should now be visible, classes:', dropdown.className);
+        } else {
+            console.log('⚠️ No results found');
+            dropdown.classList.remove('show');
+            showWarning(dropdown, 'Không tìm thấy kết quả');
+        }
+    });
+    
+    input.addEventListener('blur', function() {
+        setTimeout(() => {
+            dropdown.classList.remove('show');
+        }, 200);
+    });
+    
+    input.addEventListener('focus', function() {
+        if (this.value.length > 0) {
+            const event = new Event('input');
+            this.dispatchEvent(event);
+        } else if (dataType === 'commune' && filteredCommunes.length > 0) {
+            // Hiển thị gợi ý một số phường/xã phổ biến khi focus
+            dropdown.innerHTML = '';
+            const suggestions = filteredCommunes.slice(0, 10);
+            
+            suggestions.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong>
+                        ${item.type ? `<br><small class="text-muted">${item.type}</small>` : ''}
+                    </div>
+                `;
+                div.dataset.code = item.id || item.code;
+                
+                div.addEventListener('click', async function() {
+                    input.value = item.name;
+                    dropdown.classList.remove('show');
+                    dropdown.innerHTML = '';
+                });
+                
+                dropdown.appendChild(div);
+            });
+            
+            dropdown.classList.add('show');
+        }
+    });
+    
+    // Handle keyboard navigation
+    let selectedIndex = -1;
+    input.addEventListener('keydown', function(e) {
+        const items = dropdown.querySelectorAll('.autocomplete-item:not(.text-muted)');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelection(items, selectedIndex);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            updateSelection(items, selectedIndex);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                items[selectedIndex].click();
+            }
+        } else if (e.key === 'Escape') {
+            dropdown.classList.remove('show');
+            selectedIndex = -1;
+        } else {
+            selectedIndex = -1;
+        }
+    });
+    
+    function updateSelection(items, index) {
+        items.forEach((item, i) => {
+            item.classList.toggle('selected', i === index);
+        });
+    }
+}
+
+function showWarning(dropdown, message) {
+    const notice = document.createElement('div');
+    notice.className = 'autocomplete-item text-muted';
+    notice.textContent = message;
+    notice.style.cursor = 'default';
+    dropdown.appendChild(notice);
+    dropdown.classList.add('show');
+}
+
+// ===========================
+// UPDATE COMMUNES LIST - Load xã/phường theo tỉnh
+// ===========================
+async function updateCommunesList(provinceCode) {
+    console.log('🔄 updateCommunesList called with code:', provinceCode);
+    const wardInput = document.getElementById('ward');
+    const wardDropdown = document.getElementById('wardDropdown');
+    
+    if (!wardInput) {
+        console.error('❌ Ward input not found');
+        return;
+    }
+    
+    // Reset ward input
+    wardInput.value = '';
+    wardDropdown.innerHTML = '';
+    wardDropdown.classList.remove('show');
+    wardInput.disabled = true;
+    wardInput.placeholder = 'Đang tải...';
+    
+    // Load communes for this province
+    console.log('📥 Loading communes for province:', provinceCode);
+    const communes = await loadCommunes(provinceCode);
+    
+    filteredCommunes = communes;
+    console.log('✅ Communes loaded:', communes.length);
+    
+    if (communes.length > 0) {
+        wardInput.disabled = false;
+        wardInput.placeholder = `Nhập xã/phường ở ${selectedProvince}...`;
+        console.log('✅ Ward input enabled');
+    } else {
+        wardInput.disabled = true;
+        wardInput.placeholder = 'Không có dữ liệu xã/phường';
+        console.warn('⚠️ No communes found for province:', provinceCode);
+    }
+}
+
+// ===========================
+// SETUP PROVINCE CHANGE HANDLER
+// ===========================
+function setupProvinceChangeHandler() {
+    const provinceInput = document.getElementById('province');
+    if (!provinceInput) return;
+    
+    provinceInput.addEventListener('blur', async function() {
+        const value = this.value.trim();
+        
+        const matchedProvince = provincesData.find(p => 
+            p.name.toLowerCase() === value.toLowerCase()
+        );
+        
+        if (matchedProvince) {
+            selectedProvince = matchedProvince.name;
+            selectedProvinceCode = matchedProvince.id;
+            await updateCommunesList(matchedProvince.id);
+        } else if (value) {
+            selectedProvince = '';
+            selectedProvinceCode = '';
+            filteredCommunes = [];
+            
+            const wardInput = document.getElementById('ward');
+            if (wardInput) {
+                wardInput.value = '';
+                wardInput.disabled = true;
+                wardInput.placeholder = 'Vui lòng chọn tỉnh/thành phố hợp lệ';
+            }
+        }
+    });
+    
+    provinceInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value || value !== selectedProvince) {
+            const wardInput = document.getElementById('ward');
+            if (wardInput && selectedProvince) {
+                wardInput.value = '';
+                wardInput.disabled = true;
+                wardInput.placeholder = 'Vui lòng chọn tỉnh/thành phố trước';
+            }
+            if (!value) {
+                selectedProvince = '';
+                selectedProvinceCode = '';
+                filteredCommunes = [];
+            }
+        }
+    });
+}
+
+// ===========================
+// API FUNCTIONS - GỌI SERVER (giữ nguyên)
+// ===========================
+
+// Load addresses from database
+function loadAddressesFromDatabase() {
+    console.log('🔄 Loading addresses from database...');
+    fetch('/KhachHang/DiaChi/GetAddresses')
+        .then(response => {
+            console.log('📡 GetAddresses response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('📦 GetAddresses data:', data);
+            if (data.success && data.data) {
+                console.log('Addresses loaded:', data.data);
+                console.log('Default addresses:', data.data.filter(a => a.isDefault));
+                renderAddressList(data.data);
+            } else {
+                renderEmptyState();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading addresses:', error);
+            renderEmptyState();
+            showNotification('Có lỗi xảy ra khi tải danh sách địa chỉ!', 'error');
+        });
+}
+
+// Save address to database
+let isSaving = false; // Prevent double-click
+function saveAddressToDatabase() {
+    console.log('💾 saveAddressToDatabase called');
+    
+    if (isSaving) {
+        console.warn('⚠️ Already saving, please wait...');
+        return;
+    }
+    
+    const form = document.getElementById('addressForm');
+    
+    if (!form) {
+        console.error('❌ Form not found');
+        return;
+    }
+
+    // Collect raw form values (don't trim to detect empty intent)
+    const rawRecipient = document.getElementById('recipientName') ? document.getElementById('recipientName').value.trim() : '';
+    const rawPhone = document.getElementById('phone') ? document.getElementById('phone').value.trim() : '';
+    const rawProvince = document.getElementById('province') ? document.getElementById('province').value.trim() : '';
+    const rawWard = document.getElementById('ward') ? document.getElementById('ward').value.trim() : '';
+    const rawDetail = document.getElementById('detailAddress') ? document.getElementById('detailAddress').value.trim() : '';
+    const rawAddressType = document.querySelector('input[name="addressType"]:checked') ? document.querySelector('input[name="addressType"]:checked').value : '';
+    const rawIsDefault = document.getElementById('isDefault') ? document.getElementById('isDefault').checked : false;
+    
+    console.log('📝 Form values:', { rawRecipient, rawPhone, rawProvince, rawWard, rawDetail, rawAddressType, rawIsDefault });
+
+    // Determine edit vs create
+    const addressId = document.getElementById('addressId') ? document.getElementById('addressId').value : '';
+    const isEdit = addressId && addressId !== '';
+
+    // Start with collected values
+    const formData = {
+        RecipientName: rawRecipient,
+        Phone: rawPhone,
+        Province: rawProvince,
+        Ward: rawWard,
+        DetailAddress: rawDetail,
+        AddressType: rawAddressType || 'home',
+        IsDefault: rawIsDefault
+    };
+
+    // If editing, merge with original so empty inputs do not overwrite existing values
+    if (isEdit) {
+        const original = (window.lastRenderedAddresses || []).find(a => String(a.id) === String(addressId)) || {};
+        console.log('Original address data:', original);
+        console.log('FormData before merge:', JSON.stringify(formData));
+
+        // If original contains only fullAddress, try to split into parts (detail, ward, province)
+        const origFull = original.fullAddress || original.detailAddress || '';
+
+        // Attempt to parse original into parts if province/ward missing
+        let parsed = { detail: '', ward: '', province: '' };
+        if (origFull) {
+            const parts = origFull.split(',').map(p => p.trim()).filter(Boolean);
+            if (parts.length >= 1) parsed.province = parts[parts.length - 1] || '';
+            if (parts.length >= 2) parsed.ward = parts[parts.length - 2] || '';
+            if (parts.length >= 3) parsed.detail = parts.slice(0, parts.length - 2).join(', ');
+            if (parts.length === 2) parsed.detail = ''; // if only ward+province stored, detail empty
+        }
+
+        // Merge: if user left a field empty, use original/parsing result
+        formData.RecipientName = formData.RecipientName || original.recipientName || '';
+        formData.Phone = formData.Phone || original.phone || '';
+        // For DetailAddress: prioritize user input, then original.detailAddress, then parsed from fullAddress
+        if (!formData.DetailAddress) {
+            formData.DetailAddress = original.detailAddress || parsed.detail || '';
+        }
+        formData.Province = formData.Province || original.province || parsed.province || '';
+        formData.Ward = formData.Ward || original.ward || parsed.ward || '';
+        formData.AddressType = formData.AddressType || original.addressType || 'home';
+        // Keep checkbox value as is
+        formData.IsDefault = rawIsDefault;
+
+        // Basic validation merging: if province/ward still empty try to extract from origFull once more
+        if ((!formData.Province || !formData.Ward) && origFull) {
+            const parts = origFull.split(',').map(p => p.trim()).filter(Boolean);
+            if (parts.length >= 1 && !formData.Province) formData.Province = parts[parts.length - 1] || formData.Province;
+            if (parts.length >= 2 && !formData.Ward) formData.Ward = parts[parts.length - 2] || formData.Ward;
+            if (!formData.DetailAddress && parts.length >= 3) formData.DetailAddress = parts.slice(0, parts.length - 2).join(', ');
+        }
+
+        console.log('FormData after merge:', JSON.stringify(formData));
+
+        // Add Id to payload
+        formData.Id = parseInt(addressId);
+    }
+
+    // Cleanup DetailAddress: remove ward and province if they appear at the end
+    // Backend will concat them again, so we must send ONLY the detail part
+    if (formData.DetailAddress && formData.Ward && formData.Province) {
+        let detail = formData.DetailAddress;
+        // Remove ", Ward, Province" or ", Province" from the end if present
+        const suffixToRemove1 = `, ${formData.Ward}, ${formData.Province}`;
+        const suffixToRemove2 = `, ${formData.Province}`;
+        const suffixToRemove3 = `, ${formData.Ward}`;
+        
+        if (detail.endsWith(suffixToRemove1)) {
+            detail = detail.substring(0, detail.length - suffixToRemove1.length);
+        } else if (detail.endsWith(suffixToRemove2)) {
+            detail = detail.substring(0, detail.length - suffixToRemove2.length);
+        } else if (detail.endsWith(suffixToRemove3)) {
+            detail = detail.substring(0, detail.length - suffixToRemove3.length);
+        }
+        
+        formData.DetailAddress = detail.trim();
+        console.log('Cleaned DetailAddress:', formData.DetailAddress);
+    }
+
+    // Validate (pass isEdit so validator can be slightly permissive in certain cases)
+    if (!validateFormData(formData, !!isEdit)) {
+        form.classList.add('was-validated');
+        const firstInvalid = form.querySelector(':invalid');
+        if (firstInvalid) {
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstInvalid.focus();
+        }
+        return;
+    }
+
+    const apiUrl = isEdit ? '/KhachHang/DiaChi/Update' : '/KhachHang/DiaChi/Create';
+
+    // Set saving flag
+    isSaving = true;
+    console.log('🚀 Calling API:', apiUrl, 'with data:', formData);
+
+    // Call API to save address
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        isSaving = false; // Reset flag
+        console.log('📥 API response:', data);
+        
+        if (data.success) {
+            showNotification(
+                isEdit 
+                    ? 'Địa chỉ đã được cập nhật thành công!' 
+                    : 'Địa chỉ đã được thêm thành công!', 
+                'success'
+            );
+            hideAddressForm();
+            loadAddressesFromDatabase(); // Reload from database
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra khi lưu địa chỉ!', 'error');
+        }
+    })
+    .catch(error => {
+        isSaving = false; // Reset flag on error
+        console.error('❌ Error saving address:', error);
+        showNotification('Có lỗi xảy ra khi lưu địa chỉ!', 'error');
+    });
+}
+
+// Delete address from database
+function deleteAddressFromDatabase(id) {
+    console.log('🗑️ Attempting to delete address ID:', id);
+    if (!confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+        console.log('❌ Delete cancelled by user');
+        return;
+    }
+    console.log('✅ Delete confirmed, calling API...');
+
+    // Use POST method with JSON body to match DeleteAddress action
+    fetch('/KhachHang/DiaChi/DeleteAddress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Id: id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Địa chỉ đã được xóa thành công!', 'success');
+            loadAddressesFromDatabase(); // Reload from database
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra khi xóa địa chỉ!', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting address:', error);
+        showNotification('Có lỗi xảy ra khi xóa địa chỉ!', 'error');
+    });
+}
+
+// Set default address in database
+function setDefaultAddressInDatabase(id) {
+    fetch(`/KhachHang/DiaChi/SetDefault/${id}`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Đã đặt làm địa chỉ mặc định!', 'success');
+            loadAddressesFromDatabase(); // Reload from database
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra!', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error setting default address:', error);
+        showNotification('Có lỗi xảy ra!', 'error');
+    });
+}
+
+// Edit address - load data from database
+function editAddressFromDatabase(id) {
+    fetch(`/KhachHang/DiaChi/GetAddress/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const address = data.data;
+                
+                // Show form
+                showAddressForm();
+                
+                // Update form title for editing
+                const formTitle = document.querySelector('#addAddressSection .card-title');
+                if (formTitle) {
+                    formTitle.innerHTML = '<i class="bi bi-pencil me-2"></i>Chỉnh Sửa Địa Chỉ';
+                }
+                
+                // Fill form with address data
+                fillFormWithAddressData(address);
+            } else {
+                showNotification('Không thể tải thông tin địa chỉ!', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading address:', error);
+            showNotification('Có lỗi xảy ra khi tải thông tin địa chỉ!', 'error');
+        });
+}
+
+// ===========================
+// FORM VALIDATION
+// ===========================
+function validateFormData(formData, isEdit = false) {
+    if (!formData.RecipientName || formData.RecipientName.length < 2) {
+        showNotification('Họ và tên phải có ít nhất 2 ký tự!', 'error');
+        return false;
+    }
+
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(formData.Phone)) {
+        showNotification('Số điện thoại phải có 10-11 chữ số!', 'error');
+        return false;
+    }
+
+    // Chỉ yêu cầu Province hoặc DetailAddress, Ward không bắt buộc khi edit
+    if (!formData.Province && !formData.DetailAddress) {
+        showNotification('Vui lòng nhập tỉnh/thành phố hoặc địa chỉ cụ thể!', 'error');
+        return false;
+    }
+
+    if (formData.DetailAddress && formData.DetailAddress.length < 5) {
+        showNotification('Địa chỉ cụ thể phải có ít nhất 5 ký tự!', 'error');
+        return false;
+    }
+
+    return true;
+}
+
+// ===========================
+// UI RENDERING FUNCTIONS
+// ===========================
+// Render danh sách địa chỉ
+function renderAddressList(addresses) {
+    const addressList = document.getElementById('addressList');
+    
+    if (!addresses || addresses.length === 0) {
+        renderEmptyState();
+        return;
+    }
+
+    // Lưu danh sách hiện tại để có thể edit tại client mà không cần gọi API lần nữa
+    window.lastRenderedAddresses = addresses.slice(); // shallow copy
+
+    // Sort addresses - default address first
+    addresses.sort((a, b) => {
+        if (a.isDefault && !b.isDefault) return -1;
+        if (!a.isDefault && b.isDefault) return 1;
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+    
+    addressList.innerHTML = addresses.map(address => {
+        const fullAddress = address.fullAddress || 
+            `${address.detailAddress}, ${address.ward}, ${address.province}`;
+        // support 'home' | 'office' | 'other'
+        const addressTypeIcon = address.addressType === 'home' 
+            ? 'bi-house-fill' 
+            : address.addressType === 'office' 
+                ? 'bi-building-fill' 
+                : 'bi-three-dots';
+        const addressTypeText = address.addressType === 'home' 
+            ? 'Nhà riêng' 
+            : address.addressType === 'office' 
+                ? 'Văn phòng' 
+                : 'Khác';
+
+        return `
+            <div class="address-card" data-address-id="${address.id}" ${address.isDefault ? 'data-default="true"' : ''} role="button" tabindex="0" aria-label="Chỉnh sửa địa chỉ của ${address.recipientName || ''}" style="cursor: pointer;">
+                <div class="card" onclick="openEditAddressFromList(${address.id})">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="card-title">
+                                    ${address.recipientName}
+                                </h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-telephone-fill me-1"></i>${address.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3')}
+                                    </span>
+                                    <span class="badge bg-secondary">
+                                        <i class="${addressTypeIcon} me-1"></i>${addressTypeText}
+                                    </span>
+                                    ${address.isDefault ? '<span class="badge bg-success">Mặc định</span>' : ''}
+                                </div>
+                                <p class="card-text">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>${fullAddress}
+                                </p>
+                            </div>
+                            <div class="btn-group-vertical">
+                                <button class="btn btn-outline-primary" onclick="event.stopPropagation(); openEditAddressFromList(${address.id})" 
+                                        title="Chỉnh sửa địa chỉ">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="event.stopPropagation(); deleteAddress(${address.id})" 
+                                        title="Xóa địa chỉ">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                                ${address.isDefault 
+                                    ? `<button class="btn btn-success" disabled title="Địa chỉ mặc định">
+                                        <i class="bi bi-star-fill"></i>
+                                    </button>`
+                                    : `<button class="btn btn-outline-secondary" onclick="event.stopPropagation(); setDefaultAddress(${address.id})" 
+                                        title="Đặt làm địa chỉ mặc định">
+                                        <i class="bi bi-star"></i>
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Click + keyboard handlers for accessibility
+    const cards = addressList.querySelectorAll('.address-card[tabindex]');
+    cards.forEach(card => {
+        // Click anywhere on the card (except buttons) opens edit
+        card.addEventListener('click', function(e) {
+            const isButton = e.target.closest('button');
+            if (isButton) return; // buttons have their own handlers
+            const id = this.getAttribute('data-address-id');
+            if (id) {
+                console.log('🖱️ Card clicked (direct handler), opening edit for ID:', id);
+                openEditAddressFromList(id);
+            }
+        });
+
+        // Keyboard support
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const id = this.getAttribute('data-address-id');
+                if (id) openEditAddressFromList(id);
+            }
+        });
+    });
+}
+
+function renderEmptyState() {
+    const addressList = document.getElementById('addressList');
+    addressList.innerHTML = `
+        <div class="text-center py-5" id="emptyAddressState">
+            <div class="mb-3">
+                <i class="bi bi-geo-alt display-1 text-muted"></i>
+            </div>
+            <h5 class="text-muted mb-2">Chưa có địa chỉ nào</h5>
+            <p class="text-muted mb-3">Thêm địa chỉ đầu tiên để bắt đầu mua sắm</p>
+            <button class="btn btn-primary" onclick="showAddressForm()">
+                <i class="bi bi-plus-circle me-1"></i>Thêm Địa Chỉ Đầu Tiên
+            </button>
+        </div>
+    `;
+}
+
+// ===========================
+// FORM MANAGEMENT FUNCTIONS
+// ===========================
+function showAddressForm() {
+    const formSection = document.getElementById('addAddressSection');
+    const managementSection = document.getElementById('addressManagementSection');
+    
+    // Show form and hide management section
+    formSection.style.display = 'block';
+    managementSection.style.display = 'none';
+    
+    // Reset form title
+    const formTitle = document.querySelector('#addAddressSection .card-title');
+    if (formTitle) {
+        formTitle.innerHTML = '<i class="bi bi-geo-alt me-2"></i>Thêm Địa Chỉ Mới';
+    }
+    
+    // Reset form
+    resetAddressForm();
+    
+    // Không cuộn tự động để tránh làm người dùng bị nhảy màn hình
+}
+
+function hideAddressForm() {
+    const formSection = document.getElementById('addAddressSection');
+    const managementSection = document.getElementById('addressManagementSection');
+    
+    // Hide form and show management section
+    formSection.style.display = 'none';
+    managementSection.style.display = 'block';
+    
+    // Không cuộn tự động để tránh làm người dùng bị nhảy màn hình
+}
+
+function resetAddressForm() {
+    const form = document.getElementById('addressForm');
+    if (form) {
+        form.reset();
+        form.classList.remove('was-validated');
+    }
+    
+    const addressIdInput = document.getElementById('addressId');
+    if (addressIdInput) {
+        addressIdInput.value = '';
+    }
+    
+    // Reset address type buttons
+    const homeInput = document.getElementById('addressTypeHome');
+    const homeLabel = document.querySelector('label[for="addressTypeHome"]');
+    const officeLabel = document.querySelector('label[for="addressTypeOffice"]');
+    const otherLabel = document.querySelector('label[for="addressTypeOther"]');
+    
+    if (homeInput) homeInput.checked = true;
+    if (homeLabel) homeLabel.classList.add('active');
+    if (officeLabel) officeLabel.classList.remove('active');
+    if (otherLabel) otherLabel.classList.remove('active');
+}
+
+function fillFormWithAddressData(address) {
+    console.log('📝 Filling form with address data:', address);
+    
+    const addressIdInput = document.getElementById('addressId');
+    const recipientNameInput = document.getElementById('recipientName');
+    const phoneInput = document.getElementById('phone');
+    const provinceInput = document.getElementById('province');
+    const wardInput = document.getElementById('ward');
+    const detailAddressInput = document.getElementById('detailAddress');
+    const isDefaultInput = document.getElementById('isDefault');
+
+    // Normalize incoming address object
+    let parsedProvince = address.province || '';
+    let parsedWard = address.ward || '';
+    let parsedDetail = address.detailAddress || '';
+
+    // Only parse from fullAddress if province/ward/detail are missing
+    if ((!parsedProvince || !parsedWard || !parsedDetail) && address.fullAddress) {
+        console.log('🔍 Parsing fullAddress:', address.fullAddress);
+        const parts = address.fullAddress.split(',').map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 1 && !parsedProvince) parsedProvince = parts[parts.length - 1];
+        if (parts.length >= 2 && !parsedWard) parsedWard = parts[parts.length - 2];
+        if (parts.length >= 3 && !parsedDetail) parsedDetail = parts.slice(0, parts.length - 2).join(', ');
+    }
+    
+    console.log('📍 Parsed values:', { parsedProvince, parsedWard, parsedDetail });
+
+    if (addressIdInput) addressIdInput.value = address.id || '';
+    if (recipientNameInput) recipientNameInput.value = address.recipientName || '';
+    if (phoneInput) phoneInput.value = address.phone || '';
+    
+    if (provinceInput) {
+        // Tạm thời disable autocomplete để không hiện dropdown khi fill form
+        provinceInput.setAttribute('data-filling', 'true');
+        
+        provinceInput.value = parsedProvince || '';
+        console.log('🏙️ Set province input:', parsedProvince);
+        
+        // Cập nhật selectedProvince và danh sách xã/phường
+        if (parsedProvince) {
+            selectedProvince = parsedProvince;
+            // Tìm province code từ API data
+            const matchedProvince = provincesData.find(p => 
+                p.name.toLowerCase() === parsedProvince.toLowerCase()
+            );
+            console.log('🔍 Matched province:', matchedProvince);
+            
+            if (matchedProvince) {
+                selectedProvinceCode = matchedProvince.id;
+                console.log('📥 Loading communes for province code:', matchedProvince.id);
+                updateCommunesList(matchedProvince.id).then(() => {
+                    // Sau khi load xong communes, set giá trị ward
+                    if (wardInput && parsedWard) {
+                        wardInput.value = parsedWard;
+                        console.log('🏘️ Set ward input:', parsedWard);
+                    }
+                });
+            } else {
+                console.warn('⚠️ Province not found in provincesData:', parsedProvince);
+                // Vẫn fill ward input nếu có
+                if (wardInput && parsedWard) {
+                    wardInput.value = parsedWard;
+                    wardInput.disabled = false;
+                }
+            }
+        }
+        
+        // Bỏ flag sau khi fill xong
+        setTimeout(() => {
+            provinceInput.removeAttribute('data-filling');
+        }, 100);
+    }
+    
+    // Ward sẽ được set bởi updateCommunesList callback
+    // KHÔNG xóa giá trị ở đây!
+    
+    if (detailAddressInput) {
+        detailAddressInput.value = parsedDetail || '';
+        console.log('📝 Set detail address:', parsedDetail);
+    }
+    if (isDefaultInput) {
+        isDefaultInput.checked = address.isDefault || false;
+        console.log('⭐ Set default:', address.isDefault);
+    }
+
+    // Set address type
+    console.log('🏠 Setting address type:', address.addressType);
+    const homeInput = document.getElementById('addressTypeHome');
+    const officeInput = document.getElementById('addressTypeOffice');
+    const otherInput = document.getElementById('addressTypeOther');
+    const homeLabel = document.querySelector('label[for="addressTypeHome"]');
+    const officeLabel = document.querySelector('label[for="addressTypeOffice"]');
+    const otherLabel = document.querySelector('label[for="addressTypeOther"]');
+    
+    if (address.addressType === 'office') {
+        if (officeInput) officeInput.checked = true;
+        if (officeLabel) officeLabel.classList.add('active');
+        if (homeLabel) homeLabel.classList.remove('active');
+        if (otherLabel) otherLabel.classList.remove('active');
+    } else if (address.addressType === 'other') {
+        if (otherInput) otherInput.checked = true;
+        if (otherLabel) otherLabel.classList.add('active');
+        if (homeLabel) homeLabel.classList.remove('active');
+        if (officeLabel) officeLabel.classList.remove('active');
+    } else {
+        if (homeInput) homeInput.checked = true;
+        if (homeLabel) homeLabel.classList.add('active');
+        if (officeLabel) officeLabel.classList.remove('active');
+        if (otherLabel) otherLabel.classList.remove('active');
+    }
+}
+
+// ===========================
+// NOTIFICATION FUNCTION
+// ===========================
+function showNotification(message, type = 'success') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification-alert');
+    existingNotifications.forEach(notification => notification.remove());
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show notification-alert`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 400px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Trigger animation
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
+}
+
+// ===========================
+// PUBLIC API FUNCTIONS
+// ===========================
+// These functions are called from HTML onclick events
+function saveAddress() {
+    saveAddressToDatabase();
+}
+
+function deleteAddress(id) {
+    deleteAddressFromDatabase(id);
+}
+
+function setDefaultAddress(id) {
+    setDefaultAddressInDatabase(id);
+}
+
+function editAddress(id) {
+    editAddressFromDatabase(id);
+}
+
+function loadAddressList() {
+    loadAddressesFromDatabase();
+}
+
+// ===========================
+// SEARCH FUNCTIONALITY
+// ===========================
+function setupAddressSearch() {
+    const searchInput = document.getElementById('addressSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const addressCards = document.querySelectorAll('.address-card');
+            
+            addressCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+    }
+}
+
+// ===========================
+// THEME TOGGLE FUNCTIONALITY
+// ===========================
+function initializeThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (themeToggle && themeIcon) {
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        
+        // Update icon based on current theme
+        updateThemeIcon(savedTheme, themeIcon);
+        
+        // Add click event listener
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme, themeIcon);
+        });
+    }
+}
+
+function updateThemeIcon(theme, iconElement) {
+    if (iconElement) {
+        if (theme === 'dark') {
+            iconElement.className = 'bi bi-moon-fill text-white';
+        } else {
+            iconElement.className = 'bi bi-sun-fill text-white';
+        }
+    }
+}
+
+// ===========================
+// INITIALIZATION
+// ===========================
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 DiaChi page initialized');
+    
+    // Load provinces data first
+    console.log('📍 Step 1: Loading provinces...');
+    await loadProvinces();
+    
+    // Setup autocomplete for province and commune (xã/phường)
+    setupAddressAutocomplete('province', 'provinceDropdown', 'province');
+    setupAddressAutocomplete('ward', 'wardDropdown', 'commune');
+
+    // Ensure save button always wired (in case inline handler is blocked)
+    const saveBtn = document.getElementById('saveAddressBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveAddressToDatabase();
+        });
+    }
+    
+    // Setup province change handler
+    setupProvinceChangeHandler();
+
+    // Load address list from database on page load
+    loadAddressesFromDatabase();
+
+    // Setup address search
+    setupAddressSearch();
+
+    // Handle address type selection styling
+    const addressTypeButtons = document.querySelectorAll('.btn-check');
+    addressTypeButtons.forEach(button => {
+        button.addEventListener('change', function() {
+            const labels = document.querySelectorAll('#addAddressSection .btn-outline-primary');
+            labels.forEach(label => label.classList.remove('active'));
+            
+            if (this.checked) {
+                const label = document.querySelector(`label[for="${this.id}"]`);
+                if (label) label.classList.add('active');
+            }
+        });
+    });
+    
+    // Set default active state for home address
+    const homeLabel = document.querySelector('label[for="addressTypeHome"]');
+    if (homeLabel) homeLabel.classList.add('active');
+
+    // Delegate clicks inside address list
+    const addressListContainer = document.getElementById('addressList');
+    if (addressListContainer) {
+        addressListContainer.addEventListener('click', function(e) {
+            // Nếu click vào button, để button xử lý onclick riêng
+            const btn = e.target.closest('button');
+            if (btn && addressListContainer.contains(btn)) {
+                // Button có onclick riêng, không xử lý ở đây
+                return;
+            }
+
+            // Nếu click vào card (không phải button)
+            const card = e.target.closest('.address-card');
+            if (card && addressListContainer.contains(card)) {
+                const id = card.getAttribute('data-address-id');
+                if (id) {
+                    console.log('🖱️ Card clicked, opening edit for ID:', id);
+                    openEditAddressFromList(id);
+                }
+            }
+        });
+
+        addressListContainer.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const card = e.target.closest('.address-card');
+                if (card && addressListContainer.contains(card)) {
+                    e.preventDefault();
+                    const id = card.getAttribute('data-address-id');
+                    if (id) openEditAddressFromList(id);
+                }
+            }
+        }, true);
+    }
+});
+
+// Mở form chỉnh sửa dùng dữ liệu đã tải
+function openEditAddressFromList(id) {
+    console.log('✏️ Opening edit form for address ID:', id);
+    try {
+        const addresses = window.lastRenderedAddresses || [];
+        console.log('📋 Available addresses:', addresses.length);
+        const address = addresses.find(a => String(a.id) === String(id));
+        if (!address) {
+            editAddress(id);
+            return;
+        }
+
+        showAddressForm();
+        fillFormWithAddressData({
+            id: address.id,
+            recipientName: address.recipientName || '',
+            phone: address.phone || '',
+            province: address.province || '',
+            ward: address.ward || '',
+            detailAddress: address.detailAddress || '',
+            fullAddress: address.fullAddress || '',
+            isDefault: !!address.isDefault,
+            addressType: address.addressType || 'home'
+        });
+
+        const formTitle = document.querySelector('#addAddressSection .card-title');
+        if (formTitle) {
+            formTitle.innerHTML = '<i class="bi bi-pencil me-2"></i>Chỉnh Sửa Địa Chỉ';
+        }
+    } catch (err) {
+        console.error('openEditAddressFromList error', err);
+        editAddress(id);
+    }
+}
+</script>

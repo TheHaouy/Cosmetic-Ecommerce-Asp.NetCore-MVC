@@ -1,0 +1,62 @@
+.section-title {
+    font-size: 0.95rem;
+    color: #495057;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.attribute-card {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.attribute-card:hover {
+    border-color: #5a9367 !important;
+    box-shadow: 0 2px 8px rgba(90, 147, 103, 0.15);
+}
+
+.attribute-card .card-title {
+    color: #495057;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.form-check {
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.form-check:hover {
+    background-color: #f8f9fa;
+}
+
+.form-check-input:checked {
+    background-color: #5a9367;
+    border-color: #5a9367;
+}
+
+.form-check-label {
+    font-size: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.attribute-checkbox:checked + label {
+    font-weight: 600;
+    color: #2c5f2d;
+}
+
+/* Variant list styles */
+.variant-item {
+    transition: all 0.2s ease;
+}
+
+.variant-item:hover {
+    background-color: #f8f9fa !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.variant-item.border-success {
+    border-width: 2px !important;
+}

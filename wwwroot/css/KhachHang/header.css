@@ -1,0 +1,1470 @@
+/* ==================== HEADER STYLES ==================== */
+/*moi*/
+:root {
+    --primary-green: #2d5016;
+    --secondary-green: #4a7c59;
+    --light-green: #6b8e23;
+    --accent-green: #9acd32;
+    --light-bg: #f0f8e8;
+    --text-dark: #2c3e50;
+    --text-light: #ffffff;
+}
+
+/* QUAN TRỌNG: Tắt backdrop cho navbar collapse và dropdown */
+.navbar-collapse {
+    position: relative !important;
+}
+
+/* Xóa TẤT CẢ backdrop trên toàn trang - NUCLEAR OPTION */
+.modal-backdrop,
+.dropdown-backdrop,
+.offcanvas-backdrop,
+div[class*="backdrop"],
+div[class^="backdrop"],
+[data-bs-backdrop],
+body > div.fade.show,
+body > div[class*="backdrop"] {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    z-index: -9999 !important;
+}
+
+/* Chặn bất kỳ div nào có position:fixed và background color */
+body > div[style*="position: fixed"][style*="background"],
+body > div[style*="position:fixed"][style*="background"] {
+    display: none !important;
+}
+
+/* Header Container */
+.header-container {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 15px rgba(45, 80, 22, 0.2);
+}
+
+/* Main Navbar */
+.main-navbar {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green)) !important;
+    padding: 12px 0;
+    border-bottom: 2px solid var(--accent-green);
+}
+
+/* Brand Section */
+.navbar-brand {
+    color: var(--text-light) !important;
+    font-weight: bold;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Lobster', cursive;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    color: var(--accent-green) !important;
+    transform: scale(1.02);
+}
+
+.navbar-brand img {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--accent-green);
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: rotate(360deg);
+}
+
+/* Search Container */
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+    margin: 0 20px;
+}
+
+.search-form {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid var(--accent-green);
+    border-radius: 25px 0 0 25px;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 10px rgba(154, 205, 50, 0.3);
+    background: white;
+}
+
+.search-btn {
+    padding: 12px 20px;
+    background: var(--accent-green);
+    border: 2px solid var(--accent-green);
+    border-radius: 100px 0 0 100px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.search-btn:hover {
+    background: var(--light-green);
+    border-color: var(--light-green);
+    transform: translateX(2px);
+}
+
+/* Navigation Links */
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.nav-link:hover::before {
+    left: 100%;
+}
+
+.nav-link:hover {
+    color: var(--accent-green) !important;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* User Actions - Chưa đăng nhập */
+.user-actions-guest {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-login, .btn-register {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.btn-login {
+    background: transparent;
+    color: var(--text-light);
+    border-color: var(--text-light);
+}
+
+.btn-login:hover {
+    background: var(--text-light);
+    color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+.btn-register {
+    background: var(--accent-green);
+    color: var(--text-light);
+    border-color: var(--accent-green);
+}
+
+.btn-register:hover {
+    background: var(--light-green);
+    border-color: var(--light-green);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
+}
+
+/* User Actions - Đã đăng nhập */
+.user-actions-logged {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Bootstrap Button Overrides for Cart and User */
+.user-actions-logged .btn {
+    border-radius: 25px;
+    font-weight: 500;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+}
+
+.user-actions-logged .btn-outline-success {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.user-actions-logged .btn-outline-success:hover {
+    background-color: var(--accent-green);
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+}
+
+.user-actions-logged .btn-outline-primary {
+    border-color: var(--text-light);
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-actions-logged .btn-outline-primary:hover {
+    background-color: var(--text-light);
+    border-color: var(--text-light);
+    color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+/* User Display Name Styling */
+.user-display-name {
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* User Avatar in Button */
+.user-avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-green);
+}
+
+/* Cart Button Styling */
+.cart-button {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 25px !important;
+    padding: 8px 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    color: white !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    font-weight: 500 !important;
+}
+
+.cart-button:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Cart Count Badge */
+.cart-count-badge {
+    background: white !important;
+    color: #2d5016 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    margin-left: 8px !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.cart-count-badge:not([style*="display: none"]) {
+    display: inline-flex !important;
+}
+
+/* Remove old cart badge styles */
+#cartCount {
+    animation: none;
+}
+
+/* User Dropdown */
+.user-dropdown {
+    position: relative;
+}
+
+/* Remove conflicting dropdown styles and use Bootstrap's */
+.dropdown-menu {
+    background: white !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    min-width: 200px !important;
+    border: 1px solid var(--accent-green) !important;
+    margin-top: 8px !important;
+    /* Remove custom opacity/visibility rules that conflict with Bootstrap */
+}
+
+.dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 12px 20px !important;
+    color: var(--text-dark) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--light-bg) !important;
+    color: var(--primary-green) !important;
+    padding-left: 25px !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #ffe6e6 !important;
+    color: #e74c3c !important;
+}
+
+.dropdown-item i {
+    width: 18px !important;
+    text-align: center !important;
+}
+
+/* Logout Form Button */
+.dropdown-item[type="submit"] {
+    width: 100% !important;
+    text-align: left !important;
+    border: none !important;
+    background: none !important;
+    padding: 12px 20px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Remove custom dropdown styles that conflict with Bootstrap */
+/* Remove or comment out these conflicting styles:
+.user-info, .dropdown-icon, .user-dropdown.active styles
+*/
+
+/* ==================== GRID CATEGORY DROPDOWN STYLES ==================== */
+
+.category-dropdown {
+    position: relative;
+}
+
+/* Ẩn TOÀN BỘ backdrop trên mobile - bao gồm cả Bootstrap dropdown backdrop */
+@media (max-width: 991px) {
+    /* Ẩn backdrop của Bootstrap dropdown */
+    .dropdown-backdrop {
+        display: none !important;
+    }
+    
+    /* Ẩn backdrop được tạo bởi Bootstrap 5 */
+    body > .modal-backdrop {
+        display: none !important;
+    }
+
+    /* Ẩn nút đóng (X) của offcanvas/navbar collapse trên mobile */
+    .navbar-collapse .btn-close,
+    .offcanvas-header .btn-close,
+    .navbar-toggler-close,
+    button.btn-close {
+        display: none !important;
+    }
+
+    /* Ẩn offcanvas header nếu có */
+    .navbar-collapse .offcanvas-header {
+        display: none !important;
+    }
+}
+
+/* Category Dropdown Menu - Grid Layout */
+.category-dropdown-menu {
+    background: white !important;
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    padding: 24px !important;
+    margin-top: 8px !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    display: inline-grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 12px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: min(calc(200px * 6 + 12px * 5 + 48px), 90vw) !important;
+    width: auto !important;
+}
+
+/* Show dropdown with grid layout when active */
+.category-dropdown-menu.show {
+    display: grid !important;
+    animation: dropdownShow 0.3s ease-out;
+}
+
+/* Hide dropdown by default */
+.category-dropdown-menu:not(.show) {
+    display: none !important;
+}
+
+@keyframes dropdownShow {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+/* Category Item Wrapper */
+.category-item-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Category Items - Grid Cards */
+.category-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border: 2px solid transparent !important;
+    text-decoration: none !important;
+    color: var(--text-dark) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    gap: 8px !important;
+    text-align: left !important;
+    min-height: auto !important;
+}
+
+.category-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.category-item:hover::before {
+    opacity: 0.1;
+}
+
+.category-item:hover {
+    background: white !important;
+    border-color: var(--accent-green) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 20px rgba(154, 205, 50, 0.25) !important;
+    color: var(--primary-green) !important;
+}
+
+/* Featured "All Products" Item */
+.category-item.featured-all {
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green)) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: 600 !important;
+    grid-column: auto !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    padding: 12px 20px !important;
+    min-height: auto !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+.category-item.featured-all::before {
+    background: white;
+    opacity: 0;
+}
+
+.category-item.featured-all:hover::before {
+    opacity: 0.15;
+}
+
+.category-item.featured-all:hover {
+    background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 10px 30px rgba(45, 80, 22, 0.3) !important;
+}
+
+.category-item.featured-all .category-icon {
+    display: none !important;
+}
+
+.category-item.featured-all .category-name {
+    color: white !important;
+    font-size: 15px !important;
+}
+
+.category-item.featured-all .category-arrow {
+    color: white !important;
+}
+
+/* Category Icon */
+.category-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(154, 205, 50, 0.1), rgba(107, 142, 35, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--accent-green);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.category-item:hover .category-icon {
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green));
+    color: white;
+    transform: rotate(5deg) scale(1.1);
+}
+
+/* Category Name */
+.category-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    line-height: 1.4;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.category-item:hover .category-name {
+    color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+/* Category Arrow */
+.category-arrow {
+    font-size: 12px;
+    color: #bbb;
+    transition: all 0.3s ease;
+    opacity: 0;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.category-item:hover .category-arrow {
+    color: var(--accent-green);
+    opacity: 1;
+}
+
+/* Show chevron-down for items with children */
+.category-item.has-children .category-arrow {
+    opacity: 1;
+    color: var(--accent-green);
+}
+
+.category-item.has-children:hover .category-arrow {
+    transform: rotate(180deg);
+}
+
+/* ==================== CATEGORY CHILDREN DROPDOWN (XỔ XUỐNG) ==================== */
+
+/* Container for children dropdown */
+.category-children-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    margin-top: -2px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    border: 2px solid var(--accent-green);
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    pointer-events: none; /* Không chiếm không gian khi ẩn */
+}
+
+/* Show children dropdown on hover - chỉ khi hover vào danh mục cha */
+.category-item-wrapper:hover .category-children-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto; /* Cho phép tương tác khi hiển thị */
+}
+
+/* Keep dropdown visible when hovering over it */
+.category-children-dropdown:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Đảm bảo danh mục cha không bị che khuất bởi dropdown con */
+.category-item-wrapper {
+    z-index: auto;
+}
+
+.category-item-wrapper:hover {
+    z-index: 1002;
+}
+
+/* Children List */
+.children-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Child Item */
+.child-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.child-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent-green);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    border-radius: 0 3px 3px 0;
+}
+
+.child-item:hover {
+    background: linear-gradient(90deg, rgba(154, 205, 50, 0.15), rgba(154, 205, 50, 0.05));
+    color: var(--primary-green);
+    padding-left: 15px;
+}
+
+.child-item:hover::before {
+    transform: scaleY(1);
+}
+
+.child-item i {
+    font-size: 12px;
+    color: var(--accent-green);
+    transition: transform 0.3s ease;
+}
+
+.child-item:hover i {
+    transform: translateX(3px);
+    color: var(--light-green);
+}
+
+/* Dropdown Divider */
+.dropdown-divider {
+    margin: 0 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+    grid-column: 1 / -1 !important;
+}
+
+/* Empty State */
+.dropdown-item-text {
+    grid-column: 1 / -1 !important;
+    padding: 40px 20px !important;
+}
+
+/* Custom Scrollbar for Category Dropdown */
+.category-dropdown-menu::-webkit-scrollbar,
+.category-children-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.category-dropdown-menu::-webkit-scrollbar-track,
+.category-children-dropdown::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+    margin: 8px 0;
+}
+
+.category-dropdown-menu::-webkit-scrollbar-thumb,
+.category-children-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green));
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.category-dropdown-menu::-webkit-scrollbar-thumb:hover,
+.category-children-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+}
+
+/* Firefox Scrollbar */
+.category-dropdown-menu,
+.category-children-dropdown {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-green) #f8f9fa;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .category-dropdown-menu {
+        position: fixed !important;
+        left: 15px !important;
+        right: 15px !important;
+        top: auto !important;
+        transform: none !important;
+        margin-top: 8px !important;
+        max-width: none !important;
+        min-width: auto !important;
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        padding: 16px !important;
+        gap: 12px !important;
+        z-index: 1050 !important; /* Cao hơn Bootstrap backdrop (1040) */
+        pointer-events: auto !important; /* Đảm bảo nhận được click events */
+    }
+    
+    .category-item {
+        padding: 12px 10px !important;
+        min-height: 100px !important;
+        cursor: pointer !important;
+        pointer-events: auto !important; /* Đảm bảo items có thể click */
+    }
+
+    /* Children dropdown dạng bottom sheet trên mobile */
+    .category-children-dropdown {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -100% !important; /* Bắt đầu từ dưới màn hình */
+        top: auto !important;
+        transform: none !important;
+        background: white !important;
+        border-radius: 20px 20px 0 0 !important;
+        box-shadow: 0 -5px 30px rgba(0,0,0,0.3) !important;
+        padding: 20px !important;
+        padding-top: 40px !important; /* Space cho close button */
+        z-index: 10000 !important;
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+        transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        border: none !important;
+        margin-top: 0 !important;
+    }
+
+    /* Hiển thị children dropdown - slide up từ dưới */
+    .category-children-dropdown.show {
+        bottom: 0 !important;
+    }
+
+    /* Thêm close button cho children dropdown trên mobile */
+    .category-children-dropdown::before {
+        content: '\f00d'; /* Font Awesome times icon */
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        color: var(--text-dark);
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f0;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .category-children-dropdown::before:hover {
+        background: var(--accent-green);
+        color: white;
+    }
+
+    /* Thêm handle bar cho bottom sheet */
+    .category-children-dropdown::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: #ddd;
+        border-radius: 2px;
+    }
+
+    /* Backdrop cho children dropdown */
+    .children-dropdown-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .children-dropdown-backdrop.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Điều chỉnh children list trên mobile */
+    .category-children-dropdown .children-list {
+        gap: 8px;
+    }
+
+    .category-children-dropdown .child-item {
+        padding: 12px 15px;
+        font-size: 15px;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+
+    .category-children-dropdown .child-item:active {
+        background: var(--light-bg);
+    }
+
+    .category-item.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(74, 124, 89, 0.1);
+        border-radius: 12px;
+        pointer-events: none;
+    }
+    
+    .category-icon {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 20px !important;
+    }
+    
+    .category-name {
+        font-size: 13px !important;
+    }
+    
+    .category-item.featured-all {
+        grid-column: 1 / -1 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .category-dropdown-menu {
+        left: 10px !important;
+        right: 10px !important;
+        grid-template-columns: 1fr !important; /* 1 cột full width trên mobile nhỏ */
+        padding: 12px !important;
+        gap: 10px !important;
+    }
+    
+    .category-item {
+        padding: 15px 12px !important;
+        min-height: auto !important; /* Auto height để text tự nhiên */
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+    }
+    
+    .category-icon {
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 18px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .category-name {
+        font-size: 14px !important;
+        text-align: left !important;
+        flex: 1 !important;
+    }
+
+    /* Featured all item trên mobile nhỏ */
+    .category-item.featured-all {
+        justify-content: center !important;
+    }
+}
+
+/* ==================== LOGOUT MODAL STYLES ==================== */
+
+/* Modal Backdrop */
+.logout-modal .modal-backdrop {
+    background-color: rgba(45, 80, 22, 0.6) !important;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal Dialog */
+.logout-modal .modal-dialog {
+    max-width: 420px;
+    margin: 1.75rem auto;
+}
+
+/* Modal Content */
+.logout-modal .modal-content {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    position: relative;
+}
+
+.logout-modal .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-green), var(--light-green));
+}
+
+/* Modal Header */
+.logout-modal .modal-header {
+    background: linear-gradient(135deg, var(--light-bg) 0%, rgba(154, 205, 50, 0.1) 100%) !important;
+    border-bottom: 1px solid rgba(154, 205, 50, 0.2) !important;
+    padding: 20px 25px 15px !important;
+    border-radius: 0 !important;
+}
+
+.logout-modal .modal-title {
+    color: var(--primary-green) !important;
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin: 0 !important;
+}
+
+.logout-modal .modal-title i {
+    color: #f39c12 !important;
+    font-size: 1.4rem !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Modal Body */
+.logout-modal .modal-body {
+    padding: 25px !important;
+    text-align: center;
+    background: white;
+}
+
+.logout-modal .modal-body p {
+    color: var(--text-dark) !important;
+    font-size: 1.1rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 0 !important;
+    font-weight: 500;
+}
+
+/* Modal Footer (Custom styled div) */
+.logout-modal .modal-content > div:last-child {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border-top: 1px solid rgba(154, 205, 50, 0.2) !important;
+    padding: 20px 25px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+/* Button Styles */
+.logout-modal .btn {
+    border-radius: 25px !important;
+    font-weight: 600 !important;
+    padding: 12px 30px !important;
+    font-size: 0.95rem !important;
+    border: 2px solid !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    /* min-width: 120px !important; */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.logout-modal .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.logout-modal .btn:hover::before {
+    left: 100%;
+}
+
+/* Cancel Button */
+.logout-modal .btn-cancel {
+    background: white !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+.logout-modal .btn-cancel:hover {
+    background: #f8f9fa !important;
+    color: #495057 !important;
+    border-color: #adb5bd !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2) !important;
+}
+
+/* Confirm Button */
+.logout-modal .btn-confirm {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    color: white !important;
+    border-color: #dc3545 !important;
+}
+
+.logout-modal .btn-confirm:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a) !important;
+    border-color: #bd2130 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
+}
+
+.logout-modal .btn-confirm:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Button Icons */
+.logout-modal .btn i {
+    font-size: 0.9rem !important;
+    transition: transform 0.3s ease !important;
+}
+
+.logout-modal .btn:hover i {
+    transform: scale(1.1) !important;
+}
+
+/* Loading State for Confirm Button */
+.logout-modal .btn-confirm.loading {
+    pointer-events: none !important;
+    opacity: 0.8 !important;
+}
+
+.logout-modal .btn-confirm.loading i {
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Modal Animation */
+.logout-modal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    transform: translate(0, -50px) scale(0.9);
+}
+
+.logout-modal.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .logout-modal .modal-dialog {
+        margin: 1rem;
+        max-width: none;
+    }
+    
+    .logout-modal .modal-content > div:last-child {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .logout-modal .btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .logout-modal .modal-header {
+        padding: 18px 20px 12px;
+    }
+    
+    .logout-modal .modal-body {
+        padding: 20px;
+    }
+    
+    .logout-modal .modal-body p {
+        font-size: 1rem;
+    }
+    
+    .logout-modal .modal-title {
+        font-size: 1.15rem;
+    }
+}
+
+/* Enhanced Visual Effects */
+.logout-modal .modal-content {
+    animation: modalSlideIn 0.4s ease-out;
+}
+
+@keyframes modalSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Focus States */
+.logout-modal .btn:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(154, 205, 50, 0.3) !important;
+}
+
+.logout-modal .btn-confirm:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .logout-modal .modal-dialog,
+    .logout-modal .btn,
+    .logout-modal .btn::before,
+    .logout-modal .modal-title i {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ==================== SEARCH SUGGESTIONS STYLES ==================== */
+
+/* Search Wrapper */
+.search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Search Suggestions Container */
+.search-suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom Scrollbar for Suggestions */
+.search-suggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-suggestions::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+    margin: 8px 0;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-green), var(--light-green));
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
+}
+
+/* Suggestion Item */
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+    background: linear-gradient(90deg, rgba(154, 205, 50, 0.08), rgba(154, 205, 50, 0.15));
+    padding-left: 20px;
+}
+
+/* Suggestion Image */
+.suggestion-image {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.suggestion-item:hover .suggestion-image {
+    border-color: var(--accent-green);
+    transform: scale(1.05);
+}
+
+.suggestion-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Suggestion Content */
+.suggestion-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.suggestion-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggestion-item:hover .suggestion-name {
+    color: var(--primary-green);
+}
+
+/* Highlight matching text */
+.search-highlight {
+    background: linear-gradient(120deg, rgba(154, 205, 50, 0.3) 0%, rgba(154, 205, 50, 0.5) 100%);
+    color: var(--primary-green);
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.suggestion-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.suggestion-category {
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+.suggestion-price {
+    color: var(--primary-green);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Loading State */
+.suggestion-loading {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.suggestion-loading i {
+    margin-right: 8px;
+    color: var(--accent-green);
+}
+
+/* No Results */
+.no-suggestions {
+    padding: 30px 20px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.no-suggestions i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.no-suggestions span {
+    font-size: 0.95rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .search-container {
+        max-width: 100%;
+        margin: 10px 0;
+    }
+
+    .search-suggestions {
+        max-height: 300px;
+    }
+
+    .suggestion-item {
+        padding: 10px 12px;
+    }
+
+    .suggestion-image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .suggestion-name {
+        font-size: 0.9rem;
+    }
+
+    .suggestion-meta {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-suggestions {
+        top: calc(100% + 5px);
+        left: -10px;
+        right: -10px;
+        max-height: 250px;
+    }
+
+    .suggestion-item {
+        padding: 8px 10px;
+        gap: 10px;
+    }
+
+    .suggestion-image {
+        width: 45px;
+        height: 45px;
+    }
+
+    .suggestion-name {
+        font-size: 0.85rem;
+    }
+
+    .suggestion-category {
+        font-size: 0.75rem;
+        padding: 1px 6px;
+    }
+
+    .suggestion-price {
+        font-size: 0.85rem;
+    }
+}

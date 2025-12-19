@@ -1,0 +1,313 @@
+﻿@model List<Final_VS1.Areas.KhachHang.Models.CartItem>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/KhachHang/Views/Shared/_Layout_KhachHang.cshtml";
+}
+@section Styles {
+    <link href="~/css/KhachHang/giohang.css" rel="stylesheet" asp-append-version="true">
+    <style>
+        /* Hover effects for modal buttons */
+        #confirmDeleteModal .modal-footer .btn:hover,
+        #confirmDeleteAllModal .modal-footer .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        #confirmDeleteBtn:hover,
+        #confirmDeleteAllBtn:hover {
+            background: #c82333 !important;
+        }
+        
+        #confirmDeleteModal .modal-footer .btn:first-child:hover,
+        #confirmDeleteAllModal .modal-footer .btn:first-child:hover {
+            background: #e9ecef !important;
+        }
+        
+        /* Smooth animation for modal */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+        }
+    </style>
+}
+
+<div class="container-fluid px-0" style="padding:0 !important; margin:0 !important;">
+@Html.AntiForgeryToken()
+<a href="#" class="continue-shopping" id="btnContinueShopping"> Tiếp tục mua hàng</a>
+
+
+    <h5 class="mb-4" id="cartTitle" style="font-weight: 600;">Giỏ hàng</h5>
+
+    <!-- TÁCH ROW NÚT RA -->
+    <div class="row mb-2">
+        <div class="col-lg-8 col-12 ps-0">
+            <button id="btnSelectAll" class="btn btn-sm btn-outline-primary">Chọn tất cả</button>
+            <button id="btnDeleteAll" class="btn btn-sm btn-danger" style="display:none; margin-left:8px;">Xóa tất cả</button>
+        </div>
+    </div>
+
+    <!-- PHẦN CHÍNH: bảng sản phẩm + hóa đơn -->
+<div class="cart-wrapper">
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-8 col-12 product-box ">
+            <table class="cart-table w-100">
+                <thead>
+    <tr>
+        <th scope="col" style="width:40px; padding:12px 0;"></th>
+        <th scope="col" class="product-col">Sản phẩm</th>
+        <th scope="col" style="width:130px; padding:12px 0;">Giá tiền</th>
+        <th scope="col" style="width:115px; padding:12px 0;">Số lượng</th>
+        <th scope="col" style="width:130px; padding:12px 0;">Thành tiền</th>
+        <th scope="col" style="width:60px; padding:12px 0;"></th>
+    </tr>
+</thead>
+<tbody id="cartBodyRazor">
+    @if (Model != null && Model.Count > 0)
+    {
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var item = Model[i];
+            // Debug: Log LinkAnh value
+            @* Debug: @item.TenSanPham - LinkAnh: @item.LinkAnh *@
+            <tr data-row-index="@i" data-id-bien-the="@item.IdBienThe">
+                <td><input type="checkbox" class="cart-select-item" data-row-index="@i" checked /></td>
+                <td class="product-col">
+                    <div class="product-cell">
+                        <a href="@Url.Action("Index", "ChiTiet", new { area = "KhachHang", id = item.IdSanPham })" class="product-img-link">
+                            <img src="@(string.IsNullOrEmpty(item.LinkAnh) ? "/images/noimage.jpg" : (item.LinkAnh.StartsWith("http://") || item.LinkAnh.StartsWith("https://") ? item.LinkAnh : (item.LinkAnh.StartsWith("/") ? item.LinkAnh : "/" + item.LinkAnh)))" 
+                                 alt="@item.TenSanPham" 
+                                 class="product-img" 
+                                 data-row-index="@i" 
+                                 onerror="this.onerror=null; this.src='/images/noimage.jpg';" 
+                                 data-original-src="@item.LinkAnh" />
+                        </a>
+                        <div class="product-info">
+                            <a href="@Url.Action("Index", "ChiTiet", new { area = "KhachHang", id = item.IdSanPham })" class="cart-product-name-link">
+                                <strong class="cart-product-name">@item.TenSanPham</strong>
+                            </a>
+                            
+                            @if (item.ThuocTinhs != null && item.ThuocTinhs.Any())
+                            {
+                                <div class="product-variants-container" data-row-index="@i" data-id-san-pham="@item.IdSanPham" data-id-bien-the="@item.IdBienThe">
+                                    @foreach (var thuocTinh in item.ThuocTinhs)
+                                    {
+                                        <div class="variant-item" data-attr-name="@thuocTinh.Key">
+                                            <div class="variant-display">
+                                                <span class="variant-name">@thuocTinh.Key:</span>
+                                                <span class="variant-value">@thuocTinh.Value</span>
+                                                <i class="fas fa-chevron-down variant-arrow"></i>
+                                            </div>
+                                            <div class="variant-dropdown" data-row-index="@i" data-thuoc-tinh="@thuocTinh.Key">
+                                                <div class="variant-option selected" data-value="@thuocTinh.Value">@thuocTinh.Value</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="product-desc">@item.TenBienThe</div>
+                            }
+                        </div>
+                    </div>
+                </td>
+                <td><span class="cart-product-price" data-price="@item.Gia">@String.Format("{0:N0} ₫", item.Gia)</span></td>
+                <td>
+                    <div class="quantity-wrapper">
+                        <input type="number" class="quantity-input" min="1" max="99" value="@item.SoLuong" data-row-index="@i" readonly />
+                        <div class="quantity-arrows">
+                            <button type="button" class="quantity-arrow quantity-up" data-row-index="@i"></button>
+                            <button type="button" class="quantity-arrow quantity-down" data-row-index="@i"></button>
+                        </div>
+                    </div>
+                </td>
+                <td class="cart-product-total" data-price="@item.Gia">@String.Format("{0:N0} ₫", item.Gia * item.SoLuong)</td>
+                <td>
+                    <button class="btn-delete" data-row-index="@i" aria-label="Xóa sản phẩm">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="6" style="text-align:center;">Không có sản phẩm nào trong giỏ hàng.</td>
+        </tr>
+    }
+</tbody>
+
+
+            </table>
+        </div>
+
+        <!-- HÓA ĐƠN -->
+        <div class="col-lg-4 col-12">
+            <div class="summary-card">
+                <div class="summary-title">Hóa đơn của bạn</div>
+                <div class="summary-row">
+                    <span>Tạm tính:</span>
+                    <strong id="subtotal">1.149.000 ₫</strong>
+                </div>
+                <div class="summary-row" style="text-transform: uppercase;font-size: 20px; font-weight: 700; color: #d33838; border-top: 1px solid #ddd; padding-top: 10px;">
+                    <span>Tổng cộng:</span>
+                    <strong id="total">1.149.000 ₫</strong>
+                </div>
+                <!-- ✅ THÊM id="btnCheckout" TẠI ĐÂY -->
+                <button type="button" id="btnCheckout" class="btn btn-checkout mt-3">Tiến hành đặt hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal thông báo đặt hàng thành công -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderSuccessLabel">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Đặt hàng thành công!
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fas fa-gift text-4xl mb-3" style="color: var(--accent-green);"></i>
+                    <p>Bạn đã đặt hàng thành công!</p>
+                    <p>Cảm ơn bạn đã mua sắm tại <strong style="color: var(--primary-green);">LITTLEFISH</strong>.</p>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="fas fa-thumbs-up mr-2"></i>Hoàn tất
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thông báo giỏ hàng trống -->
+<div class="modal fade" id="emptyCartModal" tabindex="-1" aria-labelledby="emptyCartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: 3px solid var(--accent-green);">
+            <div class="modal-header" style="background: var(--gradient-green); border-radius: 17px 17px 0 0; border: none; position: relative;">
+                <h5 class="modal-title" id="emptyCartLabel" style="color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 10px;"></i>
+                    THÔNG BÁO
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; width: 35px; height: 35px;"></button>
+            </div>
+            <div class="modal-body" style="padding: 40px 30px; text-align: center; background: white;">
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-shopping-cart" style="font-size: 60px; color: var(--accent-green); opacity: 0.6;"></i>
+                </div>
+                <p style="font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 10px; line-height: 1.4;">
+                    Giỏ hàng của bạn hiện đang không có mặt hàng nào.
+                </p>
+                <p style="font-size: 15px; color: #666; margin-bottom: 0; line-height: 1.5;">
+                    Hãy thêm sản phẩm để tiếp tục mua sắm!
+                </p>
+            </div>
+            <div class="modal-footer" style="background: var(--very-light-bg); border-top: 2px solid var(--border-green); border-radius: 0 0 17px 17px; padding: 20px 30px; justify-content: center; gap: 15px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 12px 24px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: linear-gradient(135deg, #757575, #9e9e9e); border: none; color: white;">
+                    ĐÓNG
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thông báo chưa chọn sản phẩm nào -->
+<div class="modal fade" id="noSelectedModal" tabindex="-1" aria-labelledby="noSelectedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noSelectedLabel">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Thông báo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fas fa-hand-pointer text-4xl mb-3" style="color: var(--accent-green);"></i>
+                    <p>Bạn chưa chọn sản phẩm nào.</p>
+                    <p class="text-muted">Vui lòng chọn ít nhất một sản phẩm để tiếp tục!</p>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-check mr-2"></i>Đã hiểu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa một sản phẩm -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+            <div class="modal-header" style="border: none; padding: 20px 20px 10px 20px; background: white; border-radius: 16px 16px 0 0;">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" style="opacity: 0.5;"></button>
+            </div>
+            <div class="modal-body" style="padding: 0 30px 20px 30px; text-align: center; background: white;">
+                <div style="margin-bottom: 20px;">
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: #fff3f3; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-trash-alt" style="font-size: 32px; color: #dc3545;"></i>
+                    </div>
+                </div>
+                <h5 style="font-size: 20px; font-weight: 700; color: #2d3436; margin-bottom: 10px; letter-spacing: -0.5px;">
+                    Xác nhận xóa
+                </h5>
+                <p style="font-size: 15px; color: #636e72; margin-bottom: 0; line-height: 1.5;">
+                    Bạn có chắc chắn muốn xóa sản phẩm này?<br>
+                    <span style="font-size: 13px; color: #95a5a6;">Hành động này không thể hoàn tác.</span>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; padding: 0 20px 20px 20px; justify-content: center; gap: 12px; background: white; border-radius: 0 0 16px 16px;">
+                <button type="button" class="btn" data-bs-dismiss="modal" style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; background: #f1f3f5; color: #495057; border: none; transition: all 0.3s;">
+                    Hủy
+                </button>
+                <button type="button" class="btn" id="confirmDeleteBtn" style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; background: #dc3545; color: white; border: none; transition: all 0.3s;">
+                    Xóa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa tất cả -->
+<div class="modal fade" id="confirmDeleteAllModal" tabindex="-1" aria-labelledby="confirmDeleteAllLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+            <div class="modal-header" style="border: none; padding: 20px 20px 10px 20px; background: white; border-radius: 16px 16px 0 0;">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" style="opacity: 0.5;"></button>
+            </div>
+            <div class="modal-body" style="padding: 0 30px 20px 30px; text-align: center; background: white;">
+                <div style="margin-bottom: 20px;">
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: #fff3f3; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #dc3545;"></i>
+                    </div>
+                </div>
+                <h5 style="font-size: 20px; font-weight: 700; color: #2d3436; margin-bottom: 10px; letter-spacing: -0.5px;">
+                    Xóa tất cả sản phẩm?
+                </h5>
+                <p style="font-size: 15px; color: #636e72; margin-bottom: 0; line-height: 1.5;">
+                    Bạn có chắc chắn muốn xóa tất cả sản phẩm đã chọn?<br>
+                    <span style="font-size: 13px; color: #95a5a6;">Hành động này sẽ xóa toàn bộ giỏ hàng và không thể hoàn tác.</span>
+                </p>
+            </div>
+            <div class="modal-footer" style="border: none; padding: 0 20px 20px 20px; justify-content: center; gap: 12px; background: white; border-radius: 0 0 16px 16px;">
+                <button type="button" class="btn" data-bs-dismiss="modal" style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; background: #f1f3f5; color: #495057; border: none; transition: all 0.3s;">
+                    Hủy
+                </button>
+                <button type="button" class="btn" id="confirmDeleteAllBtn" style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; background: #dc3545; color: white; border: none; transition: all 0.3s;">
+                    Xóa tất cả
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

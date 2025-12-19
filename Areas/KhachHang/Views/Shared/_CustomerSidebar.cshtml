@@ -1,0 +1,127 @@
+@{
+    // Lấy thông tin controller và action hiện tại
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<style>
+    /* Fixed Sidebar Size - Applied to all pages - Override all inline styles */
+    .customer-sidebar.card {
+        max-width: 290px !important;
+        min-width: 290px !important;
+        width: 290px !important;
+        margin: 25px 0 0 30px !important;
+        position: sticky !important;
+        top: 20px !important;
+        height: fit-content !important;
+        align-self: flex-start !important;
+    }
+    
+    .customer-sidebar .card-header {
+        padding: 0.9rem 0.6rem !important;
+        background: linear-gradient(135deg, #4a7c59 0%, #5e9c6f 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    .customer-sidebar .card-header h4 {
+        font-size: 1.2rem !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
+    }
+    
+    .customer-sidebar .sidebar-nav {
+        padding: 0.5rem 0.4rem !important;
+        background: transparent !important;
+    }
+    
+    .customer-sidebar .nav.flex-column {
+        gap: 0.25rem !important;
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .customer-sidebar .nav-item {
+        list-style: none !important;
+    }
+    
+    .customer-sidebar .nav-link {
+        padding: 0.75rem 1.1rem !important;
+        font-size: 1rem !important;
+        gap: 0.7rem !important;
+        color: #2c2c2c !important;
+        background: transparent !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .customer-sidebar .nav-link i {
+        font-size: 1.15rem !important;
+        width: 22px !important;
+        color: #4a7c59 !important;
+        text-align: center !important;
+    }
+    
+    .customer-sidebar .nav-link span {
+        font-size: 1rem !important;
+        white-space: nowrap !important;
+        font-weight: 500 !important;
+        color: #2c2c2c !important;
+    }
+    
+    @@media (max-width: 991px) {
+        .customer-sidebar.card {
+            max-width: 100% !important;
+            min-width: auto !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+        }
+    }
+</style>
+
+<div class="customer-sidebar card" style="margin: 25px 0 0 0; position: sticky; top: 20px;">
+    <div class="card-header text-center" style="background: linear-gradient(135deg, #4a7c59 0%, #5e9c6f 100%); color: #ffffff; padding: 0.75rem 0.5rem;">
+        <h4 style="margin: 0; font-size: 1.15rem; font-weight: 600; color: #ffffff;">Tài khoản của tôi</h4>
+    </div>
+    <nav class="sidebar-nav" style="padding: 0.4rem 0.3rem; background: transparent;">
+        <ul class="nav flex-column" style="gap: 0.2rem; list-style: none; padding: 0; margin: 0;">
+            <li class="nav-item" style="list-style: none;">
+                <a class="nav-link @(currentController == "ThongTin" && currentAction == "Index" ? "active" : "")" 
+                   href="@Url.Action("Index", "ThongTin", new { area = "KhachHang" })"
+                   style="color: #2c2c2c !important; background: transparent; padding: 0.65rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.65rem; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-user-edit" style="color: #4a7c59 !important; font-size: 1.1rem; width: 20px; text-align: center;"></i>
+                    <span style="color: #2c2c2c !important; font-weight: 500;">Thông tin cá nhân</span>
+                </a>
+            </li>
+            <li class="nav-item" style="list-style: none;">
+                <a class="nav-link @(currentController == "ThongTin" && currentAction == "ChangePassword" ? "active" : "")" 
+                   href="@Url.Action("ChangePassword", "ThongTin", new { area = "KhachHang" })"
+                   style="color: #2c2c2c !important; background: transparent; padding: 0.65rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.65rem; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-key" style="color: #4a7c59 !important; font-size: 1.1rem; width: 20px; text-align: center;"></i>
+                    <span style="color: #2c2c2c !important; font-weight: 500;">Đổi mật khẩu</span>
+                </a>
+            </li>
+            <li class="nav-item" style="list-style: none;">
+                <a class="nav-link @(currentController == "DiaChi" ? "active" : "")" 
+                   href="@Url.Action("Index", "DiaChi", new { area = "KhachHang" })"
+                   style="color: #2c2c2c !important; background: transparent; padding: 0.65rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.65rem; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-map-marker-alt" style="color: #4a7c59 !important; font-size: 1.1rem; width: 20px; text-align: center;"></i>
+                    <span style="color: #2c2c2c !important; font-weight: 500;">Địa chỉ</span>
+                </a>
+            </li>
+            <li class="nav-item" style="list-style: none;">
+                <a class="nav-link @(currentController == "DonHang" ? "active" : "")" 
+                   href="@Url.Action("Index", "DonHang", new { area = "KhachHang" })"
+                   style="color: #2c2c2c !important; background: transparent; padding: 0.65rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.65rem; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-shopping-bag" style="color: #4a7c59 !important; font-size: 1.1rem; width: 20px; text-align: center;"></i>
+                    <span style="color: #2c2c2c !important; font-weight: 500;">Đơn hàng của tôi</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

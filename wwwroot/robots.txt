@@ -1,0 +1,46 @@
+# robots.txt cho Beauty Little Fish
+
+User-agent: *
+Allow: /
+
+# Cho phép truy cập các trang chính
+Allow: /san-pham/
+Allow: /danh-muc/
+Allow: /KhachHang/
+
+# Chặn các khu vực Admin và Nhân viên
+Disallow: /Admin/
+Disallow: /NhanVien/
+Disallow: /admin/
+Disallow: /nhanvien/
+
+# Chặn các trang đăng nhập, đăng ký, quản lý tài khoản
+Disallow: /DangNhap/
+Disallow: /DangKi/
+Disallow: /Doi_MK/
+Disallow: /Quen_MK/
+Disallow: /quanlitaikhoan.html
+
+# Chặn các thư mục hệ thống
+Disallow: /bin/
+Disallow: /obj/
+Disallow: /App_Data/
+
+# Chặn giỏ hàng và checkout
+Disallow: /KhachHang/GioHang/
+Disallow: /KhachHang/ThanhToan/
+Disallow: /KhachHang/DonHang/
+
+# Chặn các file và thư mục hệ thống
+Disallow: /*.json$
+Disallow: /*.config$
+Disallow: /lib/
+
+# Cho phép crawl các file tĩnh
+Allow: /css/
+Allow: /js/
+Allow: /Images/
+Allow: /icon/
+
+# Sitemap
+Sitemap: https://jules-unrippable-felicity.ngrok-free.dev/sitemap.xml

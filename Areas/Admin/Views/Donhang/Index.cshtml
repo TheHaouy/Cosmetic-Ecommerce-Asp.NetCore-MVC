@@ -1,0 +1,326 @@
+@model List<Final_VS1.Data.DonHang>
+@{
+    ViewData["Title"] = "QUẢN LÝ ĐƠN HÀNG";
+    ViewData["PageTitle"] = "QUẢN LÝ ĐƠN HÀNG";
+    ViewData["SearchPlaceholder"] = "Tìm kiếm đơn hàng...";
+}
+
+<link rel="stylesheet" href="~/css/Admin/donhang-list.css" asp-append-version="true" />
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>QUẢN LÝ ĐƠN HÀNG</span>
+        <div class="d-flex gap-2 filter-controls">
+            <select class="form-select form-select-sm" id="statusFilter" style="width: auto;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                <option value="Đã xác nhận">Đã xác nhận</option>
+                <option value="Đang giao">Đang giao</option>
+                <option value="Hoàn thành">Hoàn thành</option>
+                <option value="Đã hủy">Đã hủy</option>
+            </select>
+            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Tìm kiếm đơn hàng..." style="width: 250px;">
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="orderTable" class="table table-hover" style="width:100%">
+             <thead class="table-dark">
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Khách hàng</th>
+                    <th id="dateHeader" style="cursor: pointer;" title="Click để sắp xếp theo ngày">Ngày đặt <span id="dateSortIcon" class="ms-1">↓</span></th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Lịch sử thay đổi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model.OrderByDescending(x => x.IdDonHang))
+                    {
+                        var lastTimeline = order.TimelineDonHangs?.OrderByDescending(t => t.NgayCapNhat).FirstOrDefault();
+                        <tr class="order-row" data-order-id="@order.IdDonHang" style="cursor: pointer;">
+                            <td class="text-center"><strong class="text-primary">HD-@order.IdDonHang</strong></td>
+                            <td class="text-start">
+                                <div>
+                                    <strong>@(order.IdTaiKhoanNavigation?.HoTen ?? "Khách vãng lai")</strong><br>
+                                </div>
+                            </td>
+                            <td class="text-center" data-order-date="@(order.NgayDat?.ToString("o") ?? "")">@(order.NgayDat?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                            <td class="text-center"><strong class="text-success">@(order.TongTien?.ToString("N0") ?? "0") ₫</strong></td>
+                            <td class="text-center">
+                                @{
+                                    var statusClass = order.TrangThai switch
+                                    {
+                                        "Chờ xác nhận" => "bg-warning text-dark",
+                                        "Đã xác nhận" => "bg-primary text-white",
+                                        "Đang giao" => "bg-info text-dark",
+                                        "Hoàn thành" => "bg-success text-dark",
+                                        "Đã hủy" => "bg-dark text-white",
+                                        _ => "bg-secondary text-white"
+                                    };
+                                }
+                                <span class="badge @statusClass status-badge" data-order-id="@order.IdDonHang" style="cursor: pointer;" title="Click để thay đổi trạng thái">@(order.TrangThai ?? "Không xác định")</span>
+                            </td>
+                            <td class="text-start timeline-cell" data-order-id="@order.IdDonHang" style="cursor: pointer; padding: 8px;" onclick="event.stopPropagation();">
+                                @if (order.TimelineDonHangs != null && order.TimelineDonHangs.Any())
+                                {
+                                    var allTimelines = order.TimelineDonHangs.OrderByDescending(t => t.NgayCapNhat).ToList();
+                                    var latestTimeline = allTimelines.First();
+                                    var timelineCount = allTimelines.Count;
+                                    
+                                    var statusBadgeClass = latestTimeline.TrangThaiMoi switch
+                                    {
+                                        "Chờ xác nhận" => "bg-warning text-dark",
+                                        "Đã xác nhận" => "bg-primary text-white",
+                                        "Đang giao" => "bg-info text-dark",
+                                        "Hoàn thành" => "bg-success text-dark",
+                                        "Đã hủy" => "bg-dark text-white",
+                                        "Đang xử lý" => "bg-warning text-dark",
+                                        _ => "bg-secondary"
+                                    };
+
+                                    <div class="timeline-wrapper" data-order-id="@order.IdDonHang">
+                                        <!-- Timeline được thu gọn - chỉ hiển thị mới nhất -->
+                                        <div class="timeline-summary" onclick="toggleTimeline(@order.IdDonHang, event)">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="fas fa-circle text-primary" style="font-size: 6px;"></i>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock"></i> @(latestTimeline.NgayCapNhat?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                                                </small>
+                                            </div>
+                                            <div class="ps-3 d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="badge @statusBadgeClass">@latestTimeline.TrangThaiMoi</span>
+                                                    @if (timelineCount > 1)
+                                                    {
+                                                        <small class="text-muted ms-2">
+                                                            <i class="fas fa-history"></i> +@(timelineCount - 1) lịch sử
+                                                        </small>
+                                                    }
+                                                </div>
+                                                <i class="fas fa-chevron-down timeline-toggle-icon" style="font-size: 12px;"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Danh sách timeline đầy đủ - ẩn mặc định -->
+                                        <div class="timeline-list" style="display: none;">
+                                            <hr class="my-2">
+                                            @foreach (var timeline in allTimelines)
+                                            {
+                                                var timelineBadgeClass = timeline.TrangThaiMoi switch
+                                                {
+                                                    "Chờ xác nhận" => "bg-warning text-dark",
+                                                    "Đã xác nhận" => "bg-primary text-white",
+                                                    "Đang giao" => "bg-info text-dark",
+                                                    "Hoàn thành" => "bg-success text-dark",
+                                                    "Đã hủy" => "bg-dark text-white",
+                                                    "Đang xử lý" => "bg-warning text-dark",
+                                                    _ => "bg-secondary"
+                                                };
+                                                
+                                                <div class="timeline-entry mb-2 pb-2 border-bottom">
+                                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                                        <i class="fas fa-circle text-primary" style="font-size: 6px;"></i>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-clock"></i> @(timeline.NgayCapNhat?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                                                        </small>
+                                                    </div>
+                                                    <div class="ps-3">
+                                                        <span class="badge @timelineBadgeClass">@timeline.TrangThaiMoi</span>
+                                                        
+                                                        @if (timeline.TrangThaiMoi == "Hoàn thành")
+                                                        {
+                                                            var processingTimeline = order.TimelineDonHangs
+                                                                .Where(t => t.TrangThaiMoi == "Chờ xác nhận" || t.TrangThaiMoi == "Đang xử lý")
+                                                                .OrderBy(t => t.NgayCapNhat)
+                                                                .FirstOrDefault();
+
+                                                            if (processingTimeline != null && processingTimeline.NgayCapNhat.HasValue && timeline.NgayCapNhat.HasValue)
+                                                            {
+                                                                var duration = timeline.NgayCapNhat.Value - processingTimeline.NgayCapNhat.Value;
+                                                                var durationString = "";
+                                                                if (duration.Days > 0) durationString += $"{duration.Days} ngày ";
+                                                                if (duration.Hours > 0) durationString += $"{duration.Hours} giờ ";
+                                                                if (duration.Minutes > 0) durationString += $"{duration.Minutes} phút";
+                                                                
+                                                                <div class="timeline-note mt-1">
+                                                                    <small class="text-success fst-italic">
+                                                                        <i class="fas fa-check-circle"></i> Hoàn tất sau: @durationString.Trim()
+                                                                    </small>
+                                                                </div>
+                                                            }
+                                                        }
+                                                        else if (!string.IsNullOrEmpty(timeline.GhiChu))
+                                                        {
+                                                            <div class="timeline-note">
+                                                                <small class="text-muted fst-italic">@timeline.GhiChu</small>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Chưa có cập nhật</small>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có đơn hàng nào</h5>
+                            <p class="text-muted">Các đơn hàng sẽ hiển thị ở đây khi có khách hàng đặt hàng</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Modals {
+    <!-- Modal: Chi tiết đơn hàng -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng #<span id="orderModalId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Thông tin khách hàng</h6>
+                            <p class="mb-1"><strong>Tên:</strong> <span id="orderCustomerName"></span></p>
+                            <p class="mb-1"><strong>Email:</strong> <span id="orderCustomerEmail"></span></p>
+                            <p class="mb-1"><strong>SĐT:</strong> <span id="orderCustomerPhone"></span></p>
+                            <p class="mb-1"><strong>Địa chỉ:</strong> <span id="orderAddress"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Thông tin đơn hàng</h6>
+                            <p class="mb-1"><strong>Ngày đặt:</strong> <span id="orderDate"></span></p>
+                            <p class="mb-1"><strong>Phương thức TT:</strong> <span id="orderPaymentMethod"></span></p>
+                            <p class="mb-1"><strong>Tình trạng:</strong> <span id="orderStatus" class="badge"></span></p>
+                            <p class="mb-1"><strong>Tổng tiền:</strong> <span id="orderTotal" class="text-success fw-bold"></span></p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Chi tiết sản phẩm</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Biến thể</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderItemsList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Lịch sử Timeline đơn hàng -->
+    <div class="modal fade" id="timelineModal" tabindex="-1" aria-labelledby="timelineModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="timelineModalLabel">
+                        <i class="fas fa-history"></i> Lịch sử thay đổi trạng thái - Đơn hàng #<span id="timelineOrderId"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="timelineContent" class="timeline-container">
+                        <!-- Timeline will be loaded here -->
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Set up URL configuration for the JavaScript module
+        window.donhangUrls = {
+            getOrderDetail: '@Url.Action("GetOrderDetail", "Donhang", new { area = "Admin" })',
+            updateStatus: '@Url.Action("UpdateStatus", "Donhang", new { area = "Admin" })',
+            getTimeline: '@Url.Action("GetTimeline", "Donhang", new { area = "Admin" })'
+        };
+    </script>
+    <script>
+        (function () {
+            // date sort: ↑ oldest->newest, ↓ newest->oldest
+            var header = document.getElementById('dateHeader');
+            var icon = document.getElementById('dateSortIcon');
+            if (!header) return;
+
+            var asc = false; // start with newest->oldest (↓)
+
+            function parseDateFromRow(row) {
+                var td = row.querySelector('td[data-order-date]');
+                if (!td) return null;
+                var v = td.getAttribute('data-order-date');
+                if (!v) return null;
+                var d = new Date(v);
+                return isNaN(d.getTime()) ? null : d;
+            }
+
+            function sortRows(ascending) {
+                var tbody = document.querySelector('#orderTable tbody');
+                if (!tbody) return;
+                var rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort(function (a, b) {
+                    var da = parseDateFromRow(a);
+                    var db = parseDateFromRow(b);
+                    if (da === null && db === null) return 0;
+                    if (da === null) return 1;
+                    if (db === null) return -1;
+                    if (da < db) return ascending ? -1 : 1;
+                    if (da > db) return ascending ? 1 : -1;
+                    return 0;
+                });
+                // re-append in sorted order
+                rows.forEach(function (r) { tbody.appendChild(r); });
+            }
+
+            header.addEventListener('click', function (e) {
+                e.stopPropagation();
+                asc = !asc;
+                icon.textContent = asc ? '↑' : '↓';
+                sortRows(asc);
+            });
+        })();
+    </script>
+    <script src="~/js/Admin/donhang-list-inline.js" asp-append-version="true"></script>
+    <script src="~/js/Admin/donhang-index.js" asp-append-version="true"></script>
+}

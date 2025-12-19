@@ -1,0 +1,181 @@
+@using Final_VS1.Models
+
+@{
+    var seoData = ViewBag.SeoData as SeoViewModel;
+}
+
+<!-- Social Share Buttons -->
+<div class="social-share-container">
+    <h6 class="share-title">Chia sẻ:</h6>
+    <div class="share-buttons">
+        <!-- Facebook Share -->
+        <a href="javascript:void(0);" 
+           class="share-btn facebook-btn" 
+           onclick="shareFacebook('@(seoData?.OgUrl ?? "")')"
+           title="Chia sẻ lên Facebook">
+            <i class="fab fa-facebook-f"></i>
+            <span>Facebook</span>
+        </a>
+
+        <!-- Copy Link -->
+        <a href="javascript:void(0);" 
+           class="share-btn copy-btn" 
+           onclick="copyLink('@(seoData?.OgUrl ?? Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path)')"
+           title="Sao chép liên kết">
+            <i class="fas fa-link"></i>
+            <span>Copy Link</span>
+        </a>
+    </div>
+</div>
+
+<style>
+.social-share-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.share-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    color: white;
+}
+
+.share-btn i,
+.share-btn svg {
+    font-size: 18px;
+}
+
+.facebook-btn {
+    background: #1877f2;
+}
+
+.facebook-btn:hover {
+    background: #0d65d9;
+}
+
+.copy-btn {
+    background: #6c757d;
+}
+
+.copy-btn:hover {
+    background: #5a6268;
+}
+
+/* Responsive */
+@@media (max-width: 576px) {
+    .share-buttons {
+        flex-direction: column;
+    }
+    
+    .share-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Facebook Share
+function shareFacebook(url) {
+    if (!url) url = window.location.href;
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(shareUrl, 'facebook-share', 'width=626,height=436');
+}
+
+// Copy Link - Tự động copy vào clipboard
+function copyLink(url) {
+    if (!url) url = window.location.href;
+    
+    // Lấy button để show feedback
+    const btn = event.target.closest('.share-btn');
+    const originalHtml = btn.innerHTML;
+    
+    // Thử dùng Clipboard API (modern browsers)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            // Success
+            showCopySuccess(btn, originalHtml);
+        }).catch(function(err) {
+            console.log('Clipboard API failed, trying fallback...');
+            copyLinkFallback(url, btn, originalHtml);
+        });
+    } else {
+        // Fallback for older browsers
+        copyLinkFallback(url, btn, originalHtml);
+    }
+}
+
+// Fallback method for older browsers
+function copyLinkFallback(url, btn, originalHtml) {
+    const tempInput = document.createElement('textarea');
+    tempInput.style.position = 'fixed';
+    tempInput.style.top = '0';
+    tempInput.style.left = '0';
+    tempInput.style.width = '2em';
+    tempInput.style.height = '2em';
+    tempInput.style.padding = '0';
+    tempInput.style.border = 'none';
+    tempInput.style.outline = 'none';
+    tempInput.style.boxShadow = 'none';
+    tempInput.style.background = 'transparent';
+    tempInput.value = url;
+    
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+    tempInput.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccess(btn, originalHtml);
+        } else {
+            console.error('Copy command failed');
+        }
+    } catch (err) {
+        console.error('Copy failed:', err);
+    } finally {
+        document.body.removeChild(tempInput);
+    }
+}
+
+// Show success feedback
+function showCopySuccess(btn, originalHtml) {
+    btn.innerHTML = '<i class="fas fa-check"></i> <span>Đã sao chép!</span>';
+    btn.style.background = '#28a745';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.style.background = '';
+    }, 2000);
+}
+</script>
